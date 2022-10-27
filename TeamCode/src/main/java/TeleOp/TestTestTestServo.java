@@ -14,6 +14,11 @@ public class TestTestTestServo extends OpMode
     @Override
     public void init(){
 
+        rightServo = hardwareMap.get(Servo.class, "rightServo");
+        leftServo = hardwareMap.get(Servo.class, "leftServo");
+
+        //rightServo.setPosition(0);
+        //leftServo.setPosition(0);
     }
 
     @Override
@@ -26,8 +31,8 @@ public class TestTestTestServo extends OpMode
         }
         if(gamepad1.a)
         {
-            rightServo.setPosition(0);
-            leftServo.setPosition(0);
+            rightServo.setPosition(0.2);
+            leftServo.setPosition(0.2);
         }
     }
 }
