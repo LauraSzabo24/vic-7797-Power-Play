@@ -27,12 +27,12 @@ public class TestTestTestServo extends OpMode
         if(gamepad1.b)
         {
             rightServo.setPosition(0.5);
-            leftServo.setPosition(0.5);
+            leftServo.setPosition(0.5); //0.41 0.34
         }
         if(gamepad1.a)
         {
-            rightServo.setPosition(0.2);
-            leftServo.setPosition(0.2);
+            rightServo.setPosition(0.1);
+            leftServo.setPosition(0.86);
         }
     }
 }
