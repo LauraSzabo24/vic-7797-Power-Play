@@ -1,17 +1,19 @@
-/*package Autonomous;
+package Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous
-public class ExampleAuto extends LinearOpMode {
+public class AprilTagParking extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         double numberDetected = -1;
 
         while(!opModeIsActive()){
             // get the number of apriltag detected
-            numberDetected = getNumber();
+
+            numberDetected = AprilTagOp.tagNumber;
         }
 
         while(opModeIsActive() && !isStopRequested()){
@@ -29,4 +31,4 @@ public class ExampleAuto extends LinearOpMode {
         }
     }
 }
-*/
+//combine with AprilTagOp??

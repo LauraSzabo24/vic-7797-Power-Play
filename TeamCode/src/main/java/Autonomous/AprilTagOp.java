@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.pipelines.AprilTagDetectionPipeline;
+import pipelines.AprilTagDetectionPipeline;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -17,6 +17,9 @@ import java.util.ArrayList;
 @TeleOp
 public class AprilTagOp extends LinearOpMode
 {
+    //added
+    public static int tagNumber;
+
     private OpenCvCamera camera;
     private AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
@@ -32,6 +35,7 @@ public class AprilTagOp extends LinearOpMode
     // UNITS ARE METERS
     private static final double tagsize = 0.166;
 
+//...
     private int numFramesWithoutDetection = 0;
 
     private static final float DECIMATION_HIGH = 3;
@@ -40,6 +44,7 @@ public class AprilTagOp extends LinearOpMode
     private static final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
 
     @SuppressLint("DefaultLocale")
+    //...
     @Override
     public void runOpMode()
     {
@@ -67,6 +72,7 @@ public class AprilTagOp extends LinearOpMode
 
         telemetry.setMsTransmissionInterval(50);
 
+        //from here2
         while (opModeIsActive())
         {
             ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
@@ -104,13 +110,21 @@ public class AprilTagOp extends LinearOpMode
                         telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
                         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
                         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+
+                        //...
+                        if(detection.id == 1 || detection.id == 2 || detection.id == 3)
+                        {
+                            tagNumber = detection.id;
+                        }
+                        //...
                     }
                 }
-
                 telemetry.update();
             }
 
             sleep(20);
+
+            //...
         }
     }
 }
