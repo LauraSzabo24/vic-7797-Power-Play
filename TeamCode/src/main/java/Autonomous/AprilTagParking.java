@@ -1,4 +1,4 @@
-package Autonomous;
+/*package Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -21,14 +21,17 @@ public class AprilTagParking extends LinearOpMode {
 
             if(numberDetected == 1){
                 // park in zone 1
+                telemetry.addData("PARK IN ZONE 1", numberDetected);
             }
             else if(numberDetected == 2){
                 // park in zone 2
+                telemetry.addData("PARK IN ZONE 2", numberDetected);
             }
             else {
                 // park in zone 3
+                telemetry.addData("PARK IN ZONE 3", numberDetected);
             }
         }
     }
-}
+}*/
 //combine with AprilTagOp??

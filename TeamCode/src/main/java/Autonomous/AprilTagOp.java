@@ -49,8 +49,9 @@ public class AprilTagOp extends LinearOpMode
     public void runOpMode()
     {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+
 
         camera.setPipeline(aprilTagDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -58,7 +59,7 @@ public class AprilTagOp extends LinearOpMode
             @Override
             public void onOpened()
             {
-                camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(800,600, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -126,5 +127,32 @@ public class AprilTagOp extends LinearOpMode
 
             //...
         }
+
+        double numberDetected = -1;
+
+        while(!opModeIsActive()){
+            // get the number of apriltag detected
+
+            numberDetected = AprilTagOp.tagNumber;
+        }
+
+        while(opModeIsActive() && !isStopRequested()){
+            // first, move forward, strafe left, and deposit the preloaded cone
+
+            if(numberDetected == 1){
+                // park in zone 1
+                telemetry.addData("PARK IN ZONE 1", numberDetected);
+            }
+            else if(numberDetected == 2){
+                // park in zone 2
+                telemetry.addData("PARK IN ZONE 2", numberDetected);
+            }
+            else {
+                // park in zone 3
+                telemetry.addData("PARK IN ZONE 3", numberDetected);
+            }
+        }
+
+
     }
 }
