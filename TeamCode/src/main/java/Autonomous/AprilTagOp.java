@@ -2,11 +2,16 @@ package Autonomous;
 
 import android.annotation.SuppressLint;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import pipelines.AprilTagDetectionPipeline;
+
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -59,7 +64,7 @@ public class AprilTagOp extends LinearOpMode
             @Override
             public void onOpened()
             {
-                camera.startStreaming(800,600, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -136,20 +141,34 @@ public class AprilTagOp extends LinearOpMode
             numberDetected = AprilTagOp.tagNumber;
         }
 
+        //edited from here
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
         while(opModeIsActive() && !isStopRequested()){
             // first, move forward, strafe left, and deposit the preloaded cone
 
             if(numberDetected == 1){
                 // park in zone 1
                 telemetry.addData("PARK IN ZONE 1", numberDetected);
+                Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
+                        .strafeLeft(12)
+                        .forward(12)
+                        .build();
             }
             else if(numberDetected == 2){
                 // park in zone 2
                 telemetry.addData("PARK IN ZONE 2", numberDetected);
+                Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
+                        .forward(12)
+                        .build();
             }
             else {
                 // park in zone 3
                 telemetry.addData("PARK IN ZONE 3", numberDetected);
+                Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
+                        .strafeRight(12)
+                        .forward(12)
+                        .build();
             }
         }
 
