@@ -26,9 +26,16 @@ public class Slides extends OpMode
         double leftAmount = gamepad1.left_trigger;
         double rightAmount = gamepad1.right_trigger;
 
-        /*if(gamepad1.a){
-            liftB.set(0.5);
-            liftA.set(0.5);
+        liftA.set(leftAmount*1/2); //change 1/2 to good number
+        liftB.set(rightAmount*1/2);
+
+        /*{
+            pressure left = ....
+            right = ...
+
+            setpower(right*88)
+            liftB.set(0.4);
+            liftA.set(0.4);
         }*/
     }
 }
