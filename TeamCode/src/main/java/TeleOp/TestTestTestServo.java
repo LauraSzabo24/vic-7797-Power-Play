@@ -24,12 +24,12 @@ public class TestTestTestServo extends OpMode
     @Override
     public void loop(){
 
-        if(gamepad1.left_bumper)
+        if(gamepad2.left_bumper)
         {
             rightServo.setPosition(0.5);
             leftServo.setPosition(0.5);
         }
-        if(gamepad1.right_bumper)
+        if(gamepad2.right_bumper)
         {
             rightServo.setPosition(0.2);
             leftServo.setPosition(0.2);

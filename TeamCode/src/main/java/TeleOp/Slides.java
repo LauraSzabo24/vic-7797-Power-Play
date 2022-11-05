@@ -23,8 +23,8 @@ public class Slides extends OpMode
 
     @Override
     public void loop(){
-        double leftAmount = gamepad1.left_trigger;
-        double rightAmount = gamepad1.right_trigger;
+        double leftAmount = gamepad2.left_trigger;
+        double rightAmount = gamepad2.right_trigger;
 
         liftA.set(leftAmount*1/2); //change 1/2 to good number
         liftB.set(rightAmount*1/2);
