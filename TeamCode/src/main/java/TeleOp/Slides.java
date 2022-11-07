@@ -1,5 +1,6 @@
 package TeleOp;
 
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,35 +12,48 @@ public class Slides extends OpMode
     private Motor liftA;
     private Motor liftB;
 
+    private final static double upPos = 10;
+    private final static double downPos =-100;//fix up and down positions based on encoder readings
+
+    private final double[] PIDF_COEFF = {0.0001, 0.001 , .001 , 0.001};
+
+    private double targetPos;
+
+    PIDFController liftPIDF = new PIDFController(PIDF_COEFF[0], PIDF_COEFF[1], PIDF_COEFF[2] , PIDF_COEFF[3]);
+
     @Override
     public void init(){
         liftA = new Motor(hardwareMap, "LeftSlideMotor", Motor.GoBILDA.RPM_435);
         liftB = new Motor(hardwareMap, "RightSlideMotor", Motor.GoBILDA.RPM_435);
         liftA.setInverted(true);
+
+        liftA.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        liftB.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+
+        liftA.setRunMode(Motor.RunMode.VelocityControl);
+        liftB.setRunMode(Motor.RunMode.VelocityControl);
+
+         //reset these coeff
+          targetPos = upPos;
         //liftA.setRunMode(Motor.RunMode.RawPower);
        // liftB.setRunMode(Motor.RunMode.RawPower);
-        liftA.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+
 //        liftA.setVeloCoefficients(0.5, 0.5,0.5);
 //        liftB.setVeloCoefficients(0.5, 0.5,0.5);
     }
 
     @Override
     public void loop(){
-        double leftAmount = gamepad2.left_trigger;
-        double rightAmount = gamepad2.right_trigger;
 
-        liftA.set(leftAmount*1/2); //change 1/2 to good number
-        liftB.set(rightAmount*1/2);
 
-        liftA.set(PID.PIDMath(.3, liftA.getPositionCoefficient())); // figure out goal(the final distance/velocity we need)
-        liftB.set(PID.PIDMath(.3, liftB.getPositionCoefficient())); // figure out what unit we are using for pulley motors
-        /*{
-            pressure left = ....
-            right = ...
+        if(gamepad1.a) {
 
-            setpower(right*88)
-            liftB.set(0.4);
-            liftA.set(0.4);
-        }*/
+        double correction = liftPIDF.calculate(liftB.getCurrentPosition(), targetPos);
+        liftA.set(correction);
+        liftB.set(correction);
+
+        }
+
+
     }
 }
