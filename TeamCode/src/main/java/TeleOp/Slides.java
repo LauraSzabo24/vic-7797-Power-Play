@@ -3,6 +3,7 @@ package TeleOp;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 @TeleOp(name = "Slides")
 public class Slides extends OpMode
@@ -15,8 +16,9 @@ public class Slides extends OpMode
         liftA = new Motor(hardwareMap, "LeftSlideMotor", Motor.GoBILDA.RPM_435);
         liftB = new Motor(hardwareMap, "RightSlideMotor", Motor.GoBILDA.RPM_435);
         liftA.setInverted(true);
-        liftA.setRunMode(Motor.RunMode.RawPower);
-        liftB.setRunMode(Motor.RunMode.RawPower);
+        //liftA.setRunMode(Motor.RunMode.RawPower);
+       // liftB.setRunMode(Motor.RunMode.RawPower);
+        liftA.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
 //        liftA.setVeloCoefficients(0.5, 0.5,0.5);
 //        liftB.setVeloCoefficients(0.5, 0.5,0.5);
     }
@@ -29,6 +31,8 @@ public class Slides extends OpMode
         liftA.set(leftAmount*1/2); //change 1/2 to good number
         liftB.set(rightAmount*1/2);
 
+        liftA.set(PID.PIDMath(.3, liftA.getPositionCoefficient())); // figure out goal(the final distance/velocity we need)
+        liftB.set(PID.PIDMath(.3, liftB.getPositionCoefficient())); // figure out what unit we are using for pulley motors
         /*{
             pressure left = ....
             right = ...
