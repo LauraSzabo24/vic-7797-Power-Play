@@ -1,5 +1,8 @@
 package TeleOp;
 
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_RPM;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.getMotorVelocityF;
+
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -15,7 +18,7 @@ public class Slides extends OpMode
     private final static double upPos = 10;
     private final static double downPos =-100;//fix up and down positions based on encoder readings
 
-    private final double[] PIDF_COEFF = {0.0001, 0.001 , .001 , 0.001};
+    private final double[] PIDF_COEFF = {0.0001, 0.001 , .001 , .001};
 
     private double targetPos;
 
