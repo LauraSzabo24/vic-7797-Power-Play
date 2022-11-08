@@ -32,7 +32,7 @@ public class PID extends OpMode {
     public static double Kd =0.0;
 
 
-    public static double targetPosition = 3000;
+    public static double targetPosition = 5;
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -55,6 +55,10 @@ public class PID extends OpMode {
         pulleyMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         pulleyMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        targetPosition = 0;
+
+
+
 
 
     }
@@ -62,21 +66,51 @@ public class PID extends OpMode {
     @Override
     public void loop() {
 
-        TelemetryPacket packet = new TelemetryPacket();
-        double power = returnPower(targetPosition,pulleyMotorL.getCurrentPosition());
-        packet.put("power", power);
-        packet.put("position", pulleyMotorL.getCurrentPosition());
-        packet.put("error", lastError);
-        telemetry.addData("positon", pulleyMotorR.getCurrentPosition());
-        telemetry.addData("positon", pulleyMotorL.getCurrentPosition());
-        telemetry.addData("targetPosition", targetPosition);
-        telemetry.addData("power",power);
+        if (gamepad2.right_bumper && pulleyMotorL.getCurrentPosition() < 4900) {
 
 
-        pulleyMotorL.setPower(power);
-        pulleyMotorR.setPower(power);
+            TelemetryPacket packet = new TelemetryPacket();
+            double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+            packet.put("power", power);
+            packet.put("position", pulleyMotorL.getCurrentPosition());
+            packet.put("error", lastError);
+            telemetry.addData("positon", pulleyMotorR.getCurrentPosition());
+            telemetry.addData("positon", pulleyMotorL.getCurrentPosition());
+            telemetry.addData("targetPosition", targetPosition);
+            telemetry.addData("power", power);
 
-        dashboard.sendTelemetryPacket(packet);
+
+            pulleyMotorL.setPower(power);
+            pulleyMotorR.setPower(power);
+
+            dashboard.sendTelemetryPacket(packet);
+
+            targetPosition = targetPosition + 90;
+        }
+        else if(!gamepad2.right_bumper && !gamepad2.left_bumper) {
+            pulleyMotorL.setPower(0);
+            pulleyMotorR.setPower(0);
+            targetPosition = pulleyMotorL.getCurrentPosition();
+
+
+        }
+
+        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 275) {
+
+            double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+            telemetry.addData("positon", pulleyMotorR.getCurrentPosition());
+            telemetry.addData("positon", pulleyMotorL.getCurrentPosition());
+            telemetry.addData("targetPosition", targetPosition);
+            telemetry.addData("power", power);
+
+
+            pulleyMotorL.setPower(power);
+            pulleyMotorR.setPower(power);
+
+
+
+            targetPosition = targetPosition - 90;
+        }
     }
 
     public double returnPower(double reference, double state) {
