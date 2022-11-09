@@ -1,7 +1,5 @@
 package Autonomous;
 
-import android.annotation.SuppressLint;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
@@ -48,8 +46,6 @@ public class AprilTagOp extends LinearOpMode
     private static final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
     private static final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
 
-    @SuppressLint("DefaultLocale")
-    //...
     @Override
     public void runOpMode()
     {
@@ -79,7 +75,7 @@ public class AprilTagOp extends LinearOpMode
         telemetry.setMsTransmissionInterval(50);
 
         //from here2
-        while (opModeIsActive() )
+        while (opModeIsActive())
         {
             ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
 
@@ -122,47 +118,54 @@ public class AprilTagOp extends LinearOpMode
                         {
                             tagNumber = detection.id;
                         }
-
                         //...
                     }
                 }
-
+                telemetry.update();
             }
-            telemetry.update();
+
             sleep(20);
 
+            //...
+        }
+
         double numberDetected = -1;
+
+        while(!opModeIsActive()){
+            // get the number of apriltag detected
+
+            numberDetected = AprilTagOp.tagNumber;
+        }
 
         //edited from here
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-
-        //while(opModeIsActive() && !isStopRequested()){
+        while(opModeIsActive() && !isStopRequested()){
             // first, move forward, strafe left, and deposit the preloaded cone
-            if(tagNumber== 1){
+
+            if(numberDetected == 1){
                 // park in zone 1
                 telemetry.addData("PARK IN ZONE 1", numberDetected);
-                Trajectory leftPark = drive.trajectoryBuilder(new Pose2d())
+                Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
                         .strafeLeft(12)
-                        //.forward(12)
+                        .forward(12)
                         .build();
             }
-            else if(tagNumber == 2){
+            else if(numberDetected == 2){
                 // park in zone 2
                 telemetry.addData("PARK IN ZONE 2", numberDetected);
-                /*Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
+                Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
                         .forward(12)
-                        .build();*/
+                        .build();
             }
             else {
                 // park in zone 3
                 telemetry.addData("PARK IN ZONE 3", numberDetected);
-                Trajectory rightPark = drive.trajectoryBuilder(new Pose2d())
+                Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
                         .strafeRight(12)
-                        //.forward(12)
+                        .forward(12)
                         .build();
             }
-
         }
 
 
