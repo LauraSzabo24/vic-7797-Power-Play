@@ -132,7 +132,7 @@ public class FinalTeleOp extends OpMode {
 
 
         //PID
-        if (gamepad2.right_bumper && pulleyMotorL.getCurrentPosition() < 5200) {
+        if (gamepad2.right_bumper && pulleyMotorL.getCurrentPosition() < 4100) {
 
 
             TelemetryPacket packet = new TelemetryPacket();
@@ -161,7 +161,7 @@ public class FinalTeleOp extends OpMode {
 
         }
 
-        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 275) {
+        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 240) {
 
             double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
             telemetry.addData("positon", pulleyMotorR.getCurrentPosition());
@@ -221,15 +221,15 @@ public class FinalTeleOp extends OpMode {
         }
 
         if (precisionToggle) {
-            motorFrontLeft.setPower(frontLeftPower * 0.6);
-            motorBackLeft.setPower(backLeftPower * 0.6);
-            motorFrontRight.setPower(frontRightPower * 0.6);
-            motorBackRight.setPower(backRightPower * 0.6);
+            motorFrontLeft.setPower(frontLeftPower * 0.2);
+            motorBackLeft.setPower(backLeftPower * 0.2);
+            motorFrontRight.setPower(frontRightPower * 0.2);
+            motorBackRight.setPower(backRightPower * 0.2);
         } else {
-            motorFrontLeft.setPower(frontLeftPower);
-            motorBackLeft.setPower(backLeftPower);
-            motorFrontRight.setPower(frontRightPower);
-            motorBackRight.setPower(backRightPower);
+            motorFrontLeft.setPower(frontLeftPower*0.6);
+            motorBackLeft.setPower(backLeftPower*0.6);
+            motorFrontRight.setPower(frontRightPower*0.6);
+            motorBackRight.setPower(backRightPower*0.6);
         }
 
     }
