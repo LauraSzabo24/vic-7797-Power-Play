@@ -120,8 +120,13 @@ public class FinalTeleOp extends OpMode {
         }
         if(gamepad2.a)
         {
-            rightServo.setPosition(0.25);
-            leftServo.setPosition(0.75);
+            rightServo.setPosition(0.2);
+            leftServo.setPosition(0.8);
+        }
+        if(gamepad2.y)
+        {
+            rightServo.setPosition(0.15);
+            leftServo.setPosition(0.85);
         }
 
 

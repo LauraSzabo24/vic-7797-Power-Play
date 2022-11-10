@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
-@TeleOp(name = "Slides")
+@TeleOp(name = "SlidesBADBADBAD")
 public class Slides1 extends OpMode
 {
     private Motor liftA;
