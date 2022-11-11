@@ -150,8 +150,13 @@ public class FinalTeleOp extends OpMode {
             pulleyMotorR.setPower(power);
 
             dashboard.sendTelemetryPacket(packet);
-
-            targetPosition = targetPosition + 90;
+            if (gamepad2.dpad_down) {
+                targetPosition = targetPosition + 5;
+            }
+            else
+            {
+                targetPosition = targetPosition + 90;
+            }
         }
         else if(!gamepad2.right_bumper && !gamepad2.left_bumper) {
             pulleyMotorL.setPower(0);
@@ -174,8 +179,14 @@ public class FinalTeleOp extends OpMode {
             pulleyMotorR.setPower(power);
 
 
+            if (gamepad2.dpad_down) {
+                targetPosition = targetPosition - 5;
+            }
+            else
+            {
+                targetPosition = targetPosition - 90;
+            }
 
-            targetPosition = targetPosition - 90;
         }
     }
 
@@ -221,15 +232,15 @@ public class FinalTeleOp extends OpMode {
         }
 
         if (precisionToggle) {
-            motorFrontLeft.setPower(frontLeftPower * 0.2);
-            motorBackLeft.setPower(backLeftPower * 0.2);
-            motorFrontRight.setPower(frontRightPower * 0.2);
-            motorBackRight.setPower(backRightPower * 0.2);
+            motorFrontLeft.setPower(frontLeftPower * 0.6);
+            motorBackLeft.setPower(backLeftPower * 0.6);
+            motorFrontRight.setPower(frontRightPower * 0.6);
+            motorBackRight.setPower(backRightPower * 0.6);
         } else {
-            motorFrontLeft.setPower(frontLeftPower*0.6);
-            motorBackLeft.setPower(backLeftPower*0.6);
-            motorFrontRight.setPower(frontRightPower*0.6);
-            motorBackRight.setPower(backRightPower*0.6);
+            motorFrontLeft.setPower(frontLeftPower);
+            motorBackLeft.setPower(backLeftPower);
+            motorFrontRight.setPower(frontRightPower);
+            motorBackRight.setPower(backRightPower);
         }
 
     }

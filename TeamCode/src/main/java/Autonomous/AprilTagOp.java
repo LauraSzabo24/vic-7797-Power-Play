@@ -147,23 +147,23 @@ public class AprilTagOp extends LinearOpMode
                 // park in zone 1
                 telemetry.addData("PARK IN ZONE 1", numberDetected);
                 Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
-                        .strafeLeft(12)
-                        .forward(12)
+                        .strafeLeft(24)
+                        .forward(24)
                         .build();
             }
             else if(numberDetected == 2){
                 // park in zone 2
                 telemetry.addData("PARK IN ZONE 2", numberDetected);
                 Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
-                        .forward(12)
+                        .forward(24)
                         .build();
             }
             else {
                 // park in zone 3
                 telemetry.addData("PARK IN ZONE 3", numberDetected);
                 Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
-                        .strafeRight(12)
-                        .forward(12)
+                        .strafeRight(24)
+                        .forward(24)
                         .build();
             }
         }
