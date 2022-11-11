@@ -151,6 +151,7 @@ public class FinalTeleOp extends OpMode {
 
             dashboard.sendTelemetryPacket(packet);
             if (gamepad2.dpad_down) {
+                targetPosition = pulleyMotorL.getCurrentPosition(); //if this does not work decrease the power value
                 targetPosition = targetPosition + 5;
             }
             else
@@ -180,6 +181,7 @@ public class FinalTeleOp extends OpMode {
 
 
             if (gamepad2.dpad_down) {
+                targetPosition = pulleyMotorL.getCurrentPosition();//if this does not work decrease the power value
                 targetPosition = targetPosition - 5;
             }
             else
