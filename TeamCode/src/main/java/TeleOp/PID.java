@@ -95,7 +95,7 @@ public class PID extends OpMode {
 
         }
 
-        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 275) {
+        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 210) {
 
             double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
             telemetry.addData("positon", pulleyMotorR.getCurrentPosition());

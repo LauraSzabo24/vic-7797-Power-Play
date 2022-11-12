@@ -132,7 +132,7 @@ public class FinalTeleOp extends OpMode {
 
 
         //PID
-        if (gamepad2.right_bumper && pulleyMotorL.getCurrentPosition() < 4100) {
+        if (gamepad2.right_bumper && pulleyMotorL.getCurrentPosition() < 4250) {
 
 
             TelemetryPacket packet = new TelemetryPacket();
@@ -151,7 +151,7 @@ public class FinalTeleOp extends OpMode {
 
             dashboard.sendTelemetryPacket(packet);
 
-            targetPosition = targetPosition + 90;
+            targetPosition = targetPosition + 80;
         }
         else if(!gamepad2.right_bumper && !gamepad2.left_bumper) {
             pulleyMotorL.setPower(0);
@@ -161,7 +161,7 @@ public class FinalTeleOp extends OpMode {
 
         }
 
-        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 240) {
+        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 0) {
 
             double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
             telemetry.addData("positon", pulleyMotorR.getCurrentPosition());
@@ -175,7 +175,7 @@ public class FinalTeleOp extends OpMode {
 
 
 
-            targetPosition = targetPosition - 90;
+            targetPosition = targetPosition - 80;
         }
     }
 
@@ -221,15 +221,15 @@ public class FinalTeleOp extends OpMode {
         }
 
         if (precisionToggle) {
-            motorFrontLeft.setPower(frontLeftPower * 0.2);
-            motorBackLeft.setPower(backLeftPower * 0.2);
-            motorFrontRight.setPower(frontRightPower * 0.2);
-            motorBackRight.setPower(backRightPower * 0.2);
+            motorFrontLeft.setPower(frontLeftPower * 0.3);
+            motorBackLeft.setPower(backLeftPower * 0.3);
+            motorFrontRight.setPower(frontRightPower * 0.3);
+            motorBackRight.setPower(backRightPower * 0.3);
         } else {
-            motorFrontLeft.setPower(frontLeftPower*0.6);
-            motorBackLeft.setPower(backLeftPower*0.6);
-            motorFrontRight.setPower(frontRightPower*0.6);
-            motorBackRight.setPower(backRightPower*0.6);
+            motorFrontLeft.setPower(frontLeftPower*0.7);
+            motorBackLeft.setPower(backLeftPower*0.7);
+            motorFrontRight.setPower(frontRightPower*0.7);
+            motorBackRight.setPower(backRightPower*0.7);
         }
 
     }
