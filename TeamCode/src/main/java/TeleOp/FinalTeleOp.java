@@ -234,7 +234,7 @@ public class FinalTeleOp extends OpMode {
 
     }
 
-    //PID methods
+    //PID method
     public double returnPower(double reference, double state) {
         double error = reference - state;
         integralSum += error * timer.seconds();
