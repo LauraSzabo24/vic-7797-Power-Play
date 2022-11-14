@@ -80,7 +80,6 @@ public class FinalTeleOp extends OpMode {
         motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
         //servo initialization
 
         rightServo = hardwareMap.get(Servo.class, "rightServo");
@@ -150,12 +149,10 @@ public class FinalTeleOp extends OpMode {
             pulleyMotorL.setPower(power);
             pulleyMotorR.setPower(power);
 
-
             dashboard.sendTelemetryPacket(packet);
             if (gamepad2.dpad_down) {
                 targetPosition = pulleyMotorL.getCurrentPosition(); //if this does not work decrease the power value
                 targetPosition = targetPosition + 5;
-
             }
             else
             {
