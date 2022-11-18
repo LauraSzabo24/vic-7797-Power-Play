@@ -29,6 +29,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import pipelines.AprilTagDetectionPipeline;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -242,63 +243,84 @@ public class AprilTagOp extends LinearOpMode
         //edited from here
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        //trajectories
-        Trajectory goToPole = drive.trajectoryBuilder(new Pose2d())
+        //roadrunner trajectory stuff
+        Pose2d startPose = new Pose2d(0,0,0);
+        ElapsedTime timer2 = new ElapsedTime();
+        drive.setPoseEstimate(startPose);
+
+        //trajectories and trajectory sequences
+        TrajectorySequence goToThePole = drive.trajectorySequenceBuilder(startPose)
                 .forward(32)
-                .strafeRight(37)
+                .strafeRight(37)// might need to be put in seperate trajectory
+                .waitSeconds(5)
                 .build();
-        Trajectory dropCone = drive.trajectoryBuilder(new Pose2d())
+        TrajectorySequence dropCone = drive.trajectorySequenceBuilder(startPose)
+                .waitSeconds(1)
                 .forward(5)
+                .waitSeconds(2)
                 .build();
-        Trajectory backwards = drive.trajectoryBuilder(new Pose2d())
+        TrajectorySequence backwards = drive.trajectorySequenceBuilder(startPose)
+                .waitSeconds(2)
                 .back(5)
+                .waitSeconds(1)
                 .build();
+
+        Trajectory leftPark = drive.trajectoryBuilder(new Pose2d())
+                .strafeLeft(12)
+                .build();
+        Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
+                .strafeLeft(36)
+                .build();
+        Trajectory rightPark = drive.trajectoryBuilder(new Pose2d())
+                .strafeLeft(60)
+                .build();
+
+        waitForStart(); //also new
 
         while(opModeIsActive() && !isStopRequested()){
-
-            // SCORING INTO TALL JUNCTION
-            drive.followTrajectory(goToPole);
+            //go to the tallest pole
+            drive.followTrajectorySequence(goToThePole);
 
             //PID slide moving to drop cone
             targetPosition = 4200;
 
-            drive.followTrajectory(dropCone);
+            //go forward and open claw
+            drive.followTrajectorySequence(dropCone);
             rightServo.setPosition(0.5);
             leftServo.setPosition(0.5);
 
+            //bring the slides lower
             targetPosition = 3000;
+            double time = timer2.time();
+            while(time<(time+2))
+            {
+                time = timer2.time();
+            } //no clue if this timer works
             targetPosition = 4200;
 
+            //close the claw
             rightServo.setPosition(0.25);
             leftServo.setPosition(0.75);
 
-            drive.followTrajectory(backwards);
+            //go back and lower slides
+            drive.followTrajectorySequence(backwards);
             targetPosition = 0;
 
 
             if(numberDetected == 1){
                 // park in zone 1
                 telemetry.addData("PARK IN ZONE 1", numberDetected);
-                Trajectory park = drive.trajectoryBuilder(new Pose2d())
-                        .strafeLeft(12)
-                        .build();
-                drive.followTrajectory(park);
+                drive.followTrajectory(leftPark);
             }
             else if(numberDetected == 2) {
                 // park in zone 2
                 telemetry.addData("PARK IN ZONE 2", numberDetected);
-                Trajectory park = drive.trajectoryBuilder(new Pose2d())
-                        .strafeLeft(36)
-                        .build();
-                drive.followTrajectory(park);
+                drive.followTrajectory(centerPark);
             }
             else {
                 // park in zone 3
                 telemetry.addData("PARK IN ZONE 3", numberDetected);
-                Trajectory park = drive.trajectoryBuilder(new Pose2d())
-                        .strafeLeft(60)
-                        .build();
-                drive.followTrajectory(park);
+                drive.followTrajectory(rightPark);
             }
         }
     }
