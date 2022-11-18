@@ -1,10 +1,29 @@
 package Autonomous;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.linearOpMode;
+
+//PID
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+//Servo
+import com.qualcomm.robotcore.hardware.Servo;
+
+
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import pipelines.AprilTagDetectionPipeline;
@@ -17,9 +36,35 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@TeleOp
+@Autonomous
 public class AprilTagOp extends LinearOpMode
 {
+    //PID junk
+    DcMotorEx pulleyMotorR;
+    DcMotorEx pulleyMotorL;
+
+    ElapsedTime timer = new ElapsedTime();
+
+    private double lastError = 0;
+    private double integralSum =0;
+
+    public static double Kp =0.0125;
+    public static double Ki =0.0; //.00005
+    public static double Kd =0.0;
+
+
+    public static double targetPosition = 5;
+
+
+    private final FtcDashboard dashboard = FtcDashboard.getInstance();
+    //PID ends here
+
+    //CLAW goes here
+    private Servo rightServo;
+    private Servo leftServo;
+    //CLAW ends here
+
+
     //added
     public static int tagNumber;
 
@@ -38,17 +83,59 @@ public class AprilTagOp extends LinearOpMode
     // UNITS ARE METERS
     private static final double tagsize = 0.166;
 
-//...
+//no idea what this is
     private int numFramesWithoutDetection = 0;
 
     private static final float DECIMATION_HIGH = 3;
     private static final float DECIMATION_LOW = 2;
     private static final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
     private static final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
+//
+
+    public void initialize()
+    {
+        //PID initialization
+        dashboard.setTelemetryTransmissionInterval(25);
+        pulleyMotorL = hardwareMap.get(DcMotorEx.class, "LeftSlideMotor");
+        pulleyMotorR = hardwareMap.get(DcMotorEx.class, "RightSlideMotor");
+        pulleyMotorR.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        pulleyMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        pulleyMotorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        pulleyMotorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        pulleyMotorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        pulleyMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        pulleyMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        targetPosition = 0;
+
+        //SERVO
+        rightServo = hardwareMap.get(Servo.class, "rightServo");
+        leftServo = hardwareMap.get(Servo.class, "leftServo");
+    }
+
+    //PID METHOD
+    public double returnPower(double reference, double state) {
+        double error = reference - state;
+        integralSum += error * timer.seconds();
+        double derivative = (error -lastError)/ timer.seconds();
+        lastError = error;
+
+        timer.reset();
+
+        double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
+        return output;
+
+    }
+    //PID ENDS HERE
+
 
     @Override
     public void runOpMode()
     {
+        initialize();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
@@ -126,48 +213,93 @@ public class AprilTagOp extends LinearOpMode
 
             sleep(20);
 
-            //...
+           //PID CONSTANT CORRECTION OF SLIDES
+            if (pulleyMotorL.getCurrentPosition() < 4250)
+            {
+                TelemetryPacket packet = new TelemetryPacket();
+                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                packet.put("power", power);
+                packet.put("position", pulleyMotorL.getCurrentPosition());
+                packet.put("error", lastError);
+                telemetry.addData("positon", pulleyMotorR.getCurrentPosition());
+                telemetry.addData("positon", pulleyMotorL.getCurrentPosition());
+                telemetry.addData("targetPosition", targetPosition);
+                telemetry.addData("power", power);
+
+                pulleyMotorL.setPower(power);
+                pulleyMotorR.setPower(power);
+            }
+            //PID ENDS HERE
         }
 
         double numberDetected = -1;
 
         while(!opModeIsActive()){
             // get the number of apriltag detected
-
             numberDetected = AprilTagOp.tagNumber;
         }
 
         //edited from here
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
+        //trajectories
+        Trajectory goToPole = drive.trajectoryBuilder(new Pose2d())
+                .forward(32)
+                .strafeRight(37)
+                .build();
+        Trajectory dropCone = drive.trajectoryBuilder(new Pose2d())
+                .forward(5)
+                .build();
+        Trajectory backwards = drive.trajectoryBuilder(new Pose2d())
+                .back(5)
+                .build();
+
         while(opModeIsActive() && !isStopRequested()){
-            // first, move forward, strafe left, and deposit the preloaded cone
+
+            // SCORING INTO TALL JUNCTION
+            drive.followTrajectory(goToPole);
+
+            //PID slide moving to drop cone
+            targetPosition = 4200;
+
+            drive.followTrajectory(dropCone);
+            rightServo.setPosition(0.5);
+            leftServo.setPosition(0.5);
+
+            targetPosition = 3000;
+            targetPosition = 4200;
+
+            rightServo.setPosition(0.25);
+            leftServo.setPosition(0.75);
+
+            drive.followTrajectory(backwards);
+            targetPosition = 0;
+
 
             if(numberDetected == 1){
                 // park in zone 1
                 telemetry.addData("PARK IN ZONE 1", numberDetected);
-                Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
-                        .strafeLeft(24)
-                        .forward(24)
+                Trajectory park = drive.trajectoryBuilder(new Pose2d())
+                        .strafeLeft(12)
                         .build();
+                drive.followTrajectory(park);
             }
-            else if(numberDetected == 2){
+            else if(numberDetected == 2) {
                 // park in zone 2
                 telemetry.addData("PARK IN ZONE 2", numberDetected);
-                Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
-                        .forward(24)
+                Trajectory park = drive.trajectoryBuilder(new Pose2d())
+                        .strafeLeft(36)
                         .build();
+                drive.followTrajectory(park);
             }
             else {
                 // park in zone 3
                 telemetry.addData("PARK IN ZONE 3", numberDetected);
-                Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
-                        .strafeRight(24)
-                        .forward(24)
+                Trajectory park = drive.trajectoryBuilder(new Pose2d())
+                        .strafeLeft(60)
                         .build();
+                drive.followTrajectory(park);
             }
         }
-
-
     }
 }
