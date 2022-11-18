@@ -1,4 +1,4 @@
-package Autonomous;
+package TeleOp;
 
 
 
@@ -66,7 +66,7 @@ public class PID extends OpMode {
     @Override
     public void loop() {
 
-        if (gamepad2.right_bumper && pulleyMotorL.getCurrentPosition() < 4250) {
+        if (gamepad2.right_bumper && pulleyMotorL.getCurrentPosition() < 4900) {
 
 
             TelemetryPacket packet = new TelemetryPacket();
@@ -95,7 +95,7 @@ public class PID extends OpMode {
 
         }
 
-        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 0) {
+        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 210) {
 
             double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
             telemetry.addData("positon", pulleyMotorR.getCurrentPosition());

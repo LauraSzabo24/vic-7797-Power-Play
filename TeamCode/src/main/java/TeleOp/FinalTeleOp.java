@@ -132,7 +132,7 @@ public class FinalTeleOp extends OpMode {
 
 
         //PID
-        if (gamepad2.right_bumper && pulleyMotorL.getCurrentPosition() < 4250) {
+        if (gamepad2.right_bumper && pulleyMotorL.getCurrentPosition() < 4100) {
 
 
             TelemetryPacket packet = new TelemetryPacket();
@@ -150,8 +150,14 @@ public class FinalTeleOp extends OpMode {
             pulleyMotorR.setPower(power);
 
             dashboard.sendTelemetryPacket(packet);
-
-            targetPosition = targetPosition + 80;
+            if (gamepad2.dpad_down) {
+                targetPosition = pulleyMotorL.getCurrentPosition(); //if this does not work decrease the power value
+                targetPosition = targetPosition + 5;
+            }
+            else
+            {
+                targetPosition = targetPosition + 90;
+            }
         }
         else if(!gamepad2.right_bumper && !gamepad2.left_bumper) {
             pulleyMotorL.setPower(0);
@@ -161,7 +167,7 @@ public class FinalTeleOp extends OpMode {
 
         }
 
-        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 0) {
+        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 240) {
 
             double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
             telemetry.addData("positon", pulleyMotorR.getCurrentPosition());
@@ -174,8 +180,15 @@ public class FinalTeleOp extends OpMode {
             pulleyMotorR.setPower(power);
 
 
+            if (gamepad2.dpad_down) {
+                targetPosition = pulleyMotorL.getCurrentPosition();//if this does not work decrease the power value
+                targetPosition = targetPosition - 5;
+            }
+            else
+            {
+                targetPosition = targetPosition - 90;
+            }
 
-            targetPosition = targetPosition - 80;
         }
     }
 
@@ -221,20 +234,20 @@ public class FinalTeleOp extends OpMode {
         }
 
         if (precisionToggle) {
-            motorFrontLeft.setPower(frontLeftPower * 0.3);
-            motorBackLeft.setPower(backLeftPower * 0.3);
-            motorFrontRight.setPower(frontRightPower * 0.3);
-            motorBackRight.setPower(backRightPower * 0.3);
+            motorFrontLeft.setPower(frontLeftPower * 0.6);
+            motorBackLeft.setPower(backLeftPower * 0.6);
+            motorFrontRight.setPower(frontRightPower * 0.6);
+            motorBackRight.setPower(backRightPower * 0.6);
         } else {
-            motorFrontLeft.setPower(frontLeftPower*0.7);
-            motorBackLeft.setPower(backLeftPower*0.7);
-            motorFrontRight.setPower(frontRightPower*0.7);
-            motorBackRight.setPower(backRightPower*0.7);
+            motorFrontLeft.setPower(frontLeftPower);
+            motorBackLeft.setPower(backLeftPower);
+            motorFrontRight.setPower(frontRightPower);
+            motorBackRight.setPower(backRightPower);
         }
 
     }
 
-    //PID method
+    //PID methods
     public double returnPower(double reference, double state) {
         double error = reference - state;
         integralSum += error * timer.seconds();
