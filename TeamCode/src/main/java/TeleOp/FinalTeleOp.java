@@ -132,7 +132,7 @@ public class FinalTeleOp extends OpMode {
 
 
         //PID
-        if (gamepad2.right_bumper && pulleyMotorL.getCurrentPosition() < 4100) {
+        if (gamepad2.right_bumper && pulleyMotorL.getCurrentPosition() < 4500) {
 
 
             TelemetryPacket packet = new TelemetryPacket();
@@ -167,7 +167,7 @@ public class FinalTeleOp extends OpMode {
 
         }
 
-        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 240) {
+        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 0) {
 
             double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
             telemetry.addData("positon", pulleyMotorR.getCurrentPosition());
