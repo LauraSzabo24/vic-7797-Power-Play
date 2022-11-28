@@ -1,11 +1,7 @@
 package Autonomous;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.linearOpMode;
-
 //PID
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -17,13 +13,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import pipelines.AprilTagDetectionPipeline;
@@ -38,7 +30,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class AprilTagOp extends LinearOpMode
+public class UsingStackPark extends LinearOpMode
 {
     //PID junk
     DcMotorEx pulleyMotorR;
@@ -84,7 +76,7 @@ public class AprilTagOp extends LinearOpMode
     // UNITS ARE METERS
     private static final double tagsize = 0.166;
 
-//no idea what this is
+    //no idea what this is
     private int numFramesWithoutDetection = 0;
 
     private static final float DECIMATION_HIGH = 3;
@@ -214,7 +206,7 @@ public class AprilTagOp extends LinearOpMode
 
             sleep(20);
 
-           //PID CONSTANT CORRECTION OF SLIDES
+            //PID CONSTANT CORRECTION OF SLIDES
             if (pulleyMotorL.getCurrentPosition() < 4250)
             {
                 TelemetryPacket packet = new TelemetryPacket();
@@ -237,7 +229,7 @@ public class AprilTagOp extends LinearOpMode
 
         while(!opModeIsActive()){
             // get the number of apriltag detected
-            numberDetected = AprilTagOp.tagNumber;
+            numberDetected = OneConePark.tagNumber;
         }
 
         //edited from here
@@ -250,8 +242,9 @@ public class AprilTagOp extends LinearOpMode
 
         //trajectories and trajectory sequences
         TrajectorySequence goToThePole = drive.trajectorySequenceBuilder(startPose)
-                .forward(32)
-                .strafeRight(37)// might need to be put in seperate trajectory
+                .forward(69)
+                .waitSeconds(2)
+                .turn(90)//some amount, might be negative
                 .waitSeconds(5)
                 .build();
         TrajectorySequence dropCone = drive.trajectorySequenceBuilder(startPose)
@@ -264,15 +257,23 @@ public class AprilTagOp extends LinearOpMode
                 .back(5)
                 .waitSeconds(1)
                 .build();
+        TrajectorySequence poleToStack = drive.trajectorySequenceBuilder(startPose)
+                .turn(180)
+                .waitSeconds(2)
+                .forward(20)
+                .waitSeconds(2)
+                .build();
 
+        TrajectorySequence goToParking = drive.trajectorySequenceBuilder(startPose)
+                .back(6)
+                .turn(90)
+                .back(60)
+                .build();
         Trajectory leftPark = drive.trajectoryBuilder(new Pose2d())
                 .strafeLeft(12)
                 .build();
-        Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
-                .strafeLeft(36)
-                .build();
         Trajectory rightPark = drive.trajectoryBuilder(new Pose2d())
-                .strafeLeft(60)
+                .strafeRight(12)
                 .build();
 
         waitForStart(); //also new
@@ -296,9 +297,11 @@ public class AprilTagOp extends LinearOpMode
             {
                 time = timer2.time();
             } //no clue if this timer works
+            //bring the slides back up
             targetPosition = 4200;
 
             //close the claw
+            //if timer above works will use here too
             rightServo.setPosition(0.25);
             leftServo.setPosition(0.75);
 
@@ -306,6 +309,64 @@ public class AprilTagOp extends LinearOpMode
             drive.followTrajectorySequence(backwards);
             targetPosition = 0;
 
+            //go to the stack
+            drive.followTrajectorySequence(poleToStack);
+
+            //open claw and lift up slides for top cone
+            //also might use timer here
+            rightServo.setPosition(0.5);
+            leftServo.setPosition(0.5);
+            targetPosition = 1000; //random number no clue if it's any good
+
+            //go closer and close claw
+            drive.followTrajectorySequence(dropCone);
+            rightServo.setPosition(0.75);
+            leftServo.setPosition(0.75);
+
+            //backwards
+            drive.followTrajectorySequence(backwards);
+
+            //down with the slides
+            //again, might need timer here
+            //also might be able to skip this part depends on how stable
+            targetPosition = 0;
+
+            drive.followTrajectorySequence(poleToStack);
+
+            //repeat first part from here---------------------
+
+            //PID slide moving to drop cone
+            targetPosition = 4200;
+
+            //go forward and open claw
+            drive.followTrajectorySequence(dropCone);
+            rightServo.setPosition(0.5);
+            leftServo.setPosition(0.5);
+
+            //bring the slides lower
+            targetPosition = 3000;
+            time = timer2.time();
+            while(time<(time+2))
+            {
+                time = timer2.time();
+            } //no clue if this timer works
+            //bring the slides back up
+            targetPosition = 4200;
+
+            //close the claw
+            //if timer above works will use here too
+            rightServo.setPosition(0.25);
+            leftServo.setPosition(0.75);
+
+            //go back and lower slides
+            drive.followTrajectorySequence(backwards);
+            targetPosition = 0;
+
+            //get in position to park
+            drive.followTrajectorySequence(goToParking);
+
+            //this is for one cone, for more make loop with list for heights
+            //maybe even use elapsed time to see how many cones can be placed
 
             if(numberDetected == 1){
                 // park in zone 1
@@ -315,7 +376,6 @@ public class AprilTagOp extends LinearOpMode
             else if(numberDetected == 2) {
                 // park in zone 2
                 telemetry.addData("PARK IN ZONE 2", numberDetected);
-                drive.followTrajectory(centerPark);
             }
             else {
                 // park in zone 3

@@ -134,7 +134,7 @@ public class Park extends LinearOpMode
 
 
     @Override
-    public void runOpMode()
+    public void runOpMode() throws InterruptedException
     {
         initialize();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -142,20 +142,20 @@ public class Park extends LinearOpMode
         //roadrunner trajectory stuff
         Pose2d startPose = new Pose2d(0,0,0);
         ElapsedTime timer2 = new ElapsedTime();
-        drive.setPoseEstimate(startPose);
+        //drive.setPoseEstimate(startPose);
 
         //trajectories and trajectory sequences
 
 
-        Trajectory leftPark = drive.trajectoryBuilder(new Pose2d())
-                .forward(24)
-                .strafeLeft(24)
+        Trajectory leftPark = drive.trajectoryBuilder(startPose)
+                .forward(35)
+                .strafeLeft(24.0)
                 .build();
-        Trajectory centerPark = drive.trajectoryBuilder(new Pose2d())
-                .forward(24)
+        Trajectory centerPark = drive.trajectoryBuilder(startPose)
+                .forward(35)
                 .build();
-        Trajectory rightPark = drive.trajectoryBuilder(new Pose2d())
-                .forward(24)
+        Trajectory rightPark = drive.trajectoryBuilder(startPose)
+                .forward(35)
                 .strafeRight(24)
                 .build();
 
@@ -166,15 +166,18 @@ public class Park extends LinearOpMode
         {
             if (tagNumber == 1)
             {
-                drive.followTrajectory(leftPark);
+                if (!isStopRequested())
+                    drive.followTrajectory(leftPark);
             }
             else if (tagNumber == 2)
             {
-                drive.followTrajectory(centerPark);
+                if (!isStopRequested())
+                    drive.followTrajectory(centerPark);
             }
             else if (tagNumber == 3)
             {
-                drive.followTrajectory(rightPark);
+                if (!isStopRequested())
+                    drive.followTrajectory(rightPark);
             }
         }
 
