@@ -146,17 +146,18 @@ public class Park extends LinearOpMode
 
         //trajectories and trajectory sequences
 
-
-        Trajectory leftPark = drive.trajectoryBuilder(startPose)
+        TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(startPose)
                 .forward(35)
+                .waitSeconds(1)
                 .strafeLeft(24.0)
                 .build();
-        Trajectory centerPark = drive.trajectoryBuilder(startPose)
+        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(startPose)
                 .forward(35)
-                .build();
-        Trajectory rightPark = drive.trajectoryBuilder(startPose)
-                .forward(35)
+                .waitSeconds(1)
                 .strafeRight(24)
+                .build();
+        Trajectory centerPark  = drive.trajectoryBuilder(startPose)
+                .forward(35)
                 .build();
 
         waitForStart(); //also new
@@ -167,7 +168,7 @@ public class Park extends LinearOpMode
             if (tagNumber == 1)
             {
                 if (!isStopRequested())
-                    drive.followTrajectory(leftPark);
+                    drive.followTrajectorySequence(parkLeft);
             }
             else if (tagNumber == 2)
             {
@@ -177,7 +178,7 @@ public class Park extends LinearOpMode
             else if (tagNumber == 3)
             {
                 if (!isStopRequested())
-                    drive.followTrajectory(rightPark);
+                    drive.followTrajectorySequence(parkRight);
             }
         }
 
