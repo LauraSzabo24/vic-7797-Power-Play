@@ -333,7 +333,7 @@ public class UsingStackPark extends LinearOpMode
 
             drive.followTrajectorySequence(poleToStack);
 
-            //repeat first part from here---------------------
+            //repeat first part from here to place next cone---------------------
 
             //PID slide moving to drop cone
             targetPosition = 4200;
@@ -365,7 +365,8 @@ public class UsingStackPark extends LinearOpMode
             //get in position to park
             drive.followTrajectorySequence(goToParking);
 
-            //this is for one cone, for more make loop with list for heights
+            //this is for 2 cones, for more make loop with list for heights
+            //could make method for cycling
             //maybe even use elapsed time to see how many cones can be placed
 
             if(numberDetected == 1){

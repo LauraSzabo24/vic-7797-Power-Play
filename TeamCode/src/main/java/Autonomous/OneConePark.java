@@ -156,7 +156,7 @@ public class OneConePark extends LinearOpMode
         telemetry.setMsTransmissionInterval(50);
 
         //from here2
-        while (opModeIsActive())
+        while (opModeIsActive() && !(tagNumber==1) && !(tagNumber==2) && !(tagNumber==3) && !(tagNumber==4))
         {
             ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
 
@@ -208,21 +208,7 @@ public class OneConePark extends LinearOpMode
             sleep(20);
 
            //PID CONSTANT CORRECTION OF SLIDES
-            if (pulleyMotorL.getCurrentPosition() < 4250)
-            {
-                TelemetryPacket packet = new TelemetryPacket();
-                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
-                packet.put("power", power);
-                packet.put("position", pulleyMotorL.getCurrentPosition());
-                packet.put("error", lastError);
-                telemetry.addData("positon", pulleyMotorR.getCurrentPosition());
-                telemetry.addData("positon", pulleyMotorL.getCurrentPosition());
-                telemetry.addData("targetPosition", targetPosition);
-                telemetry.addData("power", power);
 
-                pulleyMotorL.setPower(power);
-                pulleyMotorR.setPower(power);
-            }
             //PID ENDS HERE
         }
 
@@ -243,39 +229,61 @@ public class OneConePark extends LinearOpMode
 
         //trajectories and trajectory sequences
         TrajectorySequence goToThePole = drive.trajectorySequenceBuilder(startPose)
-                .forward(32)
+                .forward(40)
                 .strafeRight(37)// might need to be put in seperate trajectory
-                .waitSeconds(5)
+                .waitSeconds(0.5)
                 .build();
         TrajectorySequence dropCone = drive.trajectorySequenceBuilder(startPose)
-                .waitSeconds(1)
+                .waitSeconds(0.5)
                 .forward(5)
-                .waitSeconds(2)
+                .waitSeconds(0.5)
                 .build();
         TrajectorySequence backwards = drive.trajectorySequenceBuilder(startPose)
-                .waitSeconds(2)
-                .back(5)
+                .waitSeconds(1)
+                .back(1)
                 .waitSeconds(1)
                 .build();
 
-        Trajectory leftPark = drive.trajectoryBuilder(startPose)
+        Trajectory parkLeft = drive.trajectoryBuilder(startPose)
                 .strafeLeft(12)
                 .build();
         Trajectory centerPark = drive.trajectoryBuilder(startPose)
                 .strafeLeft(36)
                 .build();
-        Trajectory rightPark = drive.trajectoryBuilder(startPose)
+        Trajectory parkRight = drive.trajectoryBuilder(startPose)
                 .strafeLeft(60)
                 .build();
 
+        /*TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(startPose)
+                .forward(35)
+                .waitSeconds(0.4)
+                .strafeLeft(24.0)
+                .build();
+        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(startPose)
+                .forward(35)
+                .waitSeconds(0.4)
+                .strafeRight(30)
+                .build();
+        Trajectory centerPark  = drive.trajectoryBuilder(startPose)
+                .forward(35)
+                .build();*/
+
         waitForStart(); //also new
 
-        while(opModeIsActive() && !isStopRequested()){
+        while(opModeIsActive()){
             //go to the tallest pole
             drive.followTrajectorySequence(goToThePole);
 
             //PID slide moving to drop cone
             targetPosition = 4200;
+            while(!((targetPosition-pulleyMotorL.getCurrentPosition())>12))
+            {
+                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                pulleyMotorL.setPower(power);
+                pulleyMotorR.setPower(power);
+                targetPosition=pulleyMotorL.getCurrentPosition();
+
+            }
 
             //go forward and open claw
             drive.followTrajectorySequence(dropCone);
@@ -284,6 +292,15 @@ public class OneConePark extends LinearOpMode
 
             //bring the slides lower
             targetPosition = 3000;
+            while(!((targetPosition-pulleyMotorL.getCurrentPosition())>12))
+            {
+                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                pulleyMotorL.setPower(power);
+                pulleyMotorR.setPower(power);
+                targetPosition=pulleyMotorL.getCurrentPosition();
+
+            }
+
             double time = timer2.time();
             while(time<(time+2))
             {
@@ -291,31 +308,69 @@ public class OneConePark extends LinearOpMode
             } //no clue if this timer works
             //bring the slides back up
             targetPosition = 4200;
+            while(!((targetPosition-pulleyMotorL.getCurrentPosition())>12))
+            {
+                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                pulleyMotorL.setPower(power);
+                pulleyMotorR.setPower(power);
+                targetPosition=pulleyMotorL.getCurrentPosition();
+
+            }
 
             //close the claw
             rightServo.setPosition(0.25);
             leftServo.setPosition(0.75);
 
             //go back and lower slides
-            drive.followTrajectorySequence(backwards);
+            //drive.followTrajectorySequence(backwards);
             targetPosition = 0;
+            while(!((targetPosition-pulleyMotorL.getCurrentPosition())>12))
+            {
+                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                pulleyMotorL.setPower(power);
+                pulleyMotorR.setPower(power);
+                targetPosition=pulleyMotorL.getCurrentPosition();
 
+            }
 
             if(numberDetected == 1){
                 // park in zone 1
                 telemetry.addData("PARK IN ZONE 1", numberDetected);
-                drive.followTrajectory(leftPark);
+                drive.followTrajectory(parkLeft);
+                tagNumber=4;
             }
             else if(numberDetected == 2) {
                 // park in zone 2
                 telemetry.addData("PARK IN ZONE 2", numberDetected);
                 drive.followTrajectory(centerPark);
+                tagNumber=4;
             }
-            else {
+            else if(numberDetected ==3) {
                 // park in zone 3
                 telemetry.addData("PARK IN ZONE 3", numberDetected);
-                drive.followTrajectory(rightPark);
+                drive.followTrajectory(parkRight);
+                tagNumber=4;
             }
+            /*
+            telemetry.addData("it got here", tagNumber);
+            if (tagNumber == 1)
+            {
+                //if (!isStopRequested())
+                drive.followTrajectorySequence(parkLeft);
+                tagNumber=0;
+            }
+            else if (tagNumber == 2)
+            {
+                //if (!isStopRequested())
+                drive.followTrajectory(centerPark);
+                tagNumber=0;
+            }
+            else if (tagNumber == 3)
+            {
+                //if (!isStopRequested())
+                drive.followTrajectorySequence(parkRight);
+                tagNumber=0;
+            }*/
         }
     }
 }

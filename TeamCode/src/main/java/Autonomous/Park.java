@@ -141,7 +141,6 @@ public class Park extends LinearOpMode
 
         //roadrunner trajectory stuff
         Pose2d startPose = new Pose2d(0,0,0);
-        ElapsedTime timer2 = new ElapsedTime();
         //drive.setPoseEstimate(startPose);
 
         //trajectories and trajectory sequences
@@ -167,17 +166,17 @@ public class Park extends LinearOpMode
         {
             if (tagNumber == 1)
             {
-                if (!isStopRequested())
+                //if (!isStopRequested())
                     drive.followTrajectorySequence(parkLeft);
             }
             else if (tagNumber == 2)
             {
-                if (!isStopRequested())
+                //if (!isStopRequested())
                     drive.followTrajectory(centerPark);
             }
             else if (tagNumber == 3)
             {
-                if (!isStopRequested())
+                //if (!isStopRequested())
                     drive.followTrajectorySequence(parkRight);
             }
         }
