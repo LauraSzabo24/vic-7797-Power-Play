@@ -4,6 +4,7 @@ package Autonomous;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //Servo
@@ -284,6 +285,7 @@ public class UsingStackPark extends LinearOpMode
 
             //PID slide moving to drop cone
             targetPosition = 4200;
+            moveSlides();
 
             //go forward and open claw
             drive.followTrajectorySequence(dropCone);
@@ -292,13 +294,17 @@ public class UsingStackPark extends LinearOpMode
 
             //bring the slides lower
             targetPosition = 3000;
+            moveSlides();
+
             double time = timer2.time();
             while(time<(time+2))
             {
                 time = timer2.time();
             } //no clue if this timer works
+
             //bring the slides back up
             targetPosition = 4200;
+            moveSlides();
 
             //close the claw
             //if timer above works will use here too
@@ -308,6 +314,7 @@ public class UsingStackPark extends LinearOpMode
             //go back and lower slides
             drive.followTrajectorySequence(backwards);
             targetPosition = 0;
+            moveSlides();
 
             //go to the stack
             drive.followTrajectorySequence(poleToStack);
@@ -317,6 +324,7 @@ public class UsingStackPark extends LinearOpMode
             rightServo.setPosition(0.5);
             leftServo.setPosition(0.5);
             targetPosition = 1000; //random number no clue if it's any good
+            moveSlides();
 
             //go closer and close claw
             drive.followTrajectorySequence(dropCone);
@@ -330,37 +338,13 @@ public class UsingStackPark extends LinearOpMode
             //again, might need timer here
             //also might be able to skip this part depends on how stable
             targetPosition = 0;
+            moveSlides();
 
             drive.followTrajectorySequence(poleToStack);
 
             //repeat first part from here to place next cone---------------------
 
-            //PID slide moving to drop cone
-            targetPosition = 4200;
-
-            //go forward and open claw
-            drive.followTrajectorySequence(dropCone);
-            rightServo.setPosition(0.5);
-            leftServo.setPosition(0.5);
-
-            //bring the slides lower
-            targetPosition = 3000;
-            time = timer2.time();
-            while(time<(time+2))
-            {
-                time = timer2.time();
-            } //no clue if this timer works
-            //bring the slides back up
-            targetPosition = 4200;
-
-            //close the claw
-            //if timer above works will use here too
-            rightServo.setPosition(0.25);
-            leftServo.setPosition(0.75);
-
-            //go back and lower slides
-            drive.followTrajectorySequence(backwards);
-            targetPosition = 0;
+            PlaceMultipleCones(poleToStack, dropCone, backwards, drive);
 
             //get in position to park
             drive.followTrajectorySequence(goToParking);
@@ -383,6 +367,44 @@ public class UsingStackPark extends LinearOpMode
                 telemetry.addData("PARK IN ZONE 3", numberDetected);
                 drive.followTrajectory(rightPark);
             }
+        }
+    }
+    public void PlaceMultipleCones(TrajectorySequence poleToStack, TrajectorySequence dropCone, TrajectorySequence backwards, SampleMecanumDrive drive)
+    {
+        drive.followTrajectorySequence(poleToStack);
+
+        //open claw and lift up slides for top cone
+        //also might use timer here
+        rightServo.setPosition(0.5);
+        leftServo.setPosition(0.5);
+        targetPosition = 1000; //random number no clue if it's any good
+        moveSlides();
+
+        //go closer and close claw
+        drive.followTrajectorySequence(dropCone);
+        rightServo.setPosition(0.75);
+        leftServo.setPosition(0.75);
+
+        //backwards
+        drive.followTrajectorySequence(backwards);
+
+        //down with the slides
+        //again, might need timer here
+        //also might be able to skip this part depends on how stable
+        targetPosition = 0;
+        moveSlides();
+
+        drive.followTrajectorySequence(poleToStack);
+    }
+    public void moveSlides()
+    {
+        while(!((targetPosition-pulleyMotorL.getCurrentPosition())>12))
+        {
+            double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+            pulleyMotorL.setPower(power);
+            pulleyMotorR.setPower(power);
+            targetPosition=pulleyMotorL.getCurrentPosition();
+
         }
     }
 }
