@@ -30,9 +30,9 @@ public class LinearSlides extends OpMode {
     public static double Kp =0.0125;
     public static double Ki =0.0; //.00005
     public static double Kd =0.0;
-    public static double smallHeight = 1500;
-    public static double midHeight =2100;
-    public static double tallHeight =4500;
+    public static double smallHeight = 1712;
+    public static double midHeight =3140;
+    public static double tallHeight =4113;
     public static double motorPower =0.5;
     public static double targetPosition = 5;
 
@@ -72,7 +72,7 @@ public class LinearSlides extends OpMode {
             targetPosition = tallHeight;
 
         }
-        if(gamepad2.dpad_down && pulleyMotorL.getCurrentPosition()>247)
+        if(gamepad2.dpad_left && pulleyMotorL.getCurrentPosition()>247)
         {
             targetPosition = smallHeight;
 
@@ -104,7 +104,7 @@ public class LinearSlides extends OpMode {
             pulleyMotorR.setPower(0);
 
         }
-        if(gamepad2.dpad_left)
+        if(gamepad2.dpad_down)
         {
             targetPosition = 0;
 

@@ -254,6 +254,20 @@ public class OneConePark extends LinearOpMode
                 .strafeLeft(60)
                 .build();
 
+        /*TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(startPose)
+                .forward(35)
+                .waitSeconds(0.4)
+                .strafeLeft(24.0)
+                .build();
+        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(startPose)
+                .forward(35)
+                .waitSeconds(0.4)
+                .strafeRight(30)
+                .build();
+        Trajectory centerPark  = drive.trajectoryBuilder(startPose)
+                .forward(35)
+                .build();*/
+
         waitForStart(); //also new
 
         while(opModeIsActive()){
@@ -262,7 +276,14 @@ public class OneConePark extends LinearOpMode
 
             //PID slide moving to drop cone
             targetPosition = 4200;
-            moveSlides();
+            while(!((targetPosition-pulleyMotorL.getCurrentPosition())>12))
+            {
+                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                pulleyMotorL.setPower(power);
+                pulleyMotorR.setPower(power);
+                targetPosition=pulleyMotorL.getCurrentPosition();
+
+            }
 
             //go forward and open claw
             drive.followTrajectorySequence(dropCone);
@@ -271,17 +292,30 @@ public class OneConePark extends LinearOpMode
 
             //bring the slides lower
             targetPosition = 3000;
-            moveSlides();
+            while(!((targetPosition-pulleyMotorL.getCurrentPosition())>12))
+            {
+                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                pulleyMotorL.setPower(power);
+                pulleyMotorR.setPower(power);
+                targetPosition=pulleyMotorL.getCurrentPosition();
+
+            }
 
             double time = timer2.time();
             while(time<(time+2))
             {
                 time = timer2.time();
             } //no clue if this timer works
-
             //bring the slides back up
             targetPosition = 4200;
-            moveSlides();
+            while(!((targetPosition-pulleyMotorL.getCurrentPosition())>12))
+            {
+                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                pulleyMotorL.setPower(power);
+                pulleyMotorR.setPower(power);
+                targetPosition=pulleyMotorL.getCurrentPosition();
+
+            }
 
             //close the claw
             rightServo.setPosition(0.25);
@@ -290,7 +324,14 @@ public class OneConePark extends LinearOpMode
             //go back and lower slides
             //drive.followTrajectorySequence(backwards);
             targetPosition = 0;
-            moveSlides();
+            while(!((targetPosition-pulleyMotorL.getCurrentPosition())>12))
+            {
+                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                pulleyMotorL.setPower(power);
+                pulleyMotorR.setPower(power);
+                targetPosition=pulleyMotorL.getCurrentPosition();
+
+            }
 
             if(numberDetected == 1){
                 // park in zone 1
@@ -310,17 +351,26 @@ public class OneConePark extends LinearOpMode
                 drive.followTrajectory(parkRight);
                 tagNumber=4;
             }
-        }
-    }
-    public void moveSlides()
-    {
-        while(!((targetPosition-pulleyMotorL.getCurrentPosition())>12))
-        {
-            double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
-            pulleyMotorL.setPower(power);
-            pulleyMotorR.setPower(power);
-            targetPosition=pulleyMotorL.getCurrentPosition();
-
+            /*
+            telemetry.addData("it got here", tagNumber);
+            if (tagNumber == 1)
+            {
+                //if (!isStopRequested())
+                drive.followTrajectorySequence(parkLeft);
+                tagNumber=0;
+            }
+            else if (tagNumber == 2)
+            {
+                //if (!isStopRequested())
+                drive.followTrajectory(centerPark);
+                tagNumber=0;
+            }
+            else if (tagNumber == 3)
+            {
+                //if (!isStopRequested())
+                drive.followTrajectorySequence(parkRight);
+                tagNumber=0;
+            }*/
         }
     }
 }

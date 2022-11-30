@@ -57,9 +57,12 @@ public class FinalTeleOp extends OpMode {
     public static double Kp =0.0125;
     public static double Ki =0.0; //.00005
     public static double Kd =0.0;
-
-
+    public static double smallHeight = 2100;
+    public static double midHeight =3141;
+    public static double tallHeight =4115;
+    public static double motorPower =0.5;
     public static double targetPosition = 5;
+
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -112,6 +115,16 @@ public class FinalTeleOp extends OpMode {
         boolean precisionToggle = gamepad1.right_trigger > 0.1;
         drive(precisionToggle);
 
+        if(gamepad1.y)
+        {
+            motorBackLeft.setPower(0);
+            motorBackRight.setPower(0);
+            motorFrontLeft.setPower(0.8);
+            motorFrontRight.setPower(-0.8);
+
+
+        }
+
         //servos
         if(gamepad2.b)
         {
@@ -132,64 +145,60 @@ public class FinalTeleOp extends OpMode {
 
 
         //PID
-        if (gamepad2.right_bumper && pulleyMotorL.getCurrentPosition() < 4500) {
+        if(gamepad2.dpad_up && pulleyMotorL.getCurrentPosition()<5000)
+        {
+            targetPosition = tallHeight;
 
-
-            TelemetryPacket packet = new TelemetryPacket();
-            double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
-            packet.put("power", power);
-            packet.put("position", pulleyMotorL.getCurrentPosition());
-            packet.put("error", lastError);
-            telemetry.addData("positon", pulleyMotorR.getCurrentPosition());
-            telemetry.addData("positon", pulleyMotorL.getCurrentPosition());
-            telemetry.addData("targetPosition", targetPosition);
-            telemetry.addData("power", power);
-
-
-            pulleyMotorL.setPower(power);
-            pulleyMotorR.setPower(power);
-
-            dashboard.sendTelemetryPacket(packet);
-            if (gamepad2.dpad_down) {
-                targetPosition = pulleyMotorL.getCurrentPosition(); //if this does not work decrease the power value
-                targetPosition = targetPosition + 5;
-            }
-            else
-            {
-                targetPosition = targetPosition + 90;
-            }
         }
-        else if(!gamepad2.right_bumper && !gamepad2.left_bumper) {
-            pulleyMotorL.setPower(0);
-            pulleyMotorR.setPower(0);
+        if(gamepad2.dpad_left && pulleyMotorL.getCurrentPosition()>50)
+        {
+            targetPosition = smallHeight;
+
+        }
+        if(gamepad2.dpad_right)
+        {
+            targetPosition = midHeight;
+
+        }
+
+        if(gamepad2.right_bumper && pulleyMotorL.getCurrentPosition()<5000 )
+        {
+
+            pulleyMotorL.setPower(motorPower);
+            pulleyMotorR.setPower(motorPower);
+            targetPosition = pulleyMotorL.getCurrentPosition();
+        }
+        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() >0)
+        {
+            pulleyMotorL.setPower(-motorPower);
+            pulleyMotorR.setPower(-motorPower);
             targetPosition = pulleyMotorL.getCurrentPosition();
 
+        }
+        if(!gamepad2.right_bumper && !gamepad2.left_bumper && (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition())<15))
+        {
+
+            pulleyMotorL.setPower(0);
+            pulleyMotorR.setPower(0);
+
+        }
+        if(gamepad2.dpad_down)
+        {
+            targetPosition = 0;
 
         }
 
-        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 0) {
-
-            double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
-            telemetry.addData("positon", pulleyMotorR.getCurrentPosition());
-            telemetry.addData("positon", pulleyMotorL.getCurrentPosition());
-            telemetry.addData("targetPosition", targetPosition);
-            telemetry.addData("power", power);
+        double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+        telemetry.addData("positonrightMotor", pulleyMotorR.getCurrentPosition());
+        telemetry.addData("positonleftMotor", pulleyMotorL.getCurrentPosition());
+        telemetry.addData("targetPosition", targetPosition);
+        telemetry.addData("power", power);
 
 
-            pulleyMotorL.setPower(power);
-            pulleyMotorR.setPower(power);
+        pulleyMotorL.setPower(power);
+        pulleyMotorR.setPower(power);
 
 
-            if (gamepad2.dpad_down) {
-                targetPosition = pulleyMotorL.getCurrentPosition();//if this does not work decrease the power value
-                targetPosition = targetPosition - 5;
-            }
-            else
-            {
-                targetPosition = targetPosition - 90;
-            }
-
-        }
     }
 
     //mecanum methods
@@ -232,6 +241,7 @@ public class FinalTeleOp extends OpMode {
             backLeftPower /= maxValue;
             backRightPower /= maxValue;
         }
+
 
         if (precisionToggle) {
             motorFrontLeft.setPower(frontLeftPower * 0.6);
