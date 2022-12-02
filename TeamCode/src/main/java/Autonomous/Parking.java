@@ -229,7 +229,7 @@ public class Parking extends LinearOpMode
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(startPose)
                 .forward(35)
                 .waitSeconds(0.4)
-                .strafeLeft(24.0)
+                .strafeLeft(30)
                 .build();
         TrajectorySequence parkRight = drive.trajectorySequenceBuilder(startPose)
                 .forward(35)

@@ -146,38 +146,24 @@ public class Park extends LinearOpMode
 
         //trajectories and trajectory sequences
 
-
-        Trajectory leftPark = drive.trajectoryBuilder(startPose)
-                .forward(35)
-                .strafeLeft(24.0)
-                .build();
-        Trajectory centerPark = drive.trajectoryBuilder(startPose)
-                .forward(35)
-                .build();
-        Trajectory rightPark = drive.trajectoryBuilder(startPose)
-                .forward(35)
-                .strafeRight(24)
-                .build();
-
         waitForStart(); //also new
 
         //from here2
         while (opModeIsActive())
         {
-            if (tagNumber == 1)
+            rightServo.setPosition(0.5);
+            leftServo.setPosition(0.5);
+
+            targetPosition = 4000;
+            //telemetry.addData("left current position", pulleyMotorL.getCurrentPosition());
+            while((targetPosition-pulleyMotorL.getCurrentPosition())>12)
             {
-                if (!isStopRequested())
-                    drive.followTrajectory(leftPark);
-            }
-            else if (tagNumber == 2)
-            {
-                if (!isStopRequested())
-                    drive.followTrajectory(centerPark);
-            }
-            else if (tagNumber == 3)
-            {
-                if (!isStopRequested())
-                    drive.followTrajectory(rightPark);
+                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                pulleyMotorL.setPower(power);
+                pulleyMotorR.setPower(power);
+                targetPosition=pulleyMotorL.getCurrentPosition();
+                telemetry.addData("power for slides:", power);
+
             }
         }
 
