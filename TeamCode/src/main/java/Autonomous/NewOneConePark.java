@@ -29,13 +29,15 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class Parking extends LinearOpMode
+public class NewOneConePark extends LinearOpMode
 {
 
     //PID junk
     DcMotorEx pulleyMotorR;
     DcMotorEx pulleyMotorL;
 
+    //timers
+    ElapsedTime timer2 = new ElapsedTime();
     ElapsedTime timer = new ElapsedTime();
 
     private double lastError = 0;
@@ -215,7 +217,7 @@ public class Parking extends LinearOpMode
 
         while(!opModeIsActive()){
             // get the number of apriltag detected
-            numberDetected = tagNumber; //= hauntedConePark.tagNumber
+            numberDetected = tagNumber;
         }
 
         //edited from here
@@ -225,23 +227,75 @@ public class Parking extends LinearOpMode
         Pose2d startPose = new Pose2d(0,0,0);
         drive.setPoseEstimate(startPose);
 
+        TrajectorySequence goToPole = drive.trajectorySequenceBuilder(startPose) //change this to go to front pole not side
+                .forward(40)
+                .strafeRight(37)
+                .waitSeconds(0.5)
+                .build();
+        TrajectorySequence dropCone = drive.trajectorySequenceBuilder(startPose)
+                .waitSeconds(0.5)
+                .forward(5)
+                .waitSeconds(0.5)
+                .build();
+        TrajectorySequence backwards = drive.trajectorySequenceBuilder(startPose)
+                .waitSeconds(0.5)
+                .back(5)
+                .waitSeconds(0.5)
+                .build();
+
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(startPose)
-                .forward(35)
                 .waitSeconds(0.4)
-                .strafeLeft(30)
+                .strafeLeft(12)
                 .build();
         TrajectorySequence parkRight = drive.trajectorySequenceBuilder(startPose)
-                .forward(35)
                 .waitSeconds(0.4)
-                .strafeRight(30)
+                .strafeRight(36)
                 .build();
-        Trajectory centerPark  = drive.trajectoryBuilder(startPose)
-                .forward(35)
+        TrajectorySequence centerPark = drive.trajectorySequenceBuilder(startPose)
+                .waitSeconds(0.4)
+                .strafeRight(60)
                 .build();
+
 
         waitForStart(); //also new
 
         while(opModeIsActive()){
+            //go to the tallest pole
+            drive.followTrajectorySequence(goToPole);
+
+            //PID slide moving to drop cone
+            targetPosition = 4200;
+            fixSlides();
+
+            //go forward and open claw
+            drive.followTrajectorySequence(dropCone);
+            rightServo.setPosition(0.5);
+            leftServo.setPosition(0.5);
+
+            //bring the slides lower
+            targetPosition = 3000;
+            fixSlides();
+
+            double time = timer2.time();
+            while(time<(time+2))
+            {
+                time = timer2.time();
+            } //no clue if this timer works
+
+            //bring the slides back up
+            targetPosition = 4200;
+            fixSlides();
+
+            //close the claw
+            rightServo.setPosition(0.25);
+            leftServo.setPosition(0.75);
+
+            //go back and lower slides
+            //drive.followTrajectorySequence(backwards);
+            targetPosition = 0;
+            fixSlides();
+
+            //tag parking
             if (tagNumber == 1)
             {
                 //if (!isStopRequested())
@@ -251,7 +305,7 @@ public class Parking extends LinearOpMode
             else if (tagNumber == 2)
             {
                 //if (!isStopRequested())
-                drive.followTrajectory(centerPark);
+                drive.followTrajectorySequence(centerPark);
                 tagNumber=0;
             }
             else if (tagNumber == 3)
@@ -260,6 +314,19 @@ public class Parking extends LinearOpMode
                 drive.followTrajectorySequence(parkRight);
                 tagNumber=0;
             }
+        }
+    }
+
+    //PID
+    public void fixSlides()
+    {
+        while((targetPosition-pulleyMotorL.getCurrentPosition())>12)
+        {
+            double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+            pulleyMotorL.setPower(power);
+            pulleyMotorR.setPower(power);
+            targetPosition=pulleyMotorL.getCurrentPosition();
+
         }
     }
 }

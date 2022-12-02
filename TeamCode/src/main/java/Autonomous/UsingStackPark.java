@@ -4,7 +4,6 @@ package Autonomous;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //Servo
@@ -208,21 +207,7 @@ public class UsingStackPark extends LinearOpMode
             sleep(20);
 
             //PID CONSTANT CORRECTION OF SLIDES
-            if (pulleyMotorL.getCurrentPosition() < 4250)
-            {
-                TelemetryPacket packet = new TelemetryPacket();
-                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
-                packet.put("power", power);
-                packet.put("position", pulleyMotorL.getCurrentPosition());
-                packet.put("error", lastError);
-                telemetry.addData("positon", pulleyMotorR.getCurrentPosition());
-                telemetry.addData("positon", pulleyMotorL.getCurrentPosition());
-                telemetry.addData("targetPosition", targetPosition);
-                telemetry.addData("power", power);
 
-                pulleyMotorL.setPower(power);
-                pulleyMotorR.setPower(power);
-            }
             //PID ENDS HERE
         }
 
@@ -230,7 +215,7 @@ public class UsingStackPark extends LinearOpMode
 
         while(!opModeIsActive()){
             // get the number of apriltag detected
-            numberDetected = OneConePark.tagNumber;
+            numberDetected = HauntedConePark.tagNumber;
         }
 
         //edited from here
@@ -297,10 +282,12 @@ public class UsingStackPark extends LinearOpMode
             moveSlides();
 
             double time = timer2.time();
-            while(time<(time+2))
+            double currentTime = timer2.time();
+            while(currentTime<(time+2))
             {
-                time = timer2.time();
-            } //no clue if this timer works
+                currentTime = timer2.time();
+            }
+            //no clue if this timer works
 
             //bring the slides back up
             targetPosition = 4200;
@@ -335,8 +322,14 @@ public class UsingStackPark extends LinearOpMode
             drive.followTrajectorySequence(backwards);
 
             //down with the slides
-            //again, might need timer here
             //also might be able to skip this part depends on how stable
+            time = timer2.time();
+            currentTime = timer2.time();
+            while(currentTime<(time+2))
+            {
+                currentTime = timer2.time();
+            }//might not need timer
+            //no clue if this timer works
             targetPosition = 0;
             moveSlides();
 
@@ -344,14 +337,10 @@ public class UsingStackPark extends LinearOpMode
 
             //repeat first part from here to place next cone---------------------
 
-            PlaceMultipleCones(poleToStack, dropCone, backwards, drive);
+            PlaceMultipleCones(poleToStack, dropCone, backwards, drive, timer2); //repeat this as many times as needed
 
             //get in position to park
             drive.followTrajectorySequence(goToParking);
-
-            //this is for 2 cones, for more make loop with list for heights
-            //could make method for cycling
-            //maybe even use elapsed time to see how many cones can be placed
 
             if(numberDetected == 1){
                 // park in zone 1
@@ -369,7 +358,8 @@ public class UsingStackPark extends LinearOpMode
             }
         }
     }
-    public void PlaceMultipleCones(TrajectorySequence poleToStack, TrajectorySequence dropCone, TrajectorySequence backwards, SampleMecanumDrive drive)
+
+    public void PlaceMultipleCones(TrajectorySequence poleToStack, TrajectorySequence dropCone, TrajectorySequence backwards, SampleMecanumDrive drive, ElapsedTime timer2)
     {
         drive.followTrajectorySequence(poleToStack);
 
@@ -377,6 +367,16 @@ public class UsingStackPark extends LinearOpMode
         //also might use timer here
         rightServo.setPosition(0.5);
         leftServo.setPosition(0.5);
+
+        //timer
+        time = timer2.time();
+        double currentTime = timer2.time();
+        while(currentTime<(time+2))
+        {
+            currentTime = timer2.time();
+        }
+        //no clue if this timer works
+
         targetPosition = 1000; //random number no clue if it's any good
         moveSlides();
 
@@ -396,6 +396,7 @@ public class UsingStackPark extends LinearOpMode
 
         drive.followTrajectorySequence(poleToStack);
     }
+
     public void moveSlides()
     {
         while(!((targetPosition-pulleyMotorL.getCurrentPosition())>12))

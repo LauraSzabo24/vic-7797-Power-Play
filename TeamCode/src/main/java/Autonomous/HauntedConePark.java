@@ -1,7 +1,6 @@
 package Autonomous;
 
 //PID
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -30,7 +29,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class OneConePark extends LinearOpMode
+public class HauntedConePark extends LinearOpMode
 {
 
     //PID junk
@@ -216,7 +215,7 @@ public class OneConePark extends LinearOpMode
 
         while(!opModeIsActive()){
             // get the number of apriltag detected
-            numberDetected = OneConePark.tagNumber;
+            numberDetected = HauntedConePark.tagNumber;
         }
 
         //edited from here
