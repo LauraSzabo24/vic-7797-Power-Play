@@ -229,7 +229,6 @@ public class NewOneConePark extends LinearOpMode
 
         TrajectorySequence goToPole = drive.trajectorySequenceBuilder(startPose) //change this to go to front pole not side
                 .forward(40)
-                .waitSeconds(0.5)
                 .strafeRight(37)
                 .waitSeconds(0.5)
                 .build();
