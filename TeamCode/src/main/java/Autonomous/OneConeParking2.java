@@ -1,24 +1,19 @@
 package Autonomous;
 
 //PID
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-//Servo
-import com.qualcomm.robotcore.hardware.Servo;
-
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import pipelines.AprilTagDetectionPipeline;
-
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
@@ -28,8 +23,10 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
+import pipelines.AprilTagDetectionPipeline;
+
 @Autonomous
-public class Parking extends LinearOpMode
+public class OneConeParking2 extends LinearOpMode
 {
 
     //PID junk
@@ -76,7 +73,7 @@ public class Parking extends LinearOpMode
     // UNITS ARE METERS
     private static final double tagsize = 0.166;
 
-    //no idea what this is
+//no idea what this is
     private int numFramesWithoutDetection = 0;
 
     private static final float DECIMATION_HIGH = 3;
@@ -126,8 +123,7 @@ public class Parking extends LinearOpMode
 
 
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
         initialize();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
@@ -135,18 +131,15 @@ public class Parking extends LinearOpMode
 
 
         camera.setPipeline(aprilTagDetectionPipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
-                camera.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+            public void onOpened() {
+                camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
-            public void onError(int errorCode)
-            {
-                throw new RuntimeException("Error opening camera! Error code "+errorCode);
+            public void onError(int errorCode) {
+                throw new RuntimeException("Error opening camera! Error code " + errorCode);
             }
         });
 
@@ -155,47 +148,38 @@ public class Parking extends LinearOpMode
         telemetry.setMsTransmissionInterval(50);
 
         //from here2
-        while (opModeIsActive() && !(tagNumber==1) && !(tagNumber==2) && !(tagNumber==3) && !(tagNumber==4))
-        {
+        while (opModeIsActive() && !(tagNumber == 1) && !(tagNumber == 2) && !(tagNumber == 3) && !(tagNumber == 4)) {
             ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
 
-            if(detections != null)
-            {
+            if (detections != null) {
                 telemetry.addData("FPS", camera.getFps());
                 telemetry.addData("Overhead ms", camera.getOverheadTimeMs());
                 telemetry.addData("Pipeline ms", camera.getPipelineTimeMs());
 
-                if(detections.size() == 0)
-                {
+                if (detections.size() == 0) {
                     numFramesWithoutDetection++;
 
-                    if(numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION)
-                    {
+                    if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
                         aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
                     }
-                }
-                else
-                {
+                } else {
                     numFramesWithoutDetection = 0;
 
-                    if(detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS)
-                    {
+                    if (detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
                         aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
                     }
 
-                    for(AprilTagDetection detection : detections)
-                    {
+                    for (AprilTagDetection detection : detections) {
                         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-                        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-                        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-                        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
+                        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x * FEET_PER_METER));
+                        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y * FEET_PER_METER));
+                        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z * FEET_PER_METER));
                         telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
                         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
                         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
 
                         //...
-                        if(detection.id == 1 || detection.id == 2 || detection.id == 3)
-                        {
+                        if (detection.id == 1 || detection.id == 2 || detection.id == 3) {
                             tagNumber = detection.id;
                         }
                         //...
@@ -213,22 +197,49 @@ public class Parking extends LinearOpMode
 
         double numberDetected = -1;
 
-        while(!opModeIsActive()){
+        while (!opModeIsActive()) {
             // get the number of apriltag detected
-            numberDetected = tagNumber; //= hauntedConePark.tagNumber
+            numberDetected = OneConeParking2.tagNumber;
         }
 
         //edited from here
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         //roadrunner trajectory stuff
-        Pose2d startPose = new Pose2d(0,0,0);
+        Pose2d startPose = new Pose2d(0, 0, 0);
+        ElapsedTime timer2 = new ElapsedTime();
         drive.setPoseEstimate(startPose);
 
+        //trajectories and trajectory sequences
+        TrajectorySequence goToThePole = drive.trajectorySequenceBuilder(startPose)
+                .forward(40)
+                //.waitSeconds(4)
+                //.strafeRight(37)// might need to be put in seperate trajectory
+                .build();
+        TrajectorySequence dropCone = drive.trajectorySequenceBuilder(startPose)
+                .waitSeconds(0.5)
+                .forward(5)
+                .waitSeconds(0.5)
+                .build();
+        TrajectorySequence backwards = drive.trajectorySequenceBuilder(startPose)
+                .waitSeconds(1)
+                .back(1)
+                .waitSeconds(1)
+                .build();
+
+        /*Trajectory parkLeft = drive.trajectoryBuilder(startPose)
+                .strafeLeft(12)
+                .build();
+        Trajectory centerPark = drive.trajectoryBuilder(startPose)
+                .strafeLeft(36)
+                .build();
+        Trajectory parkRight = drive.trajectoryBuilder(startPose)
+                .strafeLeft(60)
+                .build();*/
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(startPose)
                 .forward(35)
                 .waitSeconds(0.4)
-                .strafeLeft(30)
+                .strafeLeft(24.0)
                 .build();
         TrajectorySequence parkRight = drive.trajectorySequenceBuilder(startPose)
                 .forward(35)
@@ -239,30 +250,89 @@ public class Parking extends LinearOpMode
                 .forward(35)
                 .build();
 
+        /*TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(startPose)
+                .forward(35)
+                .waitSeconds(0.4)
+                .strafeLeft(24.0)
+                .build();
+        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(startPose)
+                .forward(35)
+                .waitSeconds(0.4)
+                .strafeRight(30)
+                .build();
+        Trajectory centerPark  = drive.trajectoryBuilder(startPose)
+                .forward(35)
+                .build();*/
+
         waitForStart(); //also new
 
-        while(opModeIsActive()){
+        while (opModeIsActive()) {
+            //go to the tallest pole
+            //drive.followTrajectorySequence(goToThePole);
 
-            drive.followTrajectory(centerPark);
-            if (tagNumber == 1)
-            {
-                //if (!isStopRequested())
+            //PID slide moving to drop cone
+            //targetPosition = 4200;
+            //fixSlides();
+/*
+
+
+            //go forward and open claw
+            drive.followTrajectorySequence(dropCone);
+            rightServo.setPosition(0.5);
+            leftServo.setPosition(0.5);
+
+            //bring the slides lower
+            targetPosition = 3000;
+           fixSlides();
+
+            double time = timer2.time();
+            while (time < (time + 2)) {
+                time = timer2.time();
+            } //no clue if this timer works
+            //bring the slides back up
+            targetPosition = 4200;
+            fixSlides();
+
+            //close the claw
+            rightServo.setPosition(0.25);
+            leftServo.setPosition(0.75);
+
+            //go back and lower slides
+            //drive.followTrajectorySequence(backwards);
+            targetPosition = 0;
+            fixSlides();*/
+           if(numberDetected == 1){
+                // park in zone 1
+                telemetry.addData("PARK IN ZONE 1", numberDetected);
                 drive.followTrajectorySequence(parkLeft);
-                tagNumber=0;
+                tagNumber=4;
             }
-            else if (tagNumber == 2)
-            {
-                //if (!isStopRequested())
+            else if(numberDetected == 2) {
+                // park in zone 2
+                telemetry.addData("PARK IN ZONE 2", numberDetected);
                 drive.followTrajectory(centerPark);
-                tagNumber=0;
+                tagNumber=4;
             }
-            else if (tagNumber == 3)
-            {
-                //if (!isStopRequested())
+            else if(numberDetected ==3) {
+                // park in zone 3
+                telemetry.addData("PARK IN ZONE 3", numberDetected);
                 drive.followTrajectorySequence(parkRight);
-                tagNumber=0;
+                tagNumber=4;
             }
+
         }
     }
+    public void fixSlides()
+    {
+        while(((targetPosition-pulleyMotorL.getCurrentPosition())>12))
+        {
+            double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+            pulleyMotorL.setPower(power);
+            pulleyMotorR.setPower(power);
+            targetPosition=pulleyMotorL.getCurrentPosition();
+
+        }
+    }
+
 }
 
