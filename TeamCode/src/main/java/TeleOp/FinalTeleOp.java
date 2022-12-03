@@ -60,7 +60,7 @@ public class FinalTeleOp extends OpMode {
     public static double smallHeight = 2100;
     public static double midHeight =3141;
     public static double tallHeight =4115;
-    public static double motorPower =0.5;
+    public static double motorPower =1;
     public static double targetPosition = 5;
 
 
@@ -112,15 +112,26 @@ public class FinalTeleOp extends OpMode {
     @Override
     public void loop() {
         // mecanum
-        boolean precisionToggle = gamepad1.right_trigger > 0.1;
+        boolean precisionToggle = gamepad1.left_trigger > 0.1;
+
         drive(precisionToggle);
 
-        if(gamepad1.y)
+        //pivots
+        if(gamepad1.b)
         {
             motorBackLeft.setPower(0);
             motorBackRight.setPower(0);
-            motorFrontLeft.setPower(0.8);
-            motorFrontRight.setPower(-0.8);
+            motorFrontLeft.setPower(0.9);
+            motorFrontRight.setPower(-0.9);
+
+
+        }
+        if(gamepad1.a)
+        {
+            motorBackLeft.setPower(0);
+            motorBackRight.setPower(0);
+            motorFrontLeft.setPower(-0.9);
+            motorFrontRight.setPower(0.9);
 
 
         }
@@ -160,6 +171,11 @@ public class FinalTeleOp extends OpMode {
             targetPosition = midHeight;
 
         }
+        if(gamepad2.dpad_down)
+        {
+            targetPosition = 0;
+
+        }
 
         if(gamepad2.right_bumper && pulleyMotorL.getCurrentPosition()<5000 )
         {
@@ -182,11 +198,7 @@ public class FinalTeleOp extends OpMode {
             pulleyMotorR.setPower(0);
 
         }
-        if(gamepad2.dpad_down)
-        {
-            targetPosition = 0;
 
-        }
 
         double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
         telemetry.addData("positonrightMotor", pulleyMotorR.getCurrentPosition());
@@ -206,6 +218,7 @@ public class FinalTeleOp extends OpMode {
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
+
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when
@@ -244,15 +257,19 @@ public class FinalTeleOp extends OpMode {
 
 
         if (precisionToggle) {
-            motorFrontLeft.setPower(frontLeftPower * 0.6);
-            motorBackLeft.setPower(backLeftPower * 0.6);
-            motorFrontRight.setPower(frontRightPower * 0.6);
-            motorBackRight.setPower(backRightPower * 0.6);
-        } else {
+            motorFrontLeft.setPower(frontLeftPower * 0.4);
+            motorBackLeft.setPower(backLeftPower * 0.4);
+            motorFrontRight.setPower(frontRightPower * 0.4);
+            motorBackRight.setPower(backRightPower * 0.4);
+        }
+        else
+        {
             motorFrontLeft.setPower(frontLeftPower);
             motorBackLeft.setPower(backLeftPower);
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
+
+
         }
 
     }
