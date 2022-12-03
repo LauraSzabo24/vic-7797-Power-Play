@@ -46,7 +46,7 @@ public class MarkersOneConePark extends LinearOpMode {
     public static double Kd = 0.0;
 
 
-    public static double targetPosition = 5;
+    public static double targetPosition = 0;
 
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -219,43 +219,45 @@ public class MarkersOneConePark extends LinearOpMode {
                 .waitSeconds(2)
                 .forward(38)
                 .waitSeconds(0.5)
-                .strafeRight(46)
+                .strafeRight(47)
                 .waitSeconds(0.5)
                 .addTemporalMarker(8, () -> {
-                    targetPosition = 4000;
+                    targetPosition = 3900;
                     fixSlides();
                 })
                 .build();
         TrajectorySequence dropCone = drive.trajectorySequenceBuilder(goToPole.end())
                 .waitSeconds(0.5)
                 .forward(6)
-                .waitSeconds(0.5)
+                .waitSeconds(3)
                 .addTemporalMarker(2, () -> {
-                    targetPosition = 3000;
-                    fixSlides();
-                })
-                .addTemporalMarker(4, () -> {
                     rightServo.setPosition(0.2);
                     leftServo.setPosition(0.8);
                 })
+
+
                 .build();
         TrajectorySequence backwards = drive.trajectorySequenceBuilder(dropCone.end())
-                .addTemporalMarker(2, () -> {
+                .waitSeconds(3)
+                .back(6)
+                .waitSeconds(3)
+                .build();
+        TrajectorySequence slides = drive.trajectorySequenceBuilder(backwards.end())
+                .addTemporalMarker(0, () -> {
                     targetPosition = 0;
                     fixSlides();
                 })
                 .waitSeconds(3)
-                .back(5)
-                .waitSeconds(1)
                 .build();
+
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(backwards.end())
                 .waitSeconds(0.4)
-                .strafeLeft(24)
+                .strafeLeft(75)
                 .build();
         TrajectorySequence parkRight = drive.trajectorySequenceBuilder(backwards.end())
                 .waitSeconds(0.4)
-                .strafeLeft(75)
+                .strafeLeft(22)
                 .build();
         TrajectorySequence centerPark = drive.trajectorySequenceBuilder(backwards.end())
                 .waitSeconds(0.4)
@@ -267,6 +269,7 @@ public class MarkersOneConePark extends LinearOpMode {
             drive.followTrajectorySequence(goToPole);
             drive.followTrajectorySequence(dropCone);
             drive.followTrajectorySequence(backwards);
+            drive.followTrajectorySequence(slides);
             //tag parking
             if (tagNumber == 1) {
                 //if (!isStopRequested())
@@ -286,6 +289,11 @@ public class MarkersOneConePark extends LinearOpMode {
             }
             stop++;
         }
+        while(opModeIsActive()&&stop>0)
+        {
+            targetPosition = 0;
+            fixSlides();
+        }
     }
 
     public void fixSlides()
@@ -300,7 +308,7 @@ public class MarkersOneConePark extends LinearOpMode {
             }*/
         double power = 0;
         telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
-        while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive())
+        while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive() && (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
         {
             power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
             pulleyMotorL.setPower(power);
