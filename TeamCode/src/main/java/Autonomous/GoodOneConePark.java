@@ -223,9 +223,9 @@ public class GoodOneConePark extends LinearOpMode {
                 .waitSeconds(0.5)
                 .build();
         TrajectorySequence backwards = drive.trajectorySequenceBuilder(dropCone.end())
-                .waitSeconds(0.5)
+                .waitSeconds(1)
                 .back(5)
-                .waitSeconds(0.5)
+                .waitSeconds(1)
                 .build();
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(backwards.end())
@@ -247,6 +247,9 @@ public class GoodOneConePark extends LinearOpMode {
                 .waitSeconds(3)
                 .build();
         TrajectorySequence Timer3 = drive.trajectorySequenceBuilder(backwards.end())
+                .waitSeconds(1)
+                .build();
+        TrajectorySequence Timer4 = drive.trajectorySequenceBuilder(dropCone.end())
                 .waitSeconds(1)
                 .build();
         waitForStart(); //also new
@@ -284,7 +287,7 @@ public class GoodOneConePark extends LinearOpMode {
             drive.followTrajectorySequence(Timer2);
             rightServo.setPosition(0.2);
             leftServo.setPosition(0.8);
-            drive.followTrajectorySequence(Timer2);
+            drive.followTrajectorySequence(Timer4);
 
             /*double time = timer2.time();
             while (time < (time + 0.5)) {
@@ -303,9 +306,9 @@ public class GoodOneConePark extends LinearOpMode {
             fixSlides();
 
             //close the claw
-            rightServo.setPosition(0.5);
+            /*rightServo.setPosition(0.5);
             leftServo.setPosition(0.5);
-            drive.followTrajectorySequence(Timer3);
+            drive.followTrajectorySequence(Timer3);*/
 
             //tag parking
             if (tagNumber == 1) {
