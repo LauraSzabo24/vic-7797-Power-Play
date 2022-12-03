@@ -365,8 +365,8 @@ public class UsingStackPark extends LinearOpMode
 
         //open claw and lift up slides for top cone
         //also might use timer here
-        rightServo.setPosition(0.5);
-        leftServo.setPosition(0.5);
+        rightServo.setPosition(0.15);
+        leftServo.setPosition(0.85);
 
         //timer
         time = timer2.time();
@@ -382,8 +382,8 @@ public class UsingStackPark extends LinearOpMode
 
         //go closer and close claw
         drive.followTrajectorySequence(dropCone);
-        rightServo.setPosition(0.75);
-        leftServo.setPosition(0.75);
+        rightServo.setPosition(0.5);
+        leftServo.setPosition(0.5);
 
         //backwards
         drive.followTrajectorySequence(backwards);
