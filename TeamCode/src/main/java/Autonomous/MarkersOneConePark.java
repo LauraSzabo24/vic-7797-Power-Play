@@ -212,55 +212,50 @@ public class MarkersOneConePark extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence goToPole = drive.trajectorySequenceBuilder(startPose) //change this to go to front pole not side
-                .addTemporalMarker(0, () -> {
+               .addTemporalMarker(0, () -> {
                     rightServo.setPosition(0.5);
                     leftServo.setPosition(0.5);
                 })
-                .waitSeconds(2)
+                .waitSeconds(0.5)
                 .forward(38)
-                .waitSeconds(0.5)
+                .waitSeconds(0.2)
                 .strafeRight(47)
-                .waitSeconds(0.5)
-                .addTemporalMarker(8, () -> {
-                    targetPosition = 3900;
+                .waitSeconds(5)
+                .addTemporalMarker(6, () -> {
+                    targetPosition = 4000;
                     fixSlides();
                 })
                 .build();
         TrajectorySequence dropCone = drive.trajectorySequenceBuilder(goToPole.end())
-                .waitSeconds(0.5)
-                .forward(6)
-                .waitSeconds(3)
-                .addTemporalMarker(2, () -> {
+                .forward(4)
+                .waitSeconds(4)
+                .addTemporalMarker(1.2, () -> {
                     rightServo.setPosition(0.2);
                     leftServo.setPosition(0.8);
                 })
-
-
-                .build();
-        TrajectorySequence backwards = drive.trajectorySequenceBuilder(dropCone.end())
-                .waitSeconds(3)
+                .waitSeconds(0.5)
                 .back(6)
-                .waitSeconds(3)
                 .build();
-        TrajectorySequence slides = drive.trajectorySequenceBuilder(backwards.end())
+        /*TrajectorySequence backwards = drive.trajectorySequenceBuilder(dropCone.end())
+                .waitSeconds(0.5)
+                .back(6)
+                .build();*/
+        TrajectorySequence slides = drive.trajectorySequenceBuilder(dropCone.end())
                 .addTemporalMarker(0, () -> {
                     targetPosition = 0;
                     fixSlides();
                 })
-                .waitSeconds(3)
+                .waitSeconds(2)
                 .build();
 
-
-        TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(backwards.end())
-                .waitSeconds(0.4)
-                .strafeLeft(75)
+        Pose2d poseEstimate = drive.getPoseEstimate();
+        TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(dropCone.end())
+                .strafeLeft(76)
                 .build();
-        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(backwards.end())
-                .waitSeconds(0.4)
+        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(dropCone.end())
                 .strafeLeft(22)
                 .build();
-        TrajectorySequence centerPark = drive.trajectorySequenceBuilder(backwards.end())
-                .waitSeconds(0.4)
+        TrajectorySequence centerPark = drive.trajectorySequenceBuilder(dropCone.end())
                 .strafeLeft(46)
                 .build();
 
@@ -268,7 +263,6 @@ public class MarkersOneConePark extends LinearOpMode {
             //go to the tallest pole
             drive.followTrajectorySequence(goToPole);
             drive.followTrajectorySequence(dropCone);
-            drive.followTrajectorySequence(backwards);
             drive.followTrajectorySequence(slides);
             //tag parking
             if (tagNumber == 1) {
@@ -276,23 +270,34 @@ public class MarkersOneConePark extends LinearOpMode {
                 telemetry.addData("number1", tagNumber);
                 drive.followTrajectorySequence(parkLeft);
                 tagNumber = 4;
+                stop++;
             } else if (tagNumber == 2) {
                 //if (!isStopRequested())
                 telemetry.addData("number2", tagNumber);
                 drive.followTrajectorySequence(centerPark);
                 tagNumber = 4;
+                stop++;
             } else if (tagNumber == 3) {
                 //if (!isStopRequested())
                 telemetry.addData("number3", tagNumber);
                 drive.followTrajectorySequence(parkRight);
                 tagNumber = 4;
+                stop++;
             }
-            stop++;
         }
         while(opModeIsActive()&&stop>0)
         {
             targetPosition = 0;
             fixSlides();
+        }
+        while(opModeIsActive())
+        {
+            telemetry.addData("current position", pulleyMotorL.getCurrentPosition());
+            telemetry.addData("target position", targetPosition);
+            telemetry.addData("tag", tagNumber);
+            telemetry.addData("current pose", new Pose2d(poseEstimate.getX(), poseEstimate.getY()));
+            telemetry.addData("backwards.end()", dropCone.end());
+            telemetry.update();
         }
     }
 
@@ -308,14 +313,20 @@ public class MarkersOneConePark extends LinearOpMode {
             }*/
         double power = 0;
         telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
-        while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive() && (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
+        while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive()) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
         {
-            power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
-            pulleyMotorL.setPower(power);
-            pulleyMotorR.setPower(power);
-            telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
-            telemetry.update();
+            if(!(pulleyMotorL.getCurrentPosition()>4000))
+            {
+                power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                pulleyMotorL.setPower(power);
+                pulleyMotorR.setPower(power);
+                telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
+                telemetry.update();
+            }
         }
+        pulleyMotorL.setPower(0);
+        pulleyMotorR.setPower(0);
     }
+
 
 }

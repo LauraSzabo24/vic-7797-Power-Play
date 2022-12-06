@@ -1,26 +1,18 @@
-package Autonomous;
+package Trash;
 
 //PID
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-//Servo
-import com.qualcomm.robotcore.hardware.Servo;
-
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-
-import pipelines.AprilTagDetectionPipeline;
-
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
@@ -30,8 +22,10 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous
-public class NewOneConePark extends LinearOpMode {
+import pipelines.AprilTagDetectionPipeline;
+
+//@Autonomous
+public class GoodOneConePark extends LinearOpMode {
 
     //PID junk
     DcMotorEx pulleyMotorR;
@@ -229,9 +223,9 @@ public class NewOneConePark extends LinearOpMode {
                 .waitSeconds(0.5)
                 .build();
         TrajectorySequence backwards = drive.trajectorySequenceBuilder(dropCone.end())
-                .waitSeconds(0.5)
+                .waitSeconds(1)
                 .back(5)
-                .waitSeconds(0.5)
+                .waitSeconds(1)
                 .build();
 
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(backwards.end())
@@ -253,6 +247,9 @@ public class NewOneConePark extends LinearOpMode {
                 .waitSeconds(3)
                 .build();
         TrajectorySequence Timer3 = drive.trajectorySequenceBuilder(backwards.end())
+                .waitSeconds(1)
+                .build();
+        TrajectorySequence Timer4 = drive.trajectorySequenceBuilder(dropCone.end())
                 .waitSeconds(1)
                 .build();
         waitForStart(); //also new
@@ -290,7 +287,7 @@ public class NewOneConePark extends LinearOpMode {
             drive.followTrajectorySequence(Timer2);
             rightServo.setPosition(0.2);
             leftServo.setPosition(0.8);
-            drive.followTrajectorySequence(Timer2);
+            drive.followTrajectorySequence(Timer4);
 
             /*double time = timer2.time();
             while (time < (time + 0.5)) {
@@ -309,9 +306,9 @@ public class NewOneConePark extends LinearOpMode {
             fixSlides();
 
             //close the claw
-            rightServo.setPosition(0.5);
+            /*rightServo.setPosition(0.5);
             leftServo.setPosition(0.5);
-            drive.followTrajectorySequence(Timer3);
+            drive.followTrajectorySequence(Timer3);*/
 
             //tag parking
             if (tagNumber == 1) {

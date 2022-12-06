@@ -1,4 +1,4 @@
-package Autonomous;
+package Trash;
 
 //PID
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,13 +12,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+        import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+        import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-
-import Trash.HauntedConePark;
+        import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import pipelines.AprilTagDetectionPipeline;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -30,9 +28,10 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous
-public class UsingStackPark extends LinearOpMode
+//@Autonomous
+public class HauntedConePark extends LinearOpMode
 {
+
     //PID junk
     DcMotorEx pulleyMotorR;
     DcMotorEx pulleyMotorL;
@@ -77,7 +76,7 @@ public class UsingStackPark extends LinearOpMode
     // UNITS ARE METERS
     private static final double tagsize = 0.166;
 
-    //no idea what this is
+//no idea what this is
     private int numFramesWithoutDetection = 0;
 
     private static final float DECIMATION_HIGH = 3;
@@ -156,7 +155,7 @@ public class UsingStackPark extends LinearOpMode
         telemetry.setMsTransmissionInterval(50);
 
         //from here2
-        while (opModeIsActive())
+        while (opModeIsActive() && !(tagNumber==1) && !(tagNumber==2) && !(tagNumber==3) && !(tagNumber==4))
         {
             ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
 
@@ -207,7 +206,7 @@ public class UsingStackPark extends LinearOpMode
 
             sleep(20);
 
-            //PID CONSTANT CORRECTION OF SLIDES
+           //PID CONSTANT CORRECTION OF SLIDES
 
             //PID ENDS HERE
         }
@@ -229,49 +228,54 @@ public class UsingStackPark extends LinearOpMode
 
         //trajectories and trajectory sequences
         TrajectorySequence goToThePole = drive.trajectorySequenceBuilder(startPose)
-                .forward(69)
-                .waitSeconds(2)
-                .turn(90)//some amount, might be negative
-                .waitSeconds(5)
+                .forward(40)
+                .strafeRight(37)// might need to be put in seperate trajectory
+                .waitSeconds(0.5)
                 .build();
         TrajectorySequence dropCone = drive.trajectorySequenceBuilder(startPose)
-                .waitSeconds(1)
+                .waitSeconds(0.5)
                 .forward(5)
-                .waitSeconds(2)
+                .waitSeconds(0.5)
                 .build();
         TrajectorySequence backwards = drive.trajectorySequenceBuilder(startPose)
-                .waitSeconds(2)
-                .back(5)
+                .waitSeconds(1)
+                .back(1)
                 .waitSeconds(1)
                 .build();
-        TrajectorySequence poleToStack = drive.trajectorySequenceBuilder(startPose)
-                .turn(180)
-                .waitSeconds(2)
-                .forward(20)
-                .waitSeconds(2)
-                .build();
 
-        TrajectorySequence goToParking = drive.trajectorySequenceBuilder(startPose)
-                .back(6)
-                .turn(90)
-                .back(60)
-                .build();
-        Trajectory leftPark = drive.trajectoryBuilder(new Pose2d())
+        Trajectory parkLeft = drive.trajectoryBuilder(startPose)
                 .strafeLeft(12)
                 .build();
-        Trajectory rightPark = drive.trajectoryBuilder(new Pose2d())
-                .strafeRight(12)
+        Trajectory centerPark = drive.trajectoryBuilder(startPose)
+                .strafeLeft(36)
                 .build();
+        Trajectory parkRight = drive.trajectoryBuilder(startPose)
+                .strafeLeft(60)
+                .build();
+
+        /*TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(startPose)
+                .forward(35)
+                .waitSeconds(0.4)
+                .strafeLeft(24.0)
+                .build();
+        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(startPose)
+                .forward(35)
+                .waitSeconds(0.4)
+                .strafeRight(30)
+                .build();
+        Trajectory centerPark  = drive.trajectoryBuilder(startPose)
+                .forward(35)
+                .build();*/
 
         waitForStart(); //also new
 
-        while(opModeIsActive() && !isStopRequested()){
+        while(opModeIsActive()){
             //go to the tallest pole
             drive.followTrajectorySequence(goToThePole);
 
             //PID slide moving to drop cone
             targetPosition = 4200;
-            moveSlides();
+            fixSlides();
 
             //go forward and open claw
             drive.followTrajectorySequence(dropCone);
@@ -280,127 +284,51 @@ public class UsingStackPark extends LinearOpMode
 
             //bring the slides lower
             targetPosition = 3000;
-            moveSlides();
+            fixSlides();
 
             double time = timer2.time();
-            double currentTime = timer2.time();
-            while(currentTime<(time+2))
+            while(time<(time+2))
             {
-                currentTime = timer2.time();
-            }
-            //no clue if this timer works
+                time = timer2.time();
+            } //no clue if this timer works
 
             //bring the slides back up
             targetPosition = 4200;
-            moveSlides();
+            fixSlides();
 
             //close the claw
-            //if timer above works will use here too
             rightServo.setPosition(0.25);
             leftServo.setPosition(0.75);
 
             //go back and lower slides
-            drive.followTrajectorySequence(backwards);
+            //drive.followTrajectorySequence(backwards);
             targetPosition = 0;
-            moveSlides();
-
-            //go to the stack
-            drive.followTrajectorySequence(poleToStack);
-
-            //open claw and lift up slides for top cone
-            //also might use timer here
-            rightServo.setPosition(0.5);
-            leftServo.setPosition(0.5);
-            targetPosition = 1000; //random number no clue if it's any good
-            moveSlides();
-
-            //go closer and close claw
-            drive.followTrajectorySequence(dropCone);
-            rightServo.setPosition(0.75);
-            leftServo.setPosition(0.75);
-
-            //backwards
-            drive.followTrajectorySequence(backwards);
-
-            //down with the slides
-            //also might be able to skip this part depends on how stable
-            time = timer2.time();
-            currentTime = timer2.time();
-            while(currentTime<(time+2))
-            {
-                currentTime = timer2.time();
-            }//might not need timer
-            //no clue if this timer works
-            targetPosition = 0;
-            moveSlides();
-
-            drive.followTrajectorySequence(poleToStack);
-
-            //repeat first part from here to place next cone---------------------
-
-            PlaceMultipleCones(poleToStack, dropCone, backwards, drive, timer2); //repeat this as many times as needed
-
-            //get in position to park
-            drive.followTrajectorySequence(goToParking);
-
-            if(numberDetected == 1){
+            fixSlides();
+            /* if(numberDetected == 1){
                 // park in zone 1
                 telemetry.addData("PARK IN ZONE 1", numberDetected);
-                drive.followTrajectory(leftPark);
+                drive.followTrajectory(parkLeft);
+                tagNumber=4;
             }
             else if(numberDetected == 2) {
                 // park in zone 2
                 telemetry.addData("PARK IN ZONE 2", numberDetected);
+                drive.followTrajectory(centerPark);
+                tagNumber=4;
             }
-            else {
+            else if(numberDetected ==3) {
                 // park in zone 3
                 telemetry.addData("PARK IN ZONE 3", numberDetected);
-                drive.followTrajectory(rightPark);
+                drive.followTrajectory(parkRight);
+                tagNumber=4;
             }
+
+             */
         }
     }
-
-    public void PlaceMultipleCones(TrajectorySequence poleToStack, TrajectorySequence dropCone, TrajectorySequence backwards, SampleMecanumDrive drive, ElapsedTime timer2)
+    public void fixSlides()
     {
-        drive.followTrajectorySequence(poleToStack);
-
-        //open claw and lift up slides for top cone
-        //also might use timer here
-        rightServo.setPosition(0.15);
-        leftServo.setPosition(0.85);
-
-        //timer
-        time = timer2.time();
-        double currentTime = timer2.time();
-        while(currentTime<(time+2))
-        {
-            currentTime = timer2.time();
-        }
-        //no clue if this timer works
-
-        targetPosition = 1000; //random number no clue if it's any good
-        moveSlides();
-
-        //go closer and close claw
-        drive.followTrajectorySequence(dropCone);
-        rightServo.setPosition(0.5);
-        leftServo.setPosition(0.5);
-
-        //backwards
-        drive.followTrajectorySequence(backwards);
-
-        //down with the slides
-        //again, might need timer here
-        //also might be able to skip this part depends on how stable
-        targetPosition = 0;
-        moveSlides();
-
-        drive.followTrajectorySequence(poleToStack);
-    }
-
-    public void moveSlides()
-    {
-        while(!((targetPosition-pulleyMotorL.getCurrentPosition())>12))
+        while((targetPosition-pulleyMotorL.getCurrentPosition())>12)
         {
             double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
             pulleyMotorL.setPower(power);
