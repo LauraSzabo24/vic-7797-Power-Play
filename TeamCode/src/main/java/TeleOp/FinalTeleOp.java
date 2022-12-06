@@ -113,7 +113,7 @@ public class FinalTeleOp extends OpMode {
     public void loop() {
         // mecanum
         boolean precisionToggle = gamepad1.left_trigger > 0.1;
-
+         boolean i= false;
         drive(precisionToggle);
 
         //pivots
@@ -177,25 +177,28 @@ public class FinalTeleOp extends OpMode {
 
         }
 
-        if(gamepad2.right_bumper && pulleyMotorL.getCurrentPosition()<5000 )
+        if(gamepad2.right_bumper && pulleyMotorL.getCurrentPosition()<5000 && !i )
         {
 
             pulleyMotorL.setPower(motorPower);
             pulleyMotorR.setPower(motorPower);
-            targetPosition = pulleyMotorL.getCurrentPosition();
+            i=true;
+
         }
-        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() >0)
+        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() >0 && !i )
         {
             pulleyMotorL.setPower(-motorPower);
             pulleyMotorR.setPower(-motorPower);
-            targetPosition = pulleyMotorL.getCurrentPosition();
+            i=true;
+
 
         }
-        if(!gamepad2.right_bumper && !gamepad2.left_bumper && (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition())<15))
+        if(!gamepad2.right_bumper && !gamepad2.left_bumper && !i )
         {
-
+            targetPosition = pulleyMotorL.getCurrentPosition();
             pulleyMotorL.setPower(0);
             pulleyMotorR.setPower(0);
+            i=false;
 
         }
 

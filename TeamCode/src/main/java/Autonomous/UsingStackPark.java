@@ -216,7 +216,7 @@ public class UsingStackPark extends LinearOpMode
 
         while(!opModeIsActive()){
             // get the number of apriltag detected
-            numberDetected = HauntedConePark.tagNumber;
+            numberDetected = tagNumber;
         }
 
         //edited from here
