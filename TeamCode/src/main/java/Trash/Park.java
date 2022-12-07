@@ -1,4 +1,4 @@
-package Autonomous;
+package Trash;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.linearOpMode;
 
@@ -37,7 +37,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous
+//@Autonomous
 public class Park extends LinearOpMode
 {
     //PID junk

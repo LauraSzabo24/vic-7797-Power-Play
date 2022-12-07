@@ -1,4 +1,4 @@
-package TeleOp;
+package Trash;
 
 
 
@@ -14,8 +14,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Config
-@TeleOp(name = "PID")
+//@Config
+//@TeleOp(name = "PID")
 
 public class PID extends OpMode {
 
