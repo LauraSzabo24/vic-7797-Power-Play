@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import pipelines.AprilTagDetectionPipeline;
 
 @Autonomous
-public class MarkersOneConePark extends LinearOpMode {
+public class LeftVerticalOneConePark extends LinearOpMode {
 
     //PID junk
     DcMotorEx pulleyMotorR;
@@ -217,46 +217,51 @@ public class MarkersOneConePark extends LinearOpMode {
                     leftServo.setPosition(0.5);
                 })
                 .waitSeconds(0.5)
-                .forward(38)
-                .waitSeconds(0.2)
-                .strafeRight(47)
+                .forward(60)
+                .waitSeconds(0.5)
+                .strafeRight(12) //random
                 .waitSeconds(5)
                 .addTemporalMarker(6, () -> {
-                    targetPosition = 4000;
+                    targetPosition = 4100;
                     fixSlides();
                 })
+                .forward(4)
                 .build();
         TrajectorySequence dropCone = drive.trajectorySequenceBuilder(goToPole.end())
-                .forward(4)
-                .waitSeconds(4)
-                .addTemporalMarker(1.2, () -> {
+                //.forward(4)
+                .addTemporalMarker(0, () -> {
                     rightServo.setPosition(0.2);
                     leftServo.setPosition(0.8);
                 })
-                .waitSeconds(0.5)
+                .waitSeconds(2)
                 .back(6)
                 .build();
         /*TrajectorySequence backwards = drive.trajectorySequenceBuilder(dropCone.end())
                 .waitSeconds(0.5)
                 .back(6)
                 .build();*/
-        TrajectorySequence slides = drive.trajectorySequenceBuilder(dropCone.end())
-                .addTemporalMarker(0, () -> {
+       TrajectorySequence slides = drive.trajectorySequenceBuilder(dropCone.end())
+               .addTemporalMarker(0, () -> {
                     targetPosition = 0;
                     fixSlides();
                 })
-                .waitSeconds(2)
+                .strafeLeft(12)
+               .waitSeconds(0.1)
+               .back(22)
+                .waitSeconds(3)
                 .build();
 
         Pose2d poseEstimate = drive.getPoseEstimate();
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(dropCone.end())
-                .strafeLeft(76)
+                .strafeLeft(22)
+                .waitSeconds(30)
                 .build();
         TrajectorySequence parkRight = drive.trajectorySequenceBuilder(dropCone.end())
-                .strafeLeft(22)
+                .strafeRight(22)
+                .waitSeconds(30)
                 .build();
         TrajectorySequence centerPark = drive.trajectorySequenceBuilder(dropCone.end())
-                .strafeLeft(46)
+                .waitSeconds(30)
                 .build();
 
         while (opModeIsActive()&&stop<1) {
@@ -315,7 +320,7 @@ public class MarkersOneConePark extends LinearOpMode {
         telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
         while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive()) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
         {
-            if(!(pulleyMotorL.getCurrentPosition()>4000))
+            if(!(pulleyMotorL.getCurrentPosition()>4100))
             {
                 power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
                 pulleyMotorL.setPower(power);
