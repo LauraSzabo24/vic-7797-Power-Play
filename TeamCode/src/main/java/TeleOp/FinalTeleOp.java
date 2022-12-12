@@ -37,6 +37,7 @@ public class FinalTeleOp extends OpMode {
     private Servo rightServo;
     private Servo leftServo;
 
+
     //slide constants
     private Motor liftA;
     private Motor liftB;
@@ -59,9 +60,10 @@ public class FinalTeleOp extends OpMode {
     public static double Kd =0.0;
     public static double smallHeight = 2100;
     public static double midHeight =3141;
-    public static double tallHeight =4115;
-    public static double motorPower =1;
+    public static double tallHeight =4215;
+    public static double motorPower =1.3;
     public static double targetPosition = 5;
+
 
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -112,8 +114,8 @@ public class FinalTeleOp extends OpMode {
     @Override
     public void loop() {
         // mecanum
-        boolean precisionToggle = gamepad1.left_trigger > 0.1;
-         boolean i= false;
+        boolean precisionToggle = gamepad1.right_trigger > 0.1;
+
         drive(precisionToggle);
 
         //pivots
@@ -123,7 +125,6 @@ public class FinalTeleOp extends OpMode {
             motorBackRight.setPower(0);
             motorFrontLeft.setPower(0.9);
             motorFrontRight.setPower(-0.9);
-
 
         }
         if(gamepad1.a)
@@ -177,28 +178,30 @@ public class FinalTeleOp extends OpMode {
 
         }
 
-        if(gamepad2.right_bumper && pulleyMotorL.getCurrentPosition()<5000 && !i )
+        if(gamepad2.right_bumper && pulleyMotorL.getCurrentPosition()<5000)
         {
 
             pulleyMotorL.setPower(motorPower);
             pulleyMotorR.setPower(motorPower);
-            i=true;
+            targetPosition = pulleyMotorL.getCurrentPosition();
+
+
 
         }
-        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() >0 && !i )
+        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 0)
         {
             pulleyMotorL.setPower(-motorPower);
             pulleyMotorR.setPower(-motorPower);
-            i=true;
+            targetPosition = pulleyMotorL.getCurrentPosition();
+
 
 
         }
-        if(!gamepad2.right_bumper && !gamepad2.left_bumper && !i )
+        if(!gamepad2.right_bumper && !gamepad2.left_bumper && Math.abs(targetPosition-pulleyMotorL.getCurrentPosition())<12)
         {
-            targetPosition = pulleyMotorL.getCurrentPosition();
+
             pulleyMotorL.setPower(0);
             pulleyMotorR.setPower(0);
-            i=false;
 
         }
 
@@ -208,8 +211,6 @@ public class FinalTeleOp extends OpMode {
         telemetry.addData("positonleftMotor", pulleyMotorL.getCurrentPosition());
         telemetry.addData("targetPosition", targetPosition);
         telemetry.addData("power", power);
-
-
         pulleyMotorL.setPower(power);
         pulleyMotorR.setPower(power);
 
@@ -221,7 +222,7 @@ public class FinalTeleOp extends OpMode {
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
-
+        boolean superToggle = gamepad1.left_trigger > 0.1;
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when
@@ -234,7 +235,12 @@ public class FinalTeleOp extends OpMode {
         double frontRightPower = (y - x - 2 * rx) / denominator;
         double backRightPower = (y + x - 2 * rx) / denominator;
 
-
+        if(superToggle){
+            frontLeftPower = (  x + 2 * rx) / denominator;
+            backLeftPower = ( - x + 2 * rx) / denominator;
+            frontRightPower = ( - x - 2 * rx) / denominator;
+            backRightPower = ( x - 2 * rx) / denominator;
+        }
         // Cube the motor powers
         frontLeftPower = Math.pow(frontLeftPower, 3);
         frontRightPower = Math.pow(frontRightPower, 3);
@@ -264,6 +270,13 @@ public class FinalTeleOp extends OpMode {
             motorBackLeft.setPower(backLeftPower * 0.4);
             motorFrontRight.setPower(frontRightPower * 0.4);
             motorBackRight.setPower(backRightPower * 0.4);
+        }
+        if(superToggle){
+            motorFrontLeft.setPower(frontLeftPower * 0.2);
+            motorBackLeft.setPower(backLeftPower * 0.2);
+            motorFrontRight.setPower(frontRightPower * 0.2);
+            motorBackRight.setPower(backRightPower * 0.2);
+
         }
         else
         {

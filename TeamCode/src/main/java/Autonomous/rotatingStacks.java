@@ -2,12 +2,8 @@ package Autonomous;
 
 //PID
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -15,8 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -30,7 +25,7 @@ import java.util.ArrayList;
 import pipelines.AprilTagDetectionPipeline;
 
 @Autonomous
-public class LinearStacks1 extends LinearOpMode
+public class rotatingStacks extends LinearOpMode
 {
 
     //PID junk
@@ -206,7 +201,7 @@ public class LinearStacks1 extends LinearOpMode
 
         while (!opModeIsActive()) {
             // get the number of apriltag detected
-            numberDetected = LinearStacks1.tagNumber;
+            numberDetected = rotatingStacks.tagNumber;
         }
 
         //edited from here
@@ -217,9 +212,10 @@ public class LinearStacks1 extends LinearOpMode
 
         //roadrunner trajectory stuff
         Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
-        Pose2d stackPose = new Pose2d(-69.5,7.7,Math.toRadians(180));
-        Pose2d farmPose = new Pose2d(-20.5,9,Math.toRadians(90));
-        Pose2d midTravelPose = new Pose2d(-35,7,Math.toRadians(90));
+        Pose2d beginnerPose = new Pose2d(-35.1,-1,Math.toRadians(90));
+        Pose2d stackPose = new Pose2d(-68.5,-0.7,Math.toRadians(180));
+        Pose2d farmPose = new Pose2d(-33.9,3.5,Math.toRadians(42));
+        Pose2d approachPose = new Pose2d(-38.1,-0.7,Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
 
@@ -228,47 +224,27 @@ public class LinearStacks1 extends LinearOpMode
 
         //trajectories and trajectory sequences
         TrajectorySequence startOff = drive.trajectorySequenceBuilder(startPose)
-
-                .lineToLinearHeading(midTravelPose)
-
+                .lineToLinearHeading(beginnerPose)
+                .lineToLinearHeading(farmPose)
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(-4.5,()->{
-                    //bring up slides-interval
-                    closeClaw();
-                    targetPosition = smallHeight;
+                    targetPosition = grabHeight; //partial slide adju
                 })
-
-                    .lineToLinearHeading(farmPose)
-                    .waitSeconds(1)
-
-                .UNSTABLE_addTemporalMarkerOffset(-2,()->{
-                    //bring up slides full
-                    targetPosition = tallHeight;
-                })
-
-                .forward(8)
-                .waitSeconds(0.5)
-
                 .UNSTABLE_addTemporalMarkerOffset(-1,()->{
-                    //bring slides down-partial
-                    //drop cone-release servo
-                    targetPosition = tallHeight - 150;
+                    targetPosition = tallHeight; // full slide
+                })
+                .forward(4)
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{
+                    targetPosition = tallHeight -150;
                     openClaw();
+                    //drop cone
                 })
-
-                .back(6)
-
-                .UNSTABLE_addTemporalMarkerOffset(-0.25,()->{
-                    //drop slides all the way
+                .UNSTABLE_addTemporalMarkerOffset(0.5,()->{
                     targetPosition = grabHeight;
+
                 })
-
-               .lineToLinearHeading(stackPose)
-
-                .UNSTABLE_addTemporalMarkerOffset(-4,()-> {
-                    closeClaw();
-                    telemetry.addData("hello friends",pulleyMotorL.getCurrentPosition());
-                })
-
+                .lineToLinearHeading(approachPose)
                 .build();
 
 
@@ -277,70 +253,33 @@ public class LinearStacks1 extends LinearOpMode
 
 
         TrajectorySequence scoreOnStack = drive.trajectorySequenceBuilder(startOff.end())
-                .waitSeconds(1)
-
-                .UNSTABLE_addTemporalMarkerOffset(.5,()-> {
-
-                    targetPosition = smallHeight;
-                    fixSlides();
-                })
-               /* .lineToLinearHeading(farmPose)
-                .waitSeconds(1)
-                .UNSTABLE_addTemporalMarkerOffset(-2,()->{
-                    //bring up slides full
-                    targetPosition = tallHeight;
-                    fixSlides();
-                })
-                .forward(8)
+                .lineToLinearHeading(stackPose)//add speed constraints//going to pick stacks
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(1,()->{
-                    //bring slides down-partial
-                    //drop cone-release servo
-                    targetPosition = tallHeight - 250;
-                    fixSlides();
-                    openClaw();
+                .UNSTABLE_addTemporalMarkerOffset(-1.5,()-> {
+                    closeClaw();
                 })
-                .back(8)
-                .UNSTABLE_addTemporalMarkerOffset(-0.25,()->{
-                    //drop slides all the way
-                    targetPosition = 0;
-                    fixSlides();
+                .UNSTABLE_addTemporalMarkerOffset(0.5,()-> {
+                    targetPosition = smallHeight; //bring up slides(small preset)
                 })
-                .lineToLinearHeading(stackPose)
-                .build();
-        TrajectorySequence scoreOnStack2 = drive.trajectorySequenceBuilder(scoreOnStack.end())
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-3,()-> {
-                    //
-                    targetPosition = 940;//shift slides
-                    fixSlides();
-                    openClaw();
-                })
+                .lineToLinearHeading(approachPose)
                 .lineToLinearHeading(farmPose)
                 .waitSeconds(1)
-                .UNSTABLE_addTemporalMarkerOffset(-.5,()->{
-                    //bring up slides full
-                    targetPosition = tallHeight;
-                    fixSlides();
+                .UNSTABLE_addTemporalMarkerOffset(-2,()->{
+                    targetPosition = tallHeight;  //bring up slides full
                 })
-                .forward(8)
+                .forward(4)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(1,()->{
-                    //bring slides down-partial
-                    //drop cone-release servo
-                    targetPosition = tallHeight - 250;
-                    fixSlides();
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{
+                    targetPosition = tallHeight -150;
                     openClaw();
                 })
-                .back(6)
-
                 .UNSTABLE_addTemporalMarkerOffset(-0.25,()->{
-                    //drop slides all the way
-                    targetPosition = 0;
-                    fixSlides();
+                    targetPosition = grabHeight-188;
                 })
+                .lineToLinearHeading(approachPose)
                 .lineToLinearHeading(stackPose)
-              */  .build();
+
+                .build();
 
 
 
@@ -349,7 +288,7 @@ public class LinearStacks1 extends LinearOpMode
 
         drive.followTrajectorySequence(startOff);
         drive.followTrajectorySequence(scoreOnStack);
-       // drive.followTrajectorySequence(scoreOnStack2);
+
 
 
         if(numberDetected == 1){

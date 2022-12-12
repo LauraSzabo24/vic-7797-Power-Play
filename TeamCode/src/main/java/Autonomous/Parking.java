@@ -241,7 +241,6 @@ public class Parking extends LinearOpMode
 
         waitForStart(); //also new
 
-        drive.followTrajectorySequence(parkLeft);
         while(opModeIsActive()){
             if (tagNumber == 1)
             {
