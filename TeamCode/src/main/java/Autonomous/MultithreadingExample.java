@@ -2,7 +2,7 @@ package Autonomous;
 
 @Autonomous
 @Disabled
-public class MultithreadingExample extends implements Runnable {
+public class MultithreadingExample extends LinearOpMode implements Runnable {
   @Override
   public void run() {
     try {
