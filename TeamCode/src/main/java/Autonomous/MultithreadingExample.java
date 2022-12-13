@@ -1,6 +1,8 @@
 package Autonomous;
 
-public class MultithreadingExample implements Runnable {
+@Autonomous
+@Disabled
+public class MultithreadingExample extends implements Runnable {
   @Override
   public void run() {
     try {
