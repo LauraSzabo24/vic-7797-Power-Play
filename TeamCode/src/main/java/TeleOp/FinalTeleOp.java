@@ -6,15 +6,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.arcrobotics.ftclib.controller.PIDFController;
+
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
+
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "FinalTeleOp")
@@ -64,14 +61,16 @@ public class FinalTeleOp extends OpMode {
     public static double motorPower =1.3;
     public static double targetPosition = 5;
 
-
-
+   // Thread slideUpdate = new Thread(new SlideFixerT());
+   // SlideFixerT slideSet = new SlideFixerT();
+    public static boolean OpmodeAvil;
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
 
     @Override
     public void init() {
         //motor initialization
+      //  slideUpdate.start();
         motorFrontLeft = (DcMotorEx) hardwareMap.dcMotor.get("FL");
         motorBackLeft = (DcMotorEx) hardwareMap.dcMotor.get("BL");
         motorFrontRight = (DcMotorEx) hardwareMap.dcMotor.get("FR");
@@ -107,6 +106,8 @@ public class FinalTeleOp extends OpMode {
         pulleyMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         pulleyMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+
+
         targetPosition = 0;
 
     }
@@ -115,8 +116,8 @@ public class FinalTeleOp extends OpMode {
     public void loop() {
         // mecanum
         boolean precisionToggle = gamepad1.right_trigger > 0.1;
-
         drive(precisionToggle);
+        OpmodeAvil = true;
 
         //pivots
         if(gamepad1.b)
@@ -160,30 +161,34 @@ public class FinalTeleOp extends OpMode {
         if(gamepad2.dpad_up && pulleyMotorL.getCurrentPosition()<5000)
         {
             targetPosition = tallHeight;
+          //  slideSet.setHeight(tallHeight);
 
         }
         if(gamepad2.dpad_left && pulleyMotorL.getCurrentPosition()>50)
         {
             targetPosition = smallHeight;
+          //  slideSet.setHeight(smallHeight);
 
         }
         if(gamepad2.dpad_right)
         {
             targetPosition = midHeight;
+          //  slideSet.setHeight(midHeight);
+
 
         }
         if(gamepad2.dpad_down)
         {
             targetPosition = 0;
-
+          //  slideSet.setHeight(0);
         }
 
-        if(gamepad2.right_bumper && pulleyMotorL.getCurrentPosition()<5000)
+      if(gamepad2.right_bumper && pulleyMotorL.getCurrentPosition()<5000)
         {
 
             pulleyMotorL.setPower(motorPower);
             pulleyMotorR.setPower(motorPower);
-            targetPosition = pulleyMotorL.getCurrentPosition();
+           targetPosition = pulleyMotorL.getCurrentPosition();
 
 
 
@@ -217,12 +222,18 @@ public class FinalTeleOp extends OpMode {
 
     }
 
+
+    public void stop(){
+        OpmodeAvil = false;
+
+    }
     //mecanum methods
     public void drive(boolean precisionToggle) {
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
         boolean superToggle = gamepad1.left_trigger > 0.1;
+
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when
@@ -235,12 +246,7 @@ public class FinalTeleOp extends OpMode {
         double frontRightPower = (y - x - 2 * rx) / denominator;
         double backRightPower = (y + x - 2 * rx) / denominator;
 
-        if(superToggle){
-            frontLeftPower = (  x + 2 * rx) / denominator;
-            backLeftPower = ( - x + 2 * rx) / denominator;
-            frontRightPower = ( - x - 2 * rx) / denominator;
-            backRightPower = ( x - 2 * rx) / denominator;
-        }
+
         // Cube the motor powers
         frontLeftPower = Math.pow(frontLeftPower, 3);
         frontRightPower = Math.pow(frontRightPower, 3);
@@ -265,19 +271,28 @@ public class FinalTeleOp extends OpMode {
         }
 
 
+        if(gamepad1.right_bumper){
+            frontLeftPower = (   x + 2 * rx) / denominator;
+            backLeftPower = (  - x + 2 * rx) / denominator;
+            frontRightPower = ( - x - 2 * rx) / denominator;
+            backRightPower = (  x - 2 * rx) / denominator;
+
+        }
+
+        if (superToggle) {
+            motorFrontLeft.setPower(frontLeftPower * 0.2);
+            motorBackLeft.setPower(backLeftPower * 0.2);
+            motorFrontRight.setPower(frontRightPower * 0.2);
+            motorBackRight.setPower(backRightPower * 0.2);
+        }
         if (precisionToggle) {
             motorFrontLeft.setPower(frontLeftPower * 0.4);
             motorBackLeft.setPower(backLeftPower * 0.4);
             motorFrontRight.setPower(frontRightPower * 0.4);
             motorBackRight.setPower(backRightPower * 0.4);
         }
-        if(superToggle){
-            motorFrontLeft.setPower(frontLeftPower * 0.2);
-            motorBackLeft.setPower(backLeftPower * 0.2);
-            motorFrontRight.setPower(frontRightPower * 0.2);
-            motorBackRight.setPower(backRightPower * 0.2);
 
-        }
+
         else
         {
             motorFrontLeft.setPower(frontLeftPower);
