@@ -25,27 +25,32 @@ import java.util.ArrayList;
 import pipelines.AprilTagDetectionPipeline;
 
 @Autonomous
-public class rotatingStacks extends LinearOpMode
-{
+public class rotatingStacks extends LinearOpMode {
 
     //PID junk
     DcMotorEx pulleyMotorR;
     DcMotorEx pulleyMotorL;
 
+    //timers
+    ElapsedTime timer2 = new ElapsedTime();
     ElapsedTime timer = new ElapsedTime();
 
-    private double lastError = 0;
-    private double integralSum =0;
+    //stop
+    int stop = 0;
 
-    public static double Kp =0.0125;
-    public static double Ki =0.0; //.00005
-    public static double Kd =0.0;
+    private double lastError = 0;
+    private double integralSum = 0;
+
+    public static double Kp = 0.0125;
+    public static double Ki = 0.0; //.00005
+    public static double Kd = 0.0;
     public static double smallHeight = 2100;
     public static double midHeight =3141;
     public static double tallHeight =4115;
     public static double grabHeight =940;
     public static double targetPosition = 5;
-    public static boolean targetIndicator = false;
+
+
 
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -59,9 +64,10 @@ public class rotatingStacks extends LinearOpMode
 
     //added
     public static int tagNumber;
-    public static int stackNum;
+
     private OpenCvCamera camera;
     private AprilTagDetectionPipeline aprilTagDetectionPipeline;
+
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -71,11 +77,10 @@ public class rotatingStacks extends LinearOpMode
     private static final double fy = 578.272;
     private static final double cx = 402.145;
     private static final double cy = 221.506;
-
     // UNITS ARE METERS
     private static final double tagsize = 0.166;
 
-//no idea what this is
+    //no idea what this is
     private int numFramesWithoutDetection = 0;
 
     private static final float DECIMATION_HIGH = 3;
@@ -84,8 +89,7 @@ public class rotatingStacks extends LinearOpMode
     private static final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
 //
 
-    public void initialize()
-    {
+    public void initialize() {
         //PID initialization
         dashboard.setTelemetryTransmissionInterval(25);
         pulleyMotorL = hardwareMap.get(DcMotorEx.class, "LeftSlideMotor");
@@ -112,7 +116,7 @@ public class rotatingStacks extends LinearOpMode
     public double returnPower(double reference, double state) {
         double error = reference - state;
         integralSum += error * timer.seconds();
-        double derivative = (error -lastError)/ timer.seconds();
+        double derivative = (error - lastError) / timer.seconds();
         lastError = error;
 
         timer.reset();
@@ -201,7 +205,7 @@ public class rotatingStacks extends LinearOpMode
 
         while (!opModeIsActive()) {
             // get the number of apriltag detected
-            numberDetected = rotatingStacks.tagNumber;
+            numberDetected = tagNumber;
         }
 
         //edited from here
@@ -212,12 +216,13 @@ public class rotatingStacks extends LinearOpMode
 
         //roadrunner trajectory stuff
         Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
-        Pose2d beginnerPose = new Pose2d(-35.1,-1,Math.toRadians(90));
-        Pose2d stackPose = new Pose2d(-68.5,-0.7,Math.toRadians(180));
-        Pose2d farmPose = new Pose2d(-33.9,3.5,Math.toRadians(42));
-        Pose2d approachPose = new Pose2d(-38.1,-0.7,Math.toRadians(90));
+        Pose2d beginnerPose = new Pose2d(-34.1,6.7,Math.toRadians(90));
+        Pose2d stackPose = new Pose2d(-69.5,7.7,Math.toRadians(180));
+        Pose2d farmPose = new Pose2d(-31.9,8.5,Math.toRadians(45));
+        Pose2d approachPose = new Pose2d(-34.1,6.7,Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
+
 
 
 
@@ -228,20 +233,27 @@ public class rotatingStacks extends LinearOpMode
                 .lineToLinearHeading(farmPose)
                 .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(-4.5,()->{
-                    targetPosition = grabHeight; //partial slide adju
+                    //partial slide adjustment
+                    targetPosition = grabHeight;
+
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-1,()->{
-                    targetPosition = tallHeight; // full slide
+                    // full slide
+
+                    targetPosition = tallHeight;
                 })
-                .forward(4)
+                .forward(6)
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{
+                    //shift to score
+
                     targetPosition = tallHeight -150;
                     openClaw();
                     //drop cone
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.5,()->{
-                    targetPosition = grabHeight;
+                    //reset height for cone
+                    SlideFixer.setHeight(grabHeight);
 
                 })
                 .lineToLinearHeading(approachPose)
@@ -259,22 +271,30 @@ public class rotatingStacks extends LinearOpMode
                     closeClaw();
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.5,()-> {
-                    targetPosition = smallHeight; //bring up slides(small preset)
+
+
+                    targetPosition = smallHeight;
+                    //bring up slides(small preset)
                 })
                 .lineToLinearHeading(approachPose)
                 .lineToLinearHeading(farmPose)
                 .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(-2,()->{
-                    targetPosition = tallHeight;  //bring up slides full
+
+                    targetPosition = tallHeight;
+                    //bring up slides full
                 })
-                .forward(4)
+                .forward(6)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{
+                .UNSTABLE_addTemporalMarkerOffset(-1,()->{
+
                     targetPosition = tallHeight -150;
                     openClaw();
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.25,()->{
+
                     targetPosition = grabHeight-188;
+
                 })
                 .lineToLinearHeading(approachPose)
                 .lineToLinearHeading(stackPose)
@@ -286,43 +306,33 @@ public class rotatingStacks extends LinearOpMode
 
         waitForStart(); //also new
 
-        drive.followTrajectorySequence(startOff);
-        drive.followTrajectorySequence(scoreOnStack);
+        drive.followTrajectorySequenceAsync(startOff);
+       // drive.followTrajectorySequenceAsync(scoreOnStack);
 
 
 
-        if(numberDetected == 1){
-            // park in zone 1
-            telemetry.addData("PARK IN ZONE 1", numberDetected);
-            // drive.followTrajectorySequence(parkLeft);
-            tagNumber=4;
-        }
-        else if(numberDetected == 2) {
-            // park in zone 2
-            telemetry.addData("PARK IN ZONE 2", numberDetected);
-            // drive.followTrajectory(centerPark);
-            tagNumber=4;
-        }
-        else if(numberDetected ==3) {
-            // park in zone 3
-            telemetry.addData("PARK IN ZONE 3", numberDetected);
-            // drive.followTrajectorySequence(parkRight);
-            tagNumber=4;
-        }
-        while (opModeIsActive()) {
 
-            fixSlides();
+        while(opModeIsActive())
+        {
+            drive.update();
+           fixSlides();
         }
     }
-    public void fixSlides() {
-        while(Math.abs((targetPosition-pulleyMotorL.getCurrentPosition()))>15) {
-            double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
-            pulleyMotorL.setPower(power);
-            pulleyMotorR.setPower(power);
-            telemetry.addData("position", pulleyMotorL.getCurrentPosition());
-            telemetry.addData("pwoer", power);
-            telemetry.update();
 
+    public void fixSlides()
+    {
+
+        telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
+        while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive()) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
+        {
+            if(!(pulleyMotorL.getCurrentPosition()>4100))
+            {
+               double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                pulleyMotorL.setPower(power);
+                pulleyMotorR.setPower(power);
+                telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
+                telemetry.update();
+            }
         }
         pulleyMotorL.setPower(0);
         pulleyMotorR.setPower(0);
@@ -340,4 +350,3 @@ public class rotatingStacks extends LinearOpMode
 
 
 }
-
