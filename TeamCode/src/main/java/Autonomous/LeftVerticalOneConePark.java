@@ -36,7 +36,7 @@ public class LeftVerticalOneConePark extends LinearOpMode {
     ElapsedTime timer = new ElapsedTime();
 
     //stop
-    int stop = 0;
+    int stop;
 
     private double lastError = 0;
     private double integralSum = 0;
@@ -127,6 +127,9 @@ public class LeftVerticalOneConePark extends LinearOpMode {
     @Override
     public void runOpMode() {
         initialize();
+        tagNumber = 0;
+        stop = 0;
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
@@ -150,9 +153,11 @@ public class LeftVerticalOneConePark extends LinearOpMode {
         telemetry.setMsTransmissionInterval(50);
 
         //from here2
-        while (opModeIsActive() && !(tagNumber == 1) && !(tagNumber == 2) && !(tagNumber == 3) && !(tagNumber == 4)) {
+        double currentTime = timer2.seconds();
+        while (opModeIsActive() && !(tagNumber == 1) && !(tagNumber == 2) && !(tagNumber == 3) && !(tagNumber == 4) && !(tagNumber == 5)) {
             ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
-
+            telemetry.addData("currentTime", currentTime);
+            telemetry.addLine(String.format("time difference", timer2.time() - currentTime));
             if (detections != null) {
                 telemetry.addData("FPS", camera.getFps());
                 telemetry.addData("Overhead ms", camera.getOverheadTimeMs());
@@ -189,7 +194,10 @@ public class LeftVerticalOneConePark extends LinearOpMode {
                 }
                 telemetry.update();
             }
-
+            if((timer2.seconds() - currentTime > 5) && tagNumber==0)
+            {
+                tagNumber = 4;
+            }
             sleep(20);
 
             //PID CONSTANT CORRECTION OF SLIDES
@@ -212,82 +220,110 @@ public class LeftVerticalOneConePark extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence goToPole = drive.trajectorySequenceBuilder(startPose) //change this to go to front pole not side
-               .addTemporalMarker(0, () -> {
+                .addTemporalMarker(0, () -> {
                     rightServo.setPosition(0.5);
                     leftServo.setPosition(0.5);
                 })
-                .waitSeconds(0.5)
-                .forward(60)
-                .waitSeconds(0.5)
-                .strafeRight(12) //random
-                .waitSeconds(5)
-                .addTemporalMarker(6, () -> {
+                .waitSeconds(2.5) //0.5
+                .forward(68)
+                .waitSeconds(0.2)
+                .strafeRight(16)
+                .waitSeconds(2)
+                /*.addTemporalMarker(6, () -> { //6
                     targetPosition = 4100;
                     fixSlides();
-                })
-                .forward(4)
+                })*/
                 .build();
         TrajectorySequence dropCone = drive.trajectorySequenceBuilder(goToPole.end())
-                //.forward(4)
-                .addTemporalMarker(0, () -> {
+                .forward(6)
+                .addTemporalMarker(1.5, () -> {
                     rightServo.setPosition(0.2);
                     leftServo.setPosition(0.8);
+
+                })
+                .addTemporalMarker(2.5, () -> {
+                    rightServo.setPosition(0.5);
+                    leftServo.setPosition(0.5);
+
                 })
                 .waitSeconds(2)
                 .back(6)
                 .build();
+
         /*TrajectorySequence backwards = drive.trajectorySequenceBuilder(dropCone.end())
                 .waitSeconds(0.5)
                 .back(6)
                 .build();*/
-       TrajectorySequence slides = drive.trajectorySequenceBuilder(dropCone.end())
-               .addTemporalMarker(0, () -> {
+        TrajectorySequence slides2 = drive.trajectorySequenceBuilder(dropCone.end())
+                .addTemporalMarker(0, () -> {
                     targetPosition = 0;
                     fixSlides();
                 })
+                .waitSeconds(2)
+                .build();
+        TrajectorySequence slides1 = drive.trajectorySequenceBuilder(dropCone.end())
+                .addTemporalMarker(0, () -> {
+                    targetPosition = 4100;
+                    fixSlides();
+                })
+                .waitSeconds(2)
+                .build();
+        TrajectorySequence moveBack = drive.trajectorySequenceBuilder(dropCone.end())
                 .strafeLeft(12)
-               .waitSeconds(0.1)
-               .back(22)
-                .waitSeconds(3)
+                .back(32)
                 .build();
 
         Pose2d poseEstimate = drive.getPoseEstimate();
-        TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(dropCone.end())
-                .strafeLeft(22)
+        TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(moveBack.end())
+                .strafeLeft(20)
                 .waitSeconds(30)
                 .build();
-        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(dropCone.end())
-                .strafeRight(22)
-                .waitSeconds(30)
-                .build();
-        TrajectorySequence centerPark = drive.trajectorySequenceBuilder(dropCone.end())
+        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(moveBack.end())
+                .strafeRight(20)
                 .waitSeconds(30)
                 .build();
 
-        while (opModeIsActive()&&stop<1) {
+        if (opModeIsActive()) {
+
+            //waitForStart(); //newnewnenwnew
             //go to the tallest pole
             drive.followTrajectorySequence(goToPole);
+            drive.followTrajectorySequence(slides1);
             drive.followTrajectorySequence(dropCone);
-            drive.followTrajectorySequence(slides);
+            drive.followTrajectorySequence(slides2);
+            drive.followTrajectorySequence(moveBack);
+
             //tag parking
-            if (tagNumber == 1) {
-                //if (!isStopRequested())
-                telemetry.addData("number1", tagNumber);
-                drive.followTrajectorySequence(parkLeft);
-                tagNumber = 4;
-                stop++;
-            } else if (tagNumber == 2) {
-                //if (!isStopRequested())
-                telemetry.addData("number2", tagNumber);
-                drive.followTrajectorySequence(centerPark);
-                tagNumber = 4;
-                stop++;
-            } else if (tagNumber == 3) {
-                //if (!isStopRequested())
-                telemetry.addData("number3", tagNumber);
-                drive.followTrajectorySequence(parkRight);
-                tagNumber = 4;
-                stop++;
+            while(tagNumber<4) {
+                if (tagNumber == 1) {
+                    //if (!isStopRequested())
+                    telemetry.addData("number1", tagNumber);
+                    drive.followTrajectorySequence(parkLeft);
+                    tagNumber = 5;
+                    stop++;
+                    sleep(2000);
+                } else if (tagNumber == 2) {
+                    //if (!isStopRequested())
+                    telemetry.addData("number2", tagNumber);
+                    tagNumber = 5;
+                    stop++;
+                    sleep(2000);
+                } else if (tagNumber == 3) {
+                    //if (!isStopRequested())
+                    telemetry.addData("number3", tagNumber);
+                    drive.followTrajectorySequence(parkRight);
+                    tagNumber = 5;
+                    stop++;
+                    sleep(2000);
+                }
+                else if(tagNumber == 4)
+                {
+                    telemetry.addData("number5", tagNumber);
+                    tagNumber = 5;
+                    stop++;
+                    sleep(2000);
+                }
+                telemetry.update();
             }
         }
         while(opModeIsActive()&&stop>0)

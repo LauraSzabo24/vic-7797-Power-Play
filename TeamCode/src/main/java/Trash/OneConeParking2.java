@@ -1,4 +1,4 @@
-package Autonomous;
+package Trash;
 
 //PID
 
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 import pipelines.AprilTagDetectionPipeline;
 
-@Autonomous
+//@Autonomous
 public class OneConeParking2 extends LinearOpMode
 {
 
