@@ -13,8 +13,11 @@ public class MeepMeepTesting {
         Pose2d startPose = new Pose2d(-35, -65, Math.toRadians(90));
         Pose2d stackPose = new Pose2d(-58.5,-12.7,Math.toRadians(180));
         Pose2d farmPose = new Pose2d(-33.9,-8.5,Math.toRadians(42));
-        Pose2d brotherPose = new Pose2d(-38.1,-12.7,Math.toRadians(90));
-
+        Pose2d approachPose = new Pose2d(-38.1,-12.7,Math.toRadians(90));
+        //-60.8,-35.6
+        Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(270));
+        Pose2d leftPark =  new Pose2d(-60.8,-35.6,Math.toRadians(270));
+        Pose2d rightPark =  new Pose2d(-10.8,-35.6,Math.toRadians(270));
         Pose2d beginnerPose = new Pose2d(-35.1,-13,Math.toRadians(90));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
@@ -42,7 +45,7 @@ public class MeepMeepTesting {
                                 .UNSTABLE_addTemporalMarkerOffset(-0.25,()->{
                                     //drop slides all the way
                                 })
-                                .lineToLinearHeading(brotherPose)
+                                .lineToLinearHeading(approachPose)
                                 .lineToLinearHeading(stackPose)//add speed constraints//going to pick stacks
                                 .waitSeconds(0.5)
                                 .UNSTABLE_addTemporalMarkerOffset(-3,()-> {
@@ -53,7 +56,7 @@ public class MeepMeepTesting {
                                     //close servo
                                     //bring up slides(small preset)
                                 })
-                                .lineToLinearHeading(brotherPose)
+                                .lineToLinearHeading(approachPose)
                                 .lineToLinearHeading(farmPose)
                                 .waitSeconds(1)
                                 .UNSTABLE_addTemporalMarkerOffset(-4.5,()->{
@@ -71,8 +74,15 @@ public class MeepMeepTesting {
                                 .UNSTABLE_addTemporalMarkerOffset(-0.25,()->{
                                     //drop slides all the way
                                 })
-                                .lineToLinearHeading(brotherPose)
-                                .lineToLinearHeading(stackPose)
+                                .lineToLinearHeading(beginnerPose)
+
+
+
+                                //parking stuffs
+                                .lineToLinearHeading(middlePark)
+                                .lineToLinearHeading(leftPark)
+                                .lineToLinearHeading(rightPark)
+
                                 .build()
                 );
 

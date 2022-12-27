@@ -24,9 +24,19 @@ import java.util.ArrayList;
 
 import pipelines.AprilTagDetectionPipeline;
 
-@Autonomous
-public class rotatingStacks extends LinearOpMode {
 
+
+@Autonomous
+public class ChainingAsyncTrajectory extends LinearOpMode {
+
+    //FSM states
+    enum State {
+        TRAJECTORY_1,   // First, follow a splineTo() trajectory
+        PARKING_MIDDLE,   // Then, follow a lineTo() trajectory
+        PARKING_LEFT,         // Then we want to do a point turn
+        PARKING_RIGHT,   // Then, we follow another lineTo() trajectory
+        IDLE            // Our bot will enter the IDLE state when done
+    }
     //PID junk
     DcMotorEx pulleyMotorR;
     DcMotorEx pulleyMotorL;
@@ -48,9 +58,8 @@ public class rotatingStacks extends LinearOpMode {
     public static double midHeight =3141;
     public static double tallHeight =4115;
     public static double grabHeight =940;
-    public static double targetPosition = 5;
 
-
+    public static double targetPosition = 0;
 
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -110,6 +119,7 @@ public class rotatingStacks extends LinearOpMode {
         //SERVO
         rightServo = hardwareMap.get(Servo.class, "rightServo");
         leftServo = hardwareMap.get(Servo.class, "leftServo");
+
     }
 
     //PID METHOD
@@ -211,128 +221,174 @@ public class rotatingStacks extends LinearOpMode {
         //edited from here
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-
-
-
         //roadrunner trajectory stuff
+
+
         Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
-        Pose2d beginnerPose = new Pose2d(-34.1,6.7,Math.toRadians(90));
-        Pose2d stackPose = new Pose2d(-69.5,7.7,Math.toRadians(180));
-        Pose2d farmPose = new Pose2d(-31.9,8.5,Math.toRadians(45));
-        Pose2d approachPose = new Pose2d(-34.1,6.7,Math.toRadians(90));
+        Pose2d beginnerPose = new Pose2d(-34.1, 6.7, Math.toRadians(90));
+        Pose2d stackPose = new Pose2d(-62.5, 6.5, Math.toRadians(180));
+        Pose2d farmPose = new Pose2d(-31.9, 12.5, Math.toRadians(48));
+        Pose2d approachPose = new Pose2d(-34.1, 6.7, Math.toRadians(90));
+        //Parking coordinates
+
+        Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(270));
+        Pose2d leftPark =  new Pose2d(-60.8,-35.6,Math.toRadians(270));
+        Pose2d rightPark =  new Pose2d(-10.8,-35.6,Math.toRadians(270));
 
         drive.setPoseEstimate(startPose);
 
 
-
-
-
         //trajectories and trajectory sequences
-        TrajectorySequence startOff = drive.trajectorySequenceBuilder(startPose)
+
+
+        drive.setPoseEstimate(startPose);
+
+        TrajectorySequence Trajectory1 = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(beginnerPose)
-                .lineToLinearHeading(farmPose)
+                .lineToLinearHeading(farmPose) //make exactly on pole
+                .forward(5)
                 .waitSeconds(1)
-                .UNSTABLE_addTemporalMarkerOffset(-4.5,()->{
-                    //partial slide adjustment
-                    targetPosition = grabHeight;
-
+                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
+                  //  targetPosition = tallHeight-170;
                 })
-                .UNSTABLE_addTemporalMarkerOffset(-1,()->{
-                    // full slide
-
-                    targetPosition = tallHeight;
-                })
-                .forward(6)
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{
-                    //shift to score
-
-                    targetPosition = tallHeight -150;
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     openClaw();
-                    //drop cone
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0.5,()->{
-                    //reset height for cone
-                    SlideFixer.setHeight(grabHeight);
 
+                })
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+
+                 //   targetPosition = grabHeight;
                 })
                 .lineToLinearHeading(approachPose)
-                .build();
 
 
 
+                //TRAJECTORY-PT-2
 
 
 
-        TrajectorySequence scoreOnStack = drive.trajectorySequenceBuilder(startOff.end())
-                .lineToLinearHeading(stackPose)//add speed constraints//going to pick stacks
+                .lineToLinearHeading(stackPose)
+                .forward(6)
+
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-1.5,()-> {
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     closeClaw();
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.5,()-> {
 
-
-                    targetPosition = smallHeight;
-                    //bring up slides(small preset)
-                })
                 .lineToLinearHeading(approachPose)
-                .lineToLinearHeading(farmPose)
+                .lineToLinearHeading(farmPose) //make this exactly on the pole
                 .waitSeconds(1)
-                .UNSTABLE_addTemporalMarkerOffset(-2,()->{
+                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
 
-                    targetPosition = tallHeight;
+                  //  targetPosition = tallHeight;
                     //bring up slides full
                 })
-                .forward(6)
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-1,()->{
+                .forward(5)
+                .waitSeconds(1)
+                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
 
-                    targetPosition = tallHeight -150;
+                //    targetPosition = tallHeight - 150;
                     openClaw();
                 })
-                .UNSTABLE_addTemporalMarkerOffset(-0.25,()->{
+                .UNSTABLE_addTemporalMarkerOffset(-0.25, () -> {
 
-                    targetPosition = grabHeight-188;
+                //    targetPosition = grabHeight - 188;
 
                 })
                 .lineToLinearHeading(approachPose)
                 .lineToLinearHeading(stackPose)
+                .forward(6)
 
+                .build();
+
+        TrajectorySequence middleParking = drive.trajectorySequenceBuilder(Trajectory1.end())
+                .lineToLinearHeading(middlePark)
+                .build();
+
+        TrajectorySequence leftParking = drive.trajectorySequenceBuilder(Trajectory1.end())
+                .lineToLinearHeading(middlePark)
+                .lineToLinearHeading(leftPark)
+                .build();
+
+        TrajectorySequence rightParking = drive.trajectorySequenceBuilder(Trajectory1.end())
+                .lineToLinearHeading(middlePark)
+                .lineToLinearHeading(leftPark)
                 .build();
 
 
 
 
-        waitForStart(); //also new
-
-        drive.followTrajectorySequenceAsync(startOff);
-       // drive.followTrajectorySequenceAsync(scoreOnStack);
 
 
-
+        waitForStart();
+        closeClaw();
+        State currentState = State.TRAJECTORY_1;
+        drive.followTrajectorySequenceAsync(Trajectory1);
 
         while(opModeIsActive())
         {
+            switch (currentState) {
+                case TRAJECTORY_1:
+                    // Check if the drive class isn't busy
+                    // Make sure we use the async follow function
+
+                    if (!drive.isBusy()) {
+                        drive.followTrajectorySequenceAsync(Trajectory1);
+                    }
+                    if(tagNumber == 2){
+                        currentState = State.PARKING_MIDDLE;
+                    }
+                    if(tagNumber == 1){
+                        currentState = State.PARKING_RIGHT;
+                    }
+                    if(tagNumber == 3){
+                        currentState = State.PARKING_LEFT;
+                    }
+                    break;
+                case PARKING_MIDDLE:
+
+
+                    if (!drive.isBusy()) {
+                        drive.followTrajectorySequenceAsync(middleParking);
+                    }
+                    break;
+                case PARKING_RIGHT:
+
+
+                    if (!drive.isBusy()) {
+                        drive.followTrajectorySequenceAsync(rightParking);
+                    }
+                    break;
+                case PARKING_LEFT:
+
+
+                    if (!drive.isBusy()) {
+                        drive.followTrajectorySequenceAsync(leftParking);
+                    }
+                    break;
+            }
             drive.update();
-           fixSlides();
+            fixSlides();
         }
+
     }
 
     public void fixSlides()
     {
 
+
         telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
         while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive()) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
         {
-            if(!(pulleyMotorL.getCurrentPosition()>4100))
-            {
-               double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
-                pulleyMotorL.setPower(power);
-                pulleyMotorR.setPower(power);
-                telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
-                telemetry.update();
-            }
+
+
+            double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+            pulleyMotorL.setPower(power);
+            pulleyMotorR.setPower(power);
+            telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
+            telemetry.update();
+
         }
         pulleyMotorL.setPower(0);
         pulleyMotorR.setPower(0);
@@ -346,7 +402,6 @@ public class rotatingStacks extends LinearOpMode {
         rightServo.setPosition(0.2);
         leftServo.setPosition(0.8);
     }
-
 
 
 }
