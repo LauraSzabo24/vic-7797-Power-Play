@@ -87,8 +87,6 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
     private static final float DECIMATION_LOW = 2;
     private static final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
     private static final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
-
-
 //
 
     public void initialize() {
@@ -296,11 +294,27 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
 
         closeClaw();
         drive.followTrajectorySequenceAsync(firstCone);
+        while (drive.isBusy()) {
+            drive.update();
+            fixSlides();
+        }
         for (int i = 5; i >= 2; i--) {
             drive.followTrajectorySequenceAsync(toStack);
+            while (drive.isBusy()) {
+                drive.update();
+                fixSlides();
+            }
             drive.followTrajectorySequenceAsync(backToPole);
+            while (drive.isBusy()) {
+                drive.update();
+                fixSlides();
+            }
         }
         drive.followTrajectorySequenceAsync(park);
+        while (drive.isBusy()) {
+            drive.update();
+            fixSlides();
+        }
         switch (tagNumber) {
             case 1 : drive.followTrajectorySequence(zone1);
             break;
@@ -310,37 +324,18 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
             break;
         }
 
-        while(opModeIsActive())
-        {
-            fixSlides();
-            if(liftIsBusy){
-                drive.setMotorPowers(0,0,0,0);
-            }
-            drive.update();
-
-
-        }
-
     }
 
     public void fixSlides()
     {
-
-
         telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
         while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive()) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
         {
-
-
                 double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
                 pulleyMotorL.setPower(power);
                 pulleyMotorR.setPower(power);
                 telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
                 telemetry.update();
-
-
-
-
         }
         pulleyMotorL.setPower(0);
         pulleyMotorR.setPower(0);
