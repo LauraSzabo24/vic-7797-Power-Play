@@ -211,19 +211,19 @@ public class SamAuto extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         //Scoring Coordinates
-        Pose2d startPose = new Pose2d(-35, -65, Math.toRadians(90));
-        Pose2d midPose = new Pose2d(-34.5, -20, Math.toRadians(90));
-        Pose2d approachPose = new Pose2d(-30.4,-6,Math.toRadians(45));
+        Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
+        Pose2d midPose = new Pose2d(-35, -20, Math.toRadians(90));
+        Pose2d approachPose = new Pose2d(-30.5, 15.5, Math.toRadians(45));
         //Parking Coordinates
 
-        Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(270));
-        Pose2d leftPark =  new Pose2d(-60.8,-35.6,Math.toRadians(270));
-        Pose2d rightPark =  new Pose2d(-10.8,-35.6,Math.toRadians(270));
+        Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(90));
+        Pose2d leftPark =  new Pose2d(-60.8,-35.6,Math.toRadians(90));
+        Pose2d rightPark =  new Pose2d(-10.8,-35.6,Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
 
 
-        //trajectories and trajectory sequencess
+        //trajectories and trajectory sequences
 
 
         drive.setPoseEstimate(startPose);
@@ -249,7 +249,7 @@ public class SamAuto extends LinearOpMode {
                 })
 
                 .back(3)
-                .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
+                .splineToSplineHeading(new Pose2d(-62.5, 6.5, Math.toRadians(180)), Math.toRadians(180))
                 .waitSeconds(.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
                     //close claw lift
@@ -258,7 +258,7 @@ public class SamAuto extends LinearOpMode {
 
 
         Trajectory backToPole = drive.trajectoryBuilder(toStack.end(), true)
-                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(60))
+                .splineToLinearHeading(approachPose, Math.toRadians(60))
                 .build();
 
 
@@ -295,7 +295,7 @@ public class SamAuto extends LinearOpMode {
 
         closeClaw();
         drive.followTrajectorySequenceAsync(firstCone);
-        for (int i = 5; i >= 2; i-- ) {
+        for (int i = 5; i >= 2; i--) {
             drive.followTrajectorySequenceAsync(toStack);
             drive.followTrajectoryAsync(backToPole);
         }
