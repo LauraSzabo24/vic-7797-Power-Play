@@ -10,11 +10,11 @@ public class SamAutoMM {
         MeepMeep meepMeep = new MeepMeep(800);
         Pose2d startPose = new Pose2d(-35, -65, Math.toRadians(90));
         Pose2d midPose = new Pose2d(-34.5, -20, Math.toRadians(90));
-        Pose2d approachPose = new Pose2d(-30.4,-6,Math.toRadians(45));
+        Pose2d farmingPose = new Pose2d(-30.4,-6,Math.toRadians(45));
         //-60.8,-35.6
-        Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(270));
-        Pose2d leftPark =  new Pose2d(-60.8,-35.6,Math.toRadians(270));
-        Pose2d rightPark =  new Pose2d(-10.8,-35.6,Math.toRadians(270));
+        Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(90));
+        Pose2d leftPark =  new Pose2d(-60.8,-35.6,Math.toRadians(90));
+        Pose2d rightPark =  new Pose2d(-10.8,-35.6,Math.toRadians(90));
         Pose2d beginnerPose = new Pose2d(-35.1,-13,Math.toRadians(90));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
@@ -26,7 +26,7 @@ public class SamAutoMM {
                                     //bring up slides
                                 })
                                 .lineToLinearHeading(midPose)
-                                .splineToSplineHeading(approachPose, Math.toRadians(45))
+                                .splineToSplineHeading(farmingPose, Math.toRadians(45))
                                 .waitSeconds(0.5)
                                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
                                     //lower slides interval
@@ -95,6 +95,7 @@ public class SamAutoMM {
                                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                                 .lineToLinearHeading(new Pose2d(-35,-15,Math.toRadians(90)))
                                 .lineToLinearHeading(new Pose2d(-35,-35,Math.toRadians(90)))
+                                .lineToLinearHeading((rightPark))
                                 .build()
                 );
 
