@@ -19,7 +19,7 @@ public class SamAutoMM {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 8)
+                .setConstraints(43, 50, Math.toRadians(60), Math.toRadians(60), 8)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPose)
                                 .UNSTABLE_addTemporalMarkerOffset(0,()->{

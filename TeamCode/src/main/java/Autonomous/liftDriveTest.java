@@ -4,6 +4,8 @@ package Autonomous;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -22,6 +24,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
+
 import pipelines.AprilTagDetectionPipeline;
 
 
@@ -33,11 +36,10 @@ public class liftDriveTest extends LinearOpMode {
     DcMotorEx pulleyMotorL;
 
     //timers
-    ElapsedTime timer2 = new ElapsedTime();
     ElapsedTime timer = new ElapsedTime();
 
     //stop
-    int stop = 0;
+
 
     private double lastError = 0;
     private double integralSum = 0;
@@ -45,6 +47,7 @@ public class liftDriveTest extends LinearOpMode {
     public static double Kp = 0.0125;
     public static double Ki = 0.0; //.00005
     public static double Kd = 0.0;
+    public static double Kf = 0.0;
     public static double smallHeight = 2100;
     public static double midHeight =3141;
     public static double tallHeight =4115;
@@ -133,6 +136,41 @@ public class liftDriveTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        PIDFController pidSlide = new PIDFController(Kp,Ki,Kd,Kf);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        class Lift{
+            public void fixSlides()
+            {
+                telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
+                while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive()) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
+                {
+
+                    double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+                     pulleyMotorL.setPower(power);
+                     pulleyMotorR.setPower(power);
+                     telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
+                     telemetry.update();
+                     drive.setMotorPowers(0,0,0,0);
+
+                }
+                pulleyMotorL.setPower(0);
+                pulleyMotorR.setPower(0);
+
+            }
+            public void closeClaw() {
+                rightServo.setPosition(0.5);
+                leftServo.setPosition(0.5);
+
+            }
+            public void openClaw() {
+                rightServo.setPosition(0.2);
+                leftServo.setPosition(0.8);
+            }
+
+
+        }
+        Lift slide = new Lift();
+
         initialize();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
@@ -212,85 +250,42 @@ public class liftDriveTest extends LinearOpMode {
         }
 
         //Trajectory starts here
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        //Scoring Coordinates
-        Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
-        Pose2d beginnerPose = new Pose2d(-34.1, 6.7, Math.toRadians(90));
-        Pose2d stackPose = new Pose2d(-62.5, 6.5, Math.toRadians(180));
-        Pose2d farmPose = new Pose2d(-30.5, 15.5, Math.toRadians(50)); //x.-31.9
-        Pose2d approachPose = new Pose2d(-34.1, 6.7, Math.toRadians(90));
-        //Parking Coordinates
-
-        Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(270));
-        Pose2d leftPark =  new Pose2d(-60.8,-35.6,Math.toRadians(270));
-        Pose2d rightPark =  new Pose2d(-10.8,-35.6,Math.toRadians(270));
-
+        Pose2d startPose = new Pose2d(-35,-60, Math.toRadians(47));
+        Vector2d stackPose = new Vector2d(-62.5,6.5);
+        com.acmerobotics.roadrunner.geometry.Vector2d farmPose = new com.acmerobotics.roadrunner.geometry.Vector2d(-30.5,15.5);
+        com.acmerobotics.roadrunner.geometry.Vector2d approachPose = new com.acmerobotics.roadrunner.geometry.Vector2d(-34.1,6.7);
         drive.setPoseEstimate(startPose);
-
 
         //trajectories and trajectory sequences
-
-
-        drive.setPoseEstimate(startPose);
-
         TrajectorySequence Trajectory1 = drive.trajectorySequenceBuilder(startPose)
-                .forward(5)
-                .UNSTABLE_addTemporalMarkerOffset(-2, () -> {
-
-                   targetPosition = tallHeight-170;
-
+                .lineTo(approachPose)
+                .waitSeconds(1)
+                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
+                    targetPosition = tallHeight-100;
                 })
+                .forward(6)
+                .waitSeconds(2)
+                .UNSTABLE_addTemporalMarkerOffset(-2, () -> {
+                    slide.openClaw();
+                })
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
 
+                    targetPosition = grabHeight; //problem
+                })
                 .build();
 
-
-
         waitForStart();
-        closeClaw();
+
         drive.followTrajectorySequenceAsync(Trajectory1);
+
         while(opModeIsActive())
         {
-            fixSlides();
+            slide.fixSlides();
             drive.update();
-
-
         }
 
     }
 
-    public void fixSlides()
-    {
-
-
-        telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
-        while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive()) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
-        {
-
-
-                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
-                pulleyMotorL.setPower(power);
-                pulleyMotorR.setPower(power);
-                telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
-                telemetry.update();
-
-
-
-
-        }
-        pulleyMotorL.setPower(0);
-        pulleyMotorR.setPower(0);
-
-    }
-    public void closeClaw() {
-        rightServo.setPosition(0.5);
-        leftServo.setPosition(0.5);
-
-    }
-    public void openClaw() {
-        rightServo.setPosition(0.2);
-        leftServo.setPosition(0.8);
-    }
 
 
 }
