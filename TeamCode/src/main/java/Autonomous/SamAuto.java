@@ -257,8 +257,10 @@ public class SamAuto extends LinearOpMode {
                 .build();
 
 
-        Trajectory backToPole = drive.trajectoryBuilder(toStack.end(), true)
+        TrajectorySequence backToPole = drive.trajectorySequenceBuilder(toStack.end())
+                .setReversed(true)
                 .splineToLinearHeading(approachPose, Math.toRadians(60))
+                .setReversed(false)
                 .build();
 
 
