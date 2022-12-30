@@ -258,12 +258,12 @@ public class SamAuto extends LinearOpMode {
 
 
         Trajectory backToPole1 = drive.trajectoryBuilder(toStack.end(), true)
-                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(180)))
                 .build();
 
 
         Trajectory backToPole2 = drive.trajectoryBuilder(backToPole1.end(), true)
-                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(225)), Math.toRadians(45))
+                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
                 .build();
 
         TrajectorySequence park = drive.trajectorySequenceBuilder((backToPole2.end()))

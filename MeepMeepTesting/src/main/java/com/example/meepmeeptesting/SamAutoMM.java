@@ -43,36 +43,50 @@ public class SamAutoMM {
                                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
                                     //close claw lift
                                 })
-                                .turn(Math.toRadians(180))
-                                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(0)))
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(225)), Math.toRadians(45))
-
+                                .setReversed(true)
+                                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(180)))
+                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
+                                .setReversed(false)
                                 .waitSeconds(0.5)
+
                                 .back(3)
                                 .splineToLinearHeading(new Pose2d(-36.4,-18,Math.toRadians(130)), Math.toRadians(180))
                                 .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
                                 .waitSeconds(.5)
-                                .turn(Math.toRadians(180))
-                                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(0)))
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(225)), Math.toRadians(45))
-
+                                .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
+                                    //close claw lift
+                                })
+                                .setReversed(true)
+                                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(180)))
+                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
+                                .setReversed(false)
                                 .waitSeconds(0.5)
+
                                 .back(3)
                                 .splineToLinearHeading(new Pose2d(-36.4,-18,Math.toRadians(130)), Math.toRadians(180))
                                 .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
                                 .waitSeconds(.5)
-                                .turn(Math.toRadians(180))
-                                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(0)))
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(225)), Math.toRadians(45))
-
+                                .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
+                                    //close claw lift
+                                })
+                                .setReversed(true)
+                                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(180)))
+                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
+                                .setReversed(false)
                                 .waitSeconds(0.5)
+
                                 .back(3)
                                 .splineToLinearHeading(new Pose2d(-36.4,-18,Math.toRadians(130)), Math.toRadians(180))
                                 .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
                                 .waitSeconds(.5)
-                                .turn(Math.toRadians(180))
-                                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(0)))
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(225)), Math.toRadians(45))
+                                .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
+                                    //close claw lift
+                                })
+                                .setReversed(true)
+                                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(180)))
+                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
+                                .setReversed(false)
+                                .waitSeconds(0.5)
 
                                 .waitSeconds(0.5)
                                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
