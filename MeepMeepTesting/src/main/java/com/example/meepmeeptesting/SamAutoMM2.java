@@ -5,7 +5,7 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-public class SamAutoMM {
+public class SamAutoMM2 {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
         Pose2d startPose = new Pose2d(-35, -65, Math.toRadians(90));
@@ -19,7 +19,7 @@ public class SamAutoMM {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 8)
+                .setConstraints(40, 40, Math.toRadians(180), Math.toRadians(180), 8)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPose)
                                 .UNSTABLE_addTemporalMarkerOffset(0,()->{
@@ -37,57 +37,54 @@ public class SamAutoMM {
                                     //bring down slides-interval
                                 })
                                 .back(3)
+                                .splineToLinearHeading(new Pose2d(-36.4,-18,Math.toRadians(130)), Math.toRadians(180))
                                 .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
                                 .waitSeconds(.5)
                                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
                                     //close claw lift
                                 })
                                 .setReversed(true)
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(60))
+                                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(180)))
+                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
                                 .setReversed(false)
                                 .waitSeconds(0.5)
 
                                 .back(3)
+                                .splineToLinearHeading(new Pose2d(-36.4,-18,Math.toRadians(130)), Math.toRadians(180))
                                 .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
                                 .waitSeconds(.5)
                                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
                                     //close claw lift
                                 })
                                 .setReversed(true)
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(60))
+                                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(180)))
+                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
                                 .setReversed(false)
                                 .waitSeconds(0.5)
 
                                 .back(3)
+                                .splineToLinearHeading(new Pose2d(-36.4,-18,Math.toRadians(130)), Math.toRadians(180))
                                 .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
                                 .waitSeconds(.5)
                                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
                                     //close claw lift
                                 })
                                 .setReversed(true)
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(60))
+                                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(180)))
+                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
                                 .setReversed(false)
                                 .waitSeconds(0.5)
 
                                 .back(3)
+                                .splineToLinearHeading(new Pose2d(-36.4,-18,Math.toRadians(130)), Math.toRadians(180))
                                 .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
                                 .waitSeconds(.5)
                                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
                                     //close claw lift
                                 })
                                 .setReversed(true)
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(60))
-                                .setReversed(false)
-                                .waitSeconds(0.5)
-
-                                .back(3)
-                                .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
-                                .waitSeconds(.5)
-                                .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
-                                    //close claw lift
-                                })
-                                .setReversed(true)
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(60))
+                                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(180)))
+                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
                                 .setReversed(false)
                                 .waitSeconds(0.5)
 
