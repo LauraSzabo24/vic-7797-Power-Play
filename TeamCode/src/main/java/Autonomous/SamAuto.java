@@ -247,8 +247,8 @@ public class SamAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{
                     //bring down slides-interval
                 })
+
                 .back(3)
-                .splineToLinearHeading(new Pose2d(-36.4,-18,Math.toRadians(130)), Math.toRadians(180))
                 .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
                 .waitSeconds(.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
@@ -257,16 +257,12 @@ public class SamAuto extends LinearOpMode {
                 .build();
 
 
-        Trajectory backToPole1 = drive.trajectoryBuilder(toStack.end(), true)
-                .lineToLinearHeading(new Pose2d(-49,-12,Math.toRadians(180)))
+        Trajectory backToPole = drive.trajectoryBuilder(toStack.end(), true)
+                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(60))
                 .build();
 
 
-        Trajectory backToPole2 = drive.trajectoryBuilder(backToPole1.end(), true)
-                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
-                .build();
-
-        TrajectorySequence park = drive.trajectorySequenceBuilder((backToPole2.end()))
+        TrajectorySequence park = drive.trajectorySequenceBuilder((backToPole.end()))
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //lower slides interval
                     //open claw
@@ -301,8 +297,7 @@ public class SamAuto extends LinearOpMode {
         drive.followTrajectorySequenceAsync(firstCone);
         for (int i = 5; i >= 2; i-- ) {
             drive.followTrajectorySequenceAsync(toStack);
-            drive.followTrajectoryAsync(backToPole1);
-            drive.followTrajectoryAsync(backToPole2);
+            drive.followTrajectoryAsync(backToPole);
         }
         drive.followTrajectorySequenceAsync(park);
         switch (tagNumber) {
