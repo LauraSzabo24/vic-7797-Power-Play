@@ -223,7 +223,7 @@ public class SamAuto extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
 
-        //trajectories and trajectory sequences
+        //trajectories and trajectory sequencess
 
 
         drive.setPoseEstimate(startPose);
