@@ -4,7 +4,6 @@ package Autonomous;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -27,7 +26,7 @@ import pipelines.AprilTagDetectionPipeline;
 
 
 @Autonomous
-public class SamAuto extends LinearOpMode {
+public class SamAutoOriginalCoordinates extends LinearOpMode {
 
     //PID junk
     DcMotorEx pulleyMotorR;
@@ -88,8 +87,6 @@ public class SamAuto extends LinearOpMode {
     private static final float DECIMATION_LOW = 2;
     private static final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
     private static final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
-
-
 //
 
     public void initialize() {
@@ -211,9 +208,9 @@ public class SamAuto extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         //Scoring Coordinates
-        Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
-        Pose2d midPose = new Pose2d(-35, -20, Math.toRadians(90));
-        Pose2d farmingPose = new Pose2d(-30.5, 15.5, Math.toRadians(45));
+        Pose2d startPose = new Pose2d(-35, -65, Math.toRadians(90));
+        Pose2d midPose = new Pose2d(-34.5, -20, Math.toRadians(90));
+        Pose2d farmingPose = new Pose2d(-30.4,-6,Math.toRadians(45));
         //Parking Coordinates
 
         Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(90));
@@ -249,7 +246,7 @@ public class SamAuto extends LinearOpMode {
                 })
 
                 .back(3)
-                .splineToSplineHeading(new Pose2d(-62.5, 6.5, Math.toRadians(180)), Math.toRadians(180))
+                .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
                 .waitSeconds(.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
                     //close claw lift
@@ -297,11 +294,27 @@ public class SamAuto extends LinearOpMode {
 
         closeClaw();
         drive.followTrajectorySequenceAsync(firstCone);
+        while (drive.isBusy()) {
+            drive.update();
+            fixSlides();
+        }
         for (int i = 5; i >= 2; i--) {
             drive.followTrajectorySequenceAsync(toStack);
+            while (drive.isBusy()) {
+                drive.update();
+                fixSlides();
+            }
             drive.followTrajectorySequenceAsync(backToPole);
+            while (drive.isBusy()) {
+                drive.update();
+                fixSlides();
+            }
         }
         drive.followTrajectorySequenceAsync(park);
+        while (drive.isBusy()) {
+            drive.update();
+            fixSlides();
+        }
         switch (tagNumber) {
             case 1 : drive.followTrajectorySequence(zone1);
             break;
@@ -311,37 +324,18 @@ public class SamAuto extends LinearOpMode {
             break;
         }
 
-        while(opModeIsActive())
-        {
-            fixSlides();
-            if(liftIsBusy){
-                drive.setMotorPowers(0,0,0,0);
-            }
-            drive.update();
-
-
-        }
-
     }
 
     public void fixSlides()
     {
-
-
         telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
         while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive()) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
         {
-
-
                 double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
                 pulleyMotorL.setPower(power);
                 pulleyMotorR.setPower(power);
                 telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
                 telemetry.update();
-
-
-
-
         }
         pulleyMotorL.setPower(0);
         pulleyMotorR.setPower(0);
