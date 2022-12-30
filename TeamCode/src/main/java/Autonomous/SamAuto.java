@@ -299,7 +299,7 @@ public class SamAuto extends LinearOpMode {
         drive.followTrajectorySequenceAsync(firstCone);
         for (int i = 5; i >= 2; i--) {
             drive.followTrajectorySequenceAsync(toStack);
-            drive.followTrajectoryAsync(backToPole);
+            drive.followTrajectorySequenceAsync(backToPole);
         }
         drive.followTrajectorySequenceAsync(park);
         switch (tagNumber) {
