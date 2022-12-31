@@ -29,8 +29,8 @@ import pipelines.AprilTagDetectionPipeline;
 public class SamAutoAProperFSM extends LinearOpMode {
     //FSM states
     enum State {
-        FIRST_CONE,   // First, follow a splineTo() trajectory
-        STACK_CYCLE,
+        TO_POLE,   // First, follow a splineTo() trajectory
+        TO_STACK,
         PARKING,// Then, we follow another lineTo() trajectory
         IDLE            // Our bot will enter the IDLE state when done
     }
@@ -297,23 +297,23 @@ public class SamAutoAProperFSM extends LinearOpMode {
 
 
 
-        State currentState =  State.FIRST_CONE;
+        State currentState =  State.TO_POLE;
         drive.followTrajectorySequenceAsync(firstCone);
 
         int i = 0;
         while(opModeIsActive())
         {
             switch (currentState) {
-                case FIRST_CONE:
+                case TO_POLE:
                     if (!drive.isBusy()) {
                         drive.followTrajectorySequenceAsync(toStack);
-                        currentState = State.STACK_CYCLE;
+                        currentState = State.TO_STACK;
                     }
-                case STACK_CYCLE:
+                case TO_STACK:
                     if (!drive.isBusy()) {
 
                         drive.followTrajectorySequenceAsync(backToPole);
-                        currentState = State.FIRST_CONE;
+                        currentState = State.TO_POLE;
                         i++;
 
                         if(i==3){
@@ -328,7 +328,6 @@ public class SamAutoAProperFSM extends LinearOpMode {
                             case 1 :
                                 drive.followTrajectorySequence(zone1);
                                 currentState = State.IDLE;
-
                                 break;
                             case 2 :
                                 drive.followTrajectorySequence(zone2);
