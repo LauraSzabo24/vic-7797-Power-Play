@@ -329,7 +329,7 @@ public class SamAuto extends LinearOpMode {
 
 
         telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
-        while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive()) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
+        if (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
         {
 
 
