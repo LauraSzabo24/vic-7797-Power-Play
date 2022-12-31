@@ -1,21 +1,21 @@
 package TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-
-
-import com.acmerobotics.dashboard.FtcDashboard;
-
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "FinalTeleOp")
-public class FinalTeleOp extends OpMode {
+import Autonomous.FunnyTeleOpHelper;
+
+
+@TeleOp(name = "FunnyTeleOp")
+public class FunnyTeleOp extends OpMode {
 
     //mecanum constants
     private DcMotorEx motorFrontLeft, motorBackLeft, motorFrontRight, motorBackRight;
@@ -106,7 +106,7 @@ public class FinalTeleOp extends OpMode {
         pulleyMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         pulleyMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-
+        Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
 
         targetPosition = 0;
 
@@ -203,6 +203,11 @@ public class FinalTeleOp extends OpMode {
             pulleyMotorL.setPower(0);
             pulleyMotorR.setPower(0);
 
+        }
+
+        if(gamepad2.y) {
+            FunnyTeleOpHelper ok = new FunnyTeleOpHelper();
+            ok.runOpMode();
         }
 
 
