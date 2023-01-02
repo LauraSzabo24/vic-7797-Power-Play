@@ -11,7 +11,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import Autonomous.FunnyTeleOpHelper;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+
 
 
 @TeleOp(name = "FunnyTeleOp")
@@ -28,6 +30,10 @@ public class FunnyTeleOp extends OpMode {
             }
         }
         return max;
+    }
+
+    enum State  {
+            TRAJ2, TRAJ3
     }
 
     //servo constants
@@ -65,6 +71,18 @@ public class FunnyTeleOp extends OpMode {
    // SlideFixerT slideSet = new SlideFixerT();
     public static boolean OpmodeAvil;
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
+
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+    Pose2d terminalPose = new Pose2d(0, -55, Math.toRadians(270));
+    Pose2d startPose = new Pose2d(-10.8,-35.6,Math.toRadians(270));
+    Pose2d highPose = new Pose2d(0,-32,Math.toRadians(90));
+    Pose2d midPose = new Pose2d(0,-35.6,Math.toRadians(270));
+    Pose2d midRightPose = new Pose2d(17,-30,Math.toRadians(45));
+    Pose2d midLeftPose = new Pose2d(-17,-30,Math.toRadians(135));
+
+    TrajectorySequence stuff2;
+    TrajectorySequence stuff3;
 
 
     @Override
@@ -106,9 +124,83 @@ public class FunnyTeleOp extends OpMode {
         pulleyMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         pulleyMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
 
         targetPosition = 0;
+
+        drive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        drive.setPoseEstimate(startPose);
+
+
+        //trajectories and trajectory sequences
+
+
+        drive.setPoseEstimate(startPose);
+
+        stuff2 = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(midPose)
+                .lineToLinearHeading(terminalPose)
+                .setReversed(true)
+                .back(8)
+                .lineToSplineHeading(highPose)
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .lineToSplineHeading(terminalPose)
+                .waitSeconds(0.5)
+
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(0,-49,Math.toRadians(270)))
+                .splineToSplineHeading(midRightPose,Math.toRadians(45))
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .splineToSplineHeading(new Pose2d(0,-49,Math.toRadians(270)),Math.toRadians(270))
+                .lineToLinearHeading(terminalPose)
+                .setReversed(false)
+                .waitSeconds(0.5)
+
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(0,-49,Math.toRadians(270)))
+                .splineToSplineHeading(midLeftPose,Math.toRadians(135))
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .splineToSplineHeading(new Pose2d(0,-49,Math.toRadians(270)),Math.toRadians(270))
+                .lineToLinearHeading(terminalPose)
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .build();
+
+        stuff3 = drive.trajectorySequenceBuilder(stuff2.end())
+                .setReversed(true)
+                .back(8)
+                .lineToSplineHeading(highPose)
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .lineToSplineHeading(terminalPose)
+                .waitSeconds(0.5)
+
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(0,-49,Math.toRadians(270)))
+                .splineToSplineHeading(midRightPose,Math.toRadians(45))
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .splineToSplineHeading(new Pose2d(0,-49,Math.toRadians(270)),Math.toRadians(270))
+                .lineToLinearHeading(terminalPose)
+                .setReversed(false)
+                .waitSeconds(0.5)
+
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(0,-49,Math.toRadians(270)))
+                .splineToSplineHeading(midLeftPose,Math.toRadians(135))
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .splineToSplineHeading(new Pose2d(0,-49,Math.toRadians(270)),Math.toRadians(270))
+                .lineToLinearHeading(terminalPose)
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .build();
 
     }
 
@@ -205,9 +297,26 @@ public class FunnyTeleOp extends OpMode {
 
         }
 
-        if(gamepad2.y) {
-            FunnyTeleOpHelper ok = new FunnyTeleOpHelper();
-            ok.runOpMode();
+        State currentState = State.TRAJ2;
+        if(gamepad1.dpad_down) {
+            while (!gamepad1.dpad_up) {
+                switch (currentState) {
+                    case TRAJ2:
+                        if (!drive.isBusy()) {
+                            drive.followTrajectorySequenceAsync(stuff2);
+                            currentState = State.TRAJ3;
+                        }
+                        break;
+
+                    case TRAJ3:
+                        if (!drive.isBusy()) {
+                            drive.followTrajectorySequenceAsync(stuff3);
+                        }
+                        break;
+                }
+                drive.update();
+                fixSlides();
+            }
         }
 
 
@@ -218,9 +327,11 @@ public class FunnyTeleOp extends OpMode {
         telemetry.addData("power", power);
         pulleyMotorL.setPower(power);
         pulleyMotorR.setPower(power);
+        telemetry.update();
 
 
     }
+
 
 
     public void stop(){
@@ -316,6 +427,32 @@ public class FunnyTeleOp extends OpMode {
 
         double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
         return output; //figure out how to connect dashboard
+
+    }
+
+    public void fixSlides()
+    {
+
+
+        if (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
+        {
+
+
+            double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+            pulleyMotorL.setPower(power);
+            pulleyMotorR.setPower(power);
+            telemetry.addData("positonrightMotor", pulleyMotorR.getCurrentPosition());
+            telemetry.addData("positonleftMotor", pulleyMotorL.getCurrentPosition());
+            telemetry.addData("targetPosition", targetPosition);
+            telemetry.addData("power", power);
+            telemetry.update();
+
+
+
+
+        }
+        pulleyMotorL.setPower(0);
+        pulleyMotorR.setPower(0);
 
     }
 
