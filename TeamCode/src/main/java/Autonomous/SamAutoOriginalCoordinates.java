@@ -29,10 +29,9 @@ import pipelines.AprilTagDetectionPipeline;
 public class SamAutoOriginalCoordinates extends LinearOpMode {
     //FSM states
     enum State {
-        TRAJECTORY_1,   // First, follow a splineTo() trajectory
-        PARKING_MIDDLE,   // Then, follow a lineTo() trajectory
-        PARKING_LEFT,         // Then we want to do a point turn
-        PARKING_RIGHT,   // Then, we follow another lineTo() trajectory
+        TO_POLE,   // First, follow a splineTo() trajectory
+        TO_STACK,
+        PARKING,// Then, we follow another lineTo() trajectory
         IDLE            // Our bot will enter the IDLE state when done
     }
     //PID junk
@@ -286,7 +285,7 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
 
         TrajectorySequence zone1 = drive.trajectorySequenceBuilder(park.end())
                 .lineToLinearHeading(leftPark)
-                        .build();
+                .build();
 
         TrajectorySequence zone2 = drive.trajectorySequenceBuilder(park.end())
                 .lineToLinearHeading(middlePark)
@@ -298,39 +297,62 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
 
 
 
-        State currentState =  State.TRAJECTORY_1;
-
-
-        closeClaw();
+        State currentState =  State.TO_POLE;
         drive.followTrajectorySequenceAsync(firstCone);
-        while (drive.isBusy()) {
+
+        int i = 0;
+        while(opModeIsActive())
+        {
+            switch (currentState) {
+                case TO_POLE:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectorySequenceAsync(toStack);
+                        currentState = State.TO_STACK;
+                    }
+                case TO_STACK:
+                    if (!drive.isBusy()) {
+                        if(i<3) {
+                            drive.followTrajectorySequenceAsync(backToPole);
+                            currentState = State.TO_POLE;
+                            i++;
+                        }
+                        else{
+                            drive.followTrajectorySequenceAsync(park);
+                            currentState = State.PARKING;
+                        }
+                    }
+
+                case PARKING:
+                    if (!drive.isBusy()) {
+                        switch (tagNumber) {
+                            case 1 :
+                                drive.followTrajectorySequence(zone1);
+                                currentState = State.IDLE;
+                                break;
+                            case 2 :
+                                drive.followTrajectorySequence(zone2);
+                                currentState = State.IDLE;
+                                break;
+                            case 3 :
+                                drive.followTrajectorySequence(zone3);
+                                currentState = State.IDLE;
+                                break;
+                        }
+
+                    }
+                    break;
+
+
+                case IDLE:
+
+
+                    break;
+            }
             drive.update();
             fixSlides();
-        }
-        for (int i = 5; i >= 2; i--) {
-            drive.followTrajectorySequenceAsync(toStack);
-            while (drive.isBusy()) {
-                drive.update();
-                fixSlides();
-            }
-            drive.followTrajectorySequenceAsync(backToPole);
-            while (drive.isBusy()) {
-                drive.update();
-                fixSlides();
-            }
-        }
-        drive.followTrajectorySequenceAsync(park);
-        while (drive.isBusy()) {
-            drive.update();
-            fixSlides();
-        }
-        switch (tagNumber) {
-            case 1 : drive.followTrajectorySequence(zone1);
-            break;
-            case 2 : drive.followTrajectorySequence(zone2);
-            break;
-            case 3 : drive.followTrajectorySequence(zone3);
-            break;
+            telemetry.addData("tagID",tagNumber);
+            telemetry.addData("state:",currentState);
+            telemetry.update();
         }
 
     }
