@@ -138,17 +138,17 @@ public class FunnyTeleOpHelper extends LinearOpMode {
     @Override
     public void runOpMode() {
         initialize();
-
         //Trajectory starts here
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         //Scoring Coordinates
-        Pose2d terminalPose = new Pose2d(0, -52, Math.toRadians(270));
-        Pose2d startPose = new Pose2d(0, -48, Math.toRadians(90));
-        Pose2d farmingPose = new Pose2d(0,-32,Math.toRadians(90));
+        Pose2d terminalPose = new Pose2d(0, -55, Math.toRadians(270));
+        Pose2d startPose = new Pose2d(-10.8,-35.6,Math.toRadians(270));
+        Pose2d highPose = new Pose2d(0,-32,Math.toRadians(90));
+        Pose2d midPose = new Pose2d(0,-35.6,Math.toRadians(270));
+        Pose2d midRightPose = new Pose2d(17,-30,Math.toRadians(45));
+        Pose2d midLeftPose = new Pose2d(-17,-30,Math.toRadians(135));
         //Parking Coordinates
-
-
         drive.setPoseEstimate(startPose);
 
 
@@ -158,29 +158,71 @@ public class FunnyTeleOpHelper extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
 
-        TrajectorySequence stuff = drive.trajectorySequenceBuilder(startPose)
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{
-                    //raise slides
-                })
-                .lineToLinearHeading(farmingPose)
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
-                    //lower slides interval
-                    //open claw
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{
-                    //lower slides
-                })
-                .back(15)
-                .turn(Math.toRadians(180))
+
+        TrajectorySequence stuff2 = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(midPose)
                 .lineToLinearHeading(terminalPose)
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{
-                    //close claw
-                })
-                .back(5)
-                .turn(Math.toRadians(180))
+                .setReversed(true)
+                .back(8)
+                .lineToSplineHeading(highPose)
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .lineToSplineHeading(terminalPose)
+                .waitSeconds(0.5)
 
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(0,-49,Math.toRadians(270)))
+                .splineToSplineHeading(midRightPose,Math.toRadians(45))
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .splineToSplineHeading(new Pose2d(0,-49,Math.toRadians(270)),Math.toRadians(270))
+                .lineToLinearHeading(terminalPose)
+                .setReversed(false)
+                .waitSeconds(0.5)
 
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(0,-49,Math.toRadians(270)))
+                .splineToSplineHeading(midLeftPose,Math.toRadians(135))
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .splineToSplineHeading(new Pose2d(0,-49,Math.toRadians(270)),Math.toRadians(270))
+                .lineToLinearHeading(terminalPose)
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .build();
+
+        TrajectorySequence stuff3 = drive.trajectorySequenceBuilder(stuff2.end())
+                .setReversed(true)
+                .back(8)
+                .lineToSplineHeading(highPose)
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .lineToSplineHeading(terminalPose)
+                .waitSeconds(0.5)
+
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(0,-49,Math.toRadians(270)))
+                .splineToSplineHeading(midRightPose,Math.toRadians(45))
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .splineToSplineHeading(new Pose2d(0,-49,Math.toRadians(270)),Math.toRadians(270))
+                .lineToLinearHeading(terminalPose)
+                .setReversed(false)
+                .waitSeconds(0.5)
+
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(0,-49,Math.toRadians(270)))
+                .splineToSplineHeading(midLeftPose,Math.toRadians(135))
+                .setReversed(false)
+                .waitSeconds(0.5)
+                .setReversed(true)
+                .splineToSplineHeading(new Pose2d(0,-49,Math.toRadians(270)),Math.toRadians(270))
+                .lineToLinearHeading(terminalPose)
+                .setReversed(false)
+                .waitSeconds(0.5)
                 .build();
 
 
@@ -188,15 +230,24 @@ public class FunnyTeleOpHelper extends LinearOpMode {
 
 
 
+
         closeClaw();
-        drive.followTrajectorySequenceAsync(stuff);
-        while (!gamepad2.y) {
-            if(drive.isBusy()) {
+        drive.followTrajectorySequenceAsync(stuff2);
+        while (drive.isBusy()) {
+            if (!gamepad2.y) {
                 drive.update();
                 fixSlides();
             }
-            else {
-                drive.followTrajectorySequenceAsync(stuff);
+            else return;
+        }
+        while (opModeInInit()) {
+            drive.followTrajectorySequenceAsync(stuff3);
+            while (drive.isBusy()) {
+                if(!gamepad2.y) {
+                    drive.update();
+                    fixSlides();
+                }
+                else return;
             }
         }
 
