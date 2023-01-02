@@ -53,7 +53,7 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
     public static double Kd = 0.0;
     public static double smallHeight = 2100;
     public static double midHeight =3141;
-    public static double tallHeight =4115;
+    public static double tallHeight =4175;
     public static double grabHeight =940;
     public static boolean liftIsBusy = false;
     public static double targetPosition = 0;
@@ -235,6 +235,7 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
         TrajectorySequence firstCone = drive.trajectorySequenceBuilder(startPose)
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{
                     //bring up slides
+                    targetPosition = tallHeight;
                 })
                 .lineToLinearHeading(midPose)
                 .splineToSplineHeading(farmingPose, Math.toRadians(45))
@@ -242,21 +243,21 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
 
 
 
-        TrajectorySequence toStack = drive.trajectorySequenceBuilder(firstCone.end())
-                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
-                    //lower slides interval
-                    //open claw
-                })
+        TrajectorySequence toStack = drive.trajectorySequenceBuilder(farmingPose)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{
-                    //bring down slides-interval
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+                    //lower slides
+                    targetPosition = grabHeight;
+                    //open claw
+                    openClaw();
                 })
-
                 .back(3)
                 .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
-                .waitSeconds(.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //close claw lift
+                    closeClaw();
+                    targetPosition = tallHeight;
                 })
                 .build();
 
@@ -269,13 +270,12 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
 
 
         TrajectorySequence park = drive.trajectorySequenceBuilder((backToPole.end()))
-                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
-                    //lower slides interval
-                    //open claw
-                })
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{
-                    //bring down slides-interval
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+                    //lower slides
+                    targetPosition = 0;
+                    //open claw
+                    openClaw();
                 })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 .lineToLinearHeading(new Pose2d(-35,-15,Math.toRadians(90)))
@@ -297,7 +297,7 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
 
 
 
-        State currentState =  State.TO_POLE;
+        State currentState = State.TO_POLE;
         drive.followTrajectorySequenceAsync(firstCone);
 
         int i = 0;
@@ -306,14 +306,9 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
             switch (currentState) {
                 case TO_POLE:
                     if (!drive.isBusy()) {
-                        drive.followTrajectorySequenceAsync(toStack);
-                        currentState = State.TO_STACK;
-                    }
-                case TO_STACK:
-                    if (!drive.isBusy()) {
                         if(i<3) {
-                            drive.followTrajectorySequenceAsync(backToPole);
-                            currentState = State.TO_POLE;
+                            drive.followTrajectorySequenceAsync(toStack);
+                            currentState = State.TO_STACK;
                             i++;
                         }
                         else{
@@ -321,6 +316,14 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
                             currentState = State.PARKING;
                         }
                     }
+                    break;
+                case TO_STACK:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectorySequenceAsync(backToPole);
+                        currentState = State.TO_POLE;
+                        grabHeight -= 200;
+                    }
+                    break;
 
                 case PARKING:
                     if (!drive.isBusy()) {
@@ -360,11 +363,12 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
     public void fixSlides()
     {
         telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
-        while (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive()) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
+        if (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive()) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
         {
                 double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
-                pulleyMotorL.setPower(power);
-                pulleyMotorR.setPower(power);
+                //purely experimental
+                pulleyMotorL.setPower(2*power);
+                pulleyMotorR.setPower(2*power);
                 telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
                 telemetry.update();
         }

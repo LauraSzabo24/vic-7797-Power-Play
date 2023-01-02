@@ -115,8 +115,7 @@ public class FinalTeleOp extends OpMode {
     @Override
     public void loop() {
         // mecanum
-        boolean precisionToggle = gamepad1.right_trigger > 0.1;
-        drive(precisionToggle);
+        drive();
         OpmodeAvil = true;
 
         //pivots
@@ -178,12 +177,12 @@ public class FinalTeleOp extends OpMode {
           //  slideSet.setHeight(0);
         }
 
-      if(gamepad2.right_bumper && pulleyMotorL.getCurrentPosition()<5000)
+        if(gamepad2.right_bumper && pulleyMotorL.getCurrentPosition()<5000)
         {
 
             pulleyMotorL.setPower(motorPower);
             pulleyMotorR.setPower(motorPower);
-           targetPosition = pulleyMotorL.getCurrentPosition();
+            targetPosition = pulleyMotorL.getCurrentPosition();
 
 
 
@@ -211,6 +210,7 @@ public class FinalTeleOp extends OpMode {
         telemetry.addData("positonleftMotor", pulleyMotorL.getCurrentPosition());
         telemetry.addData("targetPosition", targetPosition);
         telemetry.addData("power", power);
+        telemetry.update();
         pulleyMotorL.setPower(power);
         pulleyMotorR.setPower(power);
 
@@ -223,11 +223,14 @@ public class FinalTeleOp extends OpMode {
 
     }
     //mecanum methods
-    public void drive(boolean precisionToggle) {
+    public void drive() {
         double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
-        boolean superToggle = gamepad1.left_trigger > 0.1;
+        double frontLeftPower;
+        double frontRightPower;
+        double backLeftPower;
+        double backRightPower;
 
 
         // Denominator is the largest motor power (absolute value) or 1
@@ -235,11 +238,19 @@ public class FinalTeleOp extends OpMode {
         // at least one is out of the range [-1, 1]
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
 
-        // Calculate the mecanum motor powers
-        double frontLeftPower = (y + x + 2 * rx) / denominator;
-        double backLeftPower = (y - x + 2 * rx) / denominator;
-        double frontRightPower = (y - x - 2 * rx) / denominator;
-        double backRightPower = (y + x - 2 * rx) / denominator;
+        if(gamepad1.right_bumper){
+            frontLeftPower = (   x + 2 * rx) / denominator;
+            backLeftPower = (  - x + 2 * rx) / denominator;
+            frontRightPower = ( - x - 2 * rx) / denominator;
+            backRightPower = (  x - 2 * rx) / denominator;
+        }
+        else { // Calculate the mecanum motor powers
+            frontLeftPower = (y + x + 2 * rx) / denominator;
+            backLeftPower = (y - x + 2 * rx) / denominator;
+            frontRightPower = (y - x - 2 * rx) / denominator;
+            backRightPower = (y + x - 2 * rx) / denominator;
+        }
+
 
 
         // Cube the motor powers
@@ -266,21 +277,7 @@ public class FinalTeleOp extends OpMode {
         }
 
 
-        if(gamepad1.right_bumper){
-            frontLeftPower = (   x + 2 * rx) / denominator;
-            backLeftPower = (  - x + 2 * rx) / denominator;
-            frontRightPower = ( - x - 2 * rx) / denominator;
-            backRightPower = (  x - 2 * rx) / denominator;
-
-        }
-
-        if (superToggle) {
-            motorFrontLeft.setPower(frontLeftPower * 0.2);
-            motorBackLeft.setPower(backLeftPower * 0.2);
-            motorFrontRight.setPower(frontRightPower * 0.2);
-            motorBackRight.setPower(backRightPower * 0.2);
-        }
-        if (precisionToggle) {
+        if (gamepad1.right_trigger>0.1) {
             motorFrontLeft.setPower(frontLeftPower * 0.4);
             motorBackLeft.setPower(backLeftPower * 0.4);
             motorFrontRight.setPower(frontRightPower * 0.4);
@@ -288,14 +285,17 @@ public class FinalTeleOp extends OpMode {
         }
 
 
-        else
-        {
+        if (gamepad1.left_trigger>0.1) {
+            motorFrontLeft.setPower(frontLeftPower * 0.2);
+            motorBackLeft.setPower(backLeftPower * 0.2);
+            motorFrontRight.setPower(frontRightPower * 0.2);
+            motorBackRight.setPower(backRightPower * 0.2);
+        }
+        else {
             motorFrontLeft.setPower(frontLeftPower);
             motorBackLeft.setPower(backLeftPower);
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
-
-
         }
 
     }
