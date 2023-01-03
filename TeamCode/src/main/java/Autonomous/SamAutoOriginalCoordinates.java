@@ -220,9 +220,9 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
         Pose2d farmingPose = new Pose2d(-30.4,-6,Math.toRadians(45));
         //Parking Coordinates
 
-        Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(90));
-        Pose2d leftPark =  new Pose2d(-60.8,-35.6,Math.toRadians(90));
-        Pose2d rightPark =  new Pose2d(-10.8,-35.6,Math.toRadians(90));
+        Pose2d middlePark = new Pose2d(-35.8,-12,Math.toRadians(0));
+        Pose2d leftPark =  new Pose2d(-57.8,-12,Math.toRadians(0));
+        Pose2d rightPark =  new Pose2d(-10.8,-12,Math.toRadians(270));
 
         drive.setPoseEstimate(startPose);
 
@@ -264,12 +264,27 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
 
         TrajectorySequence backToPole = drive.trajectorySequenceBuilder(toStack.end())
                 .setReversed(true)
-                .splineToLinearHeading(farmingPose, Math.toRadians(60))
+                .splineToSplineHeading(farmingPose, Math.toRadians(60))
                 .setReversed(false)
                 .build();
 
 
-        TrajectorySequence park = drive.trajectorySequenceBuilder((backToPole.end()))
+
+        TrajectorySequence zone1 = drive.trajectorySequenceBuilder(backToPole.end())
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+                    //lower slides
+                    targetPosition = 0;
+                    //open claw
+                    openClaw();
+                })
+                .setReversed(true)
+                .back(3)
+                .splineToSplineHeading(leftPark, Math.toRadians(180))
+                .setReversed(false)
+                .build();
+
+        TrajectorySequence zone2 = drive.trajectorySequenceBuilder(backToPole.end())
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //lower slides
@@ -278,21 +293,21 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
                     openClaw();
                 })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
-                .lineToLinearHeading(new Pose2d(-35,-15,Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(-35,-35,Math.toRadians(90)))
-                .build();
-
-
-        TrajectorySequence zone1 = drive.trajectorySequenceBuilder(park.end())
-                .lineToLinearHeading(leftPark)
-                .build();
-
-        TrajectorySequence zone2 = drive.trajectorySequenceBuilder(park.end())
                 .lineToLinearHeading(middlePark)
                 .build();
 
-        TrajectorySequence zone3 = drive.trajectorySequenceBuilder(park.end())
-                .lineToLinearHeading(rightPark)
+        TrajectorySequence zone3 = drive.trajectorySequenceBuilder(backToPole.end())
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+                    //lower slides
+                    targetPosition = 0;
+                    //open claw
+                    openClaw();
+                })
+                .setReversed(true)
+                .back(3)
+                .splineToSplineHeading(rightPark, Math.toRadians(0))
+                .setReversed(false)
                 .build();
 
 
@@ -312,8 +327,20 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
                             i++;
                         }
                         else{
-                            drive.followTrajectorySequenceAsync(park);
-                            currentState = State.PARKING;
+                            switch (tagNumber) {
+                                case 1 :
+                                    drive.followTrajectorySequence(zone1);
+                                    currentState = State.IDLE;
+                                    break;
+                                case 2 :
+                                    drive.followTrajectorySequence(zone2);
+                                    currentState = State.IDLE;
+                                    break;
+                                case 3 :
+                                    drive.followTrajectorySequence(zone3);
+                                    currentState = State.IDLE;
+                                    break;
+                            }
                         }
                     }
                     break;
@@ -324,31 +351,7 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
                         grabHeight -= 200;
                     }
                     break;
-
-                case PARKING:
-                    if (!drive.isBusy()) {
-                        switch (tagNumber) {
-                            case 1 :
-                                drive.followTrajectorySequence(zone1);
-                                currentState = State.IDLE;
-                                break;
-                            case 2 :
-                                drive.followTrajectorySequence(zone2);
-                                currentState = State.IDLE;
-                                break;
-                            case 3 :
-                                drive.followTrajectorySequence(zone3);
-                                currentState = State.IDLE;
-                                break;
-                        }
-
-                    }
-                    break;
-
-
                 case IDLE:
-
-
                     break;
             }
             drive.update();
