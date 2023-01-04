@@ -94,6 +94,9 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
     private static final float DECIMATION_LOW = 2;
     private static final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
     private static final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
+
+    int offSet = 0;
+    int angleOffSet =0;
 //
 
     public void initialize() {
@@ -215,9 +218,13 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         //Scoring Coordinates
-        Pose2d startPose = new Pose2d(-35, -65, Math.toRadians(90));
+        /*Pose2d startPose = new Pose2d(-35, -65, Math.toRadians(90));
         Pose2d midPose = new Pose2d(-34.5, -20, Math.toRadians(90));
-        Pose2d farmingPose = new Pose2d(-30.4,-6,Math.toRadians(45));
+        Pose2d farmingPose = new Pose2d(-30.4,-6,Math.toRadians(45));*/
+
+        Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
+        Pose2d midPose = new Pose2d(-35, -5, Math.toRadians(90));
+        Pose2d farmingPose = new Pose2d(-25.5, 20.5, Math.toRadians(45));
         //Parking Coordinates
 
         Pose2d middlePark = new Pose2d(-35.8,-12,Math.toRadians(0));
@@ -235,7 +242,7 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
         TrajectorySequence firstCone = drive.trajectorySequenceBuilder(startPose)
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{
                     //bring up slides
-                    targetPosition = tallHeight;
+                    //targetPosition = tallHeight;
                 })
                 .lineToLinearHeading(midPose)
                 .splineToSplineHeading(farmingPose, Math.toRadians(45))
@@ -247,24 +254,27 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //lower slides
-                    targetPosition = grabHeight;
+                    //targetPosition = grabHeight;
                     //open claw
-                    openClaw();
+                    //openClaw();
                 })
                 .back(3)
-                .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
+                .splineToSplineHeading(new Pose2d(-70,10+offSet,Math.toRadians(180 - angleOffSet)), Math.toRadians(180))
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //close claw lift
-                    closeClaw();
-                    targetPosition = tallHeight;
+                    //closeClaw();
+                    //targetPosition = tallHeight;
+                    offSet += 20;
+                    angleOffSet += 2;
+
                 })
                 .build();
 
 
         TrajectorySequence backToPole = drive.trajectorySequenceBuilder(toStack.end())
                 .setReversed(true)
-                .splineToSplineHeading(farmingPose, Math.toRadians(60))
+                .splineToSplineHeading(new Pose2d(-25.5, 20.5+offSet, Math.toRadians(45+angleOffSet)), Math.toRadians(60))
                 .setReversed(false)
                 .build();
 
@@ -274,9 +284,9 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //lower slides
-                    targetPosition = 0;
+                    //targetPosition = 0;
                     //open claw
-                    openClaw();
+                    //openClaw();
                 })
                 .setReversed(true)
                 .back(3)
@@ -288,9 +298,9 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //lower slides
-                    targetPosition = 0;
+                    //targetPosition = 0;
                     //open claw
-                    openClaw();
+                    //openClaw();
                 })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 .lineToLinearHeading(middlePark)
@@ -300,9 +310,9 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //lower slides
-                    targetPosition = 0;
+                    //targetPosition = 0;
                     //open claw
-                    openClaw();
+                    //openClaw();
                 })
                 .setReversed(true)
                 .back(3)
@@ -375,8 +385,11 @@ public class SamAutoOriginalCoordinates extends LinearOpMode {
                 telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
                 telemetry.update();
         }
-        pulleyMotorL.setPower(0);
-        pulleyMotorR.setPower(0);
+        else{
+            pulleyMotorL.setPower(0);
+            pulleyMotorR.setPower(0);
+        }
+
 
     }
     public void closeClaw() {
