@@ -224,7 +224,7 @@ public class SamAutoWorkInProgress extends LinearOpMode {
 
         Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
         Pose2d midPose = new Pose2d(-35, -5, Math.toRadians(90));
-        Pose2d farmingPose = new Pose2d(-25.5, 20.5, Math.toRadians(45));
+        Pose2d farmingPose = new Pose2d(-25.5, 20, Math.toRadians(45));
         Pose2d stackPose = new Pose2d(-70,10,Math.toRadians(180));
         //Parking Coordinates
 
