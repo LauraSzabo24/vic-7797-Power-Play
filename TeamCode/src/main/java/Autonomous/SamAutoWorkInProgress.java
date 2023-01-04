@@ -218,14 +218,15 @@ public class SamAutoWorkInProgress extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         //Scoring Coordinates
-        /*Pose2d startPose = new Pose2d(-35, -65, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-35, -65, Math.toRadians(90));
         Pose2d midPose = new Pose2d(-34.5, -20, Math.toRadians(90));
-        Pose2d farmingPose = new Pose2d(-30.4,-6,Math.toRadians(45));*/
+        Pose2d farmingPose = new Pose2d(-30.4,-6,Math.toRadians(45));
+        Pose2d stackPose = new Pose2d(-59,-12,Math.toRadians(180));
 
-        Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
+        /*Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
         Pose2d midPose = new Pose2d(-35, -5, Math.toRadians(90));
         Pose2d farmingPose = new Pose2d(-25.5, 20, Math.toRadians(45));
-        Pose2d stackPose = new Pose2d(-70,10,Math.toRadians(180));
+        Pose2d stackPose = new Pose2d(-70,10,Math.toRadians(180));*/
         //Parking Coordinates
 
         Pose2d middlePark = new Pose2d(-35.8,-12,Math.toRadians(0));
@@ -251,7 +252,7 @@ public class SamAutoWorkInProgress extends LinearOpMode {
 
 
 
-        TrajectorySequence toStack = drive.trajectorySequenceBuilder(/*farming pose*/new Pose2d(-25.5, 20.5+offSet, Math.toRadians(45+angleOffSet)))
+        TrajectorySequence toStack = drive.trajectorySequenceBuilder(/*farming pose*/farmingPose)
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //lower slides
@@ -259,22 +260,22 @@ public class SamAutoWorkInProgress extends LinearOpMode {
                     //open claw
                     //openClaw();
                 })
-                .lineToLinearHeading(/*farming pose but -3*/new Pose2d(-25.5-3, 20.5+offSet-3, Math.toRadians(45+angleOffSet)))
-                .splineToSplineHeading(/*stack pose*/new Pose2d(-70,10+offSet,Math.toRadians(180-angleOffSet)), Math.toRadians(180))
+                .back(3)
+                .splineToSplineHeading(/*stack pose*/stackPose, Math.toRadians(180))
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //close claw lift
                     //closeClaw();
                     //targetPosition = tallHeight;
-                    offSet += 10;
-                    angleOffSet += 4;
+                    //offSet += 10;
+                    //angleOffSet += 4;
                 })
                 .build();
 
 
         TrajectorySequence backToPole = drive.trajectorySequenceBuilder(toStack.end())
                 .setReversed(true)
-                .splineToSplineHeading(/*farming pose*/new Pose2d(-25.5, 20.5+offSet, Math.toRadians(45+angleOffSet)), Math.toRadians(60))
+                .splineToSplineHeading(/*farming pose*/ farmingPose, Math.toRadians(60))
                 .setReversed(false)
                 .build();
 

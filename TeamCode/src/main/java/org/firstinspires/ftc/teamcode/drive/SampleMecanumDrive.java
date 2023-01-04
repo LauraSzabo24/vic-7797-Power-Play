@@ -30,6 +30,8 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
+import org.firstinspires.ftc.teamcode.util.AxisDirection;
+import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 
 import java.util.ArrayList;
@@ -56,7 +58,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(7.5, 0, 1);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(6.755, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = (28.5/22.5) * (33.2/34.5) * (33.26/32.5);
+    public static double LATERAL_MULTIPLIER = 0.9375 * (28.5/22.5) * (33.2/34.5) * (33.26/32.5);
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -116,7 +118,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         //
         // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
         // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
-
+         BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_X);
         leftFront = hardwareMap.get(DcMotorEx.class, "FL"); //leftFront
         leftRear = hardwareMap.get(DcMotorEx.class, "BL"); //leftRear
         rightRear = hardwareMap.get(DcMotorEx.class, "BR"); //rightRear
@@ -301,7 +303,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getAngularVelocity().xRotationRate;
+        return (double) imu.getAngularVelocity().zRotationRate;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
