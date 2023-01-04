@@ -259,7 +259,7 @@ public class SamAutoWorkInProgress extends LinearOpMode {
                     //open claw
                     //openClaw();
                 })
-                .back(3)
+                .lineToLinearHeading(/*farming pose but -3*/new Pose2d(-25.5-3, 20.5+offSet-3, Math.toRadians(45+angleOffSet)))
                 .splineToSplineHeading(/*stack pose*/new Pose2d(-70,10+offSet,Math.toRadians(180-angleOffSet)), Math.toRadians(180))
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
