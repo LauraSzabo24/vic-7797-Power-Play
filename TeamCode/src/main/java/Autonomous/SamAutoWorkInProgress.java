@@ -4,7 +4,6 @@ package Autonomous;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -27,8 +26,14 @@ import pipelines.AprilTagDetectionPipeline;
 
 
 @Autonomous
-public class SamAuto extends LinearOpMode {
-
+public class SamAutoWorkInProgress extends LinearOpMode {
+    //FSM states
+    enum State {
+        TO_POLE,   // First, follow a splineTo() trajectory
+        TO_STACK,
+        PARKING,// Then, we follow another lineTo() trajectory
+        IDLE            // Our bot will enter the IDLE state when done
+    }
     //PID junk
     DcMotorEx pulleyMotorR;
     DcMotorEx pulleyMotorL;
@@ -48,7 +53,7 @@ public class SamAuto extends LinearOpMode {
     public static double Kd = 0.0;
     public static double smallHeight = 2100;
     public static double midHeight =3141;
-    public static double tallHeight =4115;
+    public static double tallHeight =4175;
     public static double grabHeight =940;
     public static boolean liftIsBusy = false;
     public static double targetPosition = 0;
@@ -56,6 +61,7 @@ public class SamAuto extends LinearOpMode {
 
     private final FtcDashboard dashboard = FtcDashboard.getInstance();
     //PID ends here
+
 
     //CLAW goes here
     private Servo rightServo;
@@ -89,7 +95,8 @@ public class SamAuto extends LinearOpMode {
     private static final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
     private static final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
 
-
+    int offSet = 0;
+    int angleOffSet =0;
 //
 
     public void initialize() {
@@ -211,14 +218,19 @@ public class SamAuto extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         //Scoring Coordinates
+        /*Pose2d startPose = new Pose2d(-35, -65, Math.toRadians(90));
+        Pose2d midPose = new Pose2d(-34.5, -20, Math.toRadians(90));
+        Pose2d farmingPose = new Pose2d(-30.4,-6,Math.toRadians(45));*/
+
         Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
-        Pose2d midPose = new Pose2d(-35, -20, Math.toRadians(90));
-        Pose2d farmingPose = new Pose2d(-30.5, 15.5, Math.toRadians(45));
+        Pose2d midPose = new Pose2d(-35, -5, Math.toRadians(90));
+        Pose2d farmingPose = new Pose2d(-25.5, 20.5, Math.toRadians(45));
+        Pose2d stackPose = new Pose2d(-70,10,Math.toRadians(180));
         //Parking Coordinates
 
-        Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(90));
-        Pose2d leftPark =  new Pose2d(-60.8,-35.6,Math.toRadians(90));
-        Pose2d rightPark =  new Pose2d(-10.8,-35.6,Math.toRadians(90));
+        Pose2d middlePark = new Pose2d(-35.8,-12,Math.toRadians(0));
+        Pose2d leftPark =  new Pose2d(-57.8,-12,Math.toRadians(0));
+        Pose2d rightPark =  new Pose2d(-10.8,-12,Math.toRadians(270));
 
         drive.setPoseEstimate(startPose);
 
@@ -231,6 +243,7 @@ public class SamAuto extends LinearOpMode {
         TrajectorySequence firstCone = drive.trajectorySequenceBuilder(startPose)
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{
                     //bring up slides
+                    //targetPosition = tallHeight;
                 })
                 .lineToLinearHeading(midPose)
                 .splineToSplineHeading(farmingPose, Math.toRadians(45))
@@ -238,113 +251,145 @@ public class SamAuto extends LinearOpMode {
 
 
 
-        TrajectorySequence toStack = drive.trajectorySequenceBuilder(firstCone.end())
-                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
-                    //lower slides interval
-                    //open claw
-                })
+        TrajectorySequence toStack = drive.trajectorySequenceBuilder(/*farming pose*/new Pose2d(-25.5, 20.5+offSet, Math.toRadians(45+angleOffSet)))
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{
-                    //bring down slides-interval
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+                    //lower slides
+                    //targetPosition = grabHeight;
+                    //open claw
+                    //openClaw();
                 })
-
                 .back(3)
-                .splineToSplineHeading(new Pose2d(-62.5, 6.5, Math.toRadians(180)), Math.toRadians(180))
-                .waitSeconds(.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
+                .splineToSplineHeading(/*stack pose*/new Pose2d(-70,10+offSet,Math.toRadians(180-angleOffSet)), Math.toRadians(180))
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //close claw lift
+                    //closeClaw();
+                    //targetPosition = tallHeight;
+                    offSet += 10;
+                    angleOffSet += 4;
                 })
                 .build();
 
 
         TrajectorySequence backToPole = drive.trajectorySequenceBuilder(toStack.end())
                 .setReversed(true)
-                .splineToLinearHeading(farmingPose, Math.toRadians(60))
+                .splineToSplineHeading(/*farming pose*/new Pose2d(-25.5, 20.5+offSet, Math.toRadians(45+angleOffSet)), Math.toRadians(60))
                 .setReversed(false)
                 .build();
 
 
-        TrajectorySequence park = drive.trajectorySequenceBuilder((backToPole.end()))
-                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
-                    //lower slides interval
-                    //open claw
-                })
+
+        TrajectorySequence zone1 = drive.trajectorySequenceBuilder(backToPole.end())
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(0,()->{
-                    //bring down slides-interval
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+                    //lower slides
+                    //targetPosition = 0;
+                    //open claw
+                    //openClaw();
                 })
-                .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
-                .lineToLinearHeading(new Pose2d(-35,-15,Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(-35,-35,Math.toRadians(90)))
+                .setReversed(true)
+                .back(3)
+                .splineToSplineHeading(leftPark, Math.toRadians(180))
+                .setReversed(false)
                 .build();
 
-
-        TrajectorySequence zone1 = drive.trajectorySequenceBuilder(park.end())
-                .lineToLinearHeading(leftPark)
-                        .build();
-
-        TrajectorySequence zone2 = drive.trajectorySequenceBuilder(park.end())
+        TrajectorySequence zone2 = drive.trajectorySequenceBuilder(backToPole.end())
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+                    //lower slides
+                    //targetPosition = 0;
+                    //open claw
+                    //openClaw();
+                })
+                .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 .lineToLinearHeading(middlePark)
                 .build();
 
-        TrajectorySequence zone3 = drive.trajectorySequenceBuilder(park.end())
-                .lineToLinearHeading(rightPark)
+        TrajectorySequence zone3 = drive.trajectorySequenceBuilder(backToPole.end())
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+                    //lower slides
+                    //targetPosition = 0;
+                    //open claw
+                    //openClaw();
+                })
+                .setReversed(true)
+                .back(3)
+                .splineToSplineHeading(rightPark, Math.toRadians(0))
+                .setReversed(false)
                 .build();
 
 
 
-
-
-        closeClaw();
+        State currentState = State.TO_POLE;
         drive.followTrajectorySequenceAsync(firstCone);
-        for (int i = 5; i >= 2; i--) {
-            drive.followTrajectorySequenceAsync(toStack);
-            drive.followTrajectorySequenceAsync(backToPole);
-        }
-        drive.followTrajectorySequenceAsync(park);
-        switch (tagNumber) {
-            case 1 : drive.followTrajectorySequence(zone1);
-            break;
-            case 2 : drive.followTrajectorySequence(zone2);
-            break;
-            case 3 : drive.followTrajectorySequence(zone3);
-            break;
-        }
 
+        int i = 0;
         while(opModeIsActive())
         {
-            fixSlides();
-            if(liftIsBusy){
-                drive.setMotorPowers(0,0,0,0);
+            switch (currentState) {
+                case TO_POLE:
+                    if (!drive.isBusy()) {
+                        if(i<3) {
+                            drive.followTrajectorySequenceAsync(toStack);
+                            currentState = State.TO_STACK;
+                            i++;
+                        }
+                        else{
+                            switch (tagNumber) {
+                                case 1 :
+                                    drive.followTrajectorySequence(zone1);
+                                    currentState = State.IDLE;
+                                    break;
+                                case 2 :
+                                    drive.followTrajectorySequence(zone2);
+                                    currentState = State.IDLE;
+                                    break;
+                                case 3 :
+                                    drive.followTrajectorySequence(zone3);
+                                    currentState = State.IDLE;
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case TO_STACK:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectorySequenceAsync(backToPole);
+                        currentState = State.TO_POLE;
+                        grabHeight -= 200;
+                    }
+                    break;
+                case IDLE:
+                    break;
             }
             drive.update();
-
-
+            fixSlides();
+            telemetry.addData("tagID",tagNumber);
+            telemetry.addData("state:",currentState);
+            telemetry.update();
         }
 
     }
 
     public void fixSlides()
     {
-
-
         telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
-        if (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
+        if (Math.abs(targetPosition - pulleyMotorL.getCurrentPosition()) > 12 && opModeIsActive()) //&& (4000>pulleyMotorL.getCurrentPosition()) && (-10<pulleyMotorL.getCurrentPosition()))
         {
-
-
                 double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
-                pulleyMotorL.setPower(power);
-                pulleyMotorR.setPower(power);
+                //purely experimental
+                pulleyMotorL.setPower(2*power);
+                pulleyMotorR.setPower(2*power);
                 telemetry.addData("positionLL:", pulleyMotorL.getCurrentPosition());
                 telemetry.update();
-
-
-
-
         }
-        pulleyMotorL.setPower(0);
-        pulleyMotorR.setPower(0);
+        else{
+            pulleyMotorL.setPower(0);
+            pulleyMotorR.setPower(0);
+        }
+
 
     }
     public void closeClaw() {
