@@ -36,7 +36,7 @@ public class SamAutoMM {
                                 .UNSTABLE_addTemporalMarkerOffset(0,()->{
                                     //bring down slides-interval
                                 })
-                                .lineToLinearHeading(new Pose2d(-33.4,-9,Math.toRadians(45)))
+                                .back(3)
                                 .splineToSplineHeading(new Pose2d(-59,-12,Math.toRadians(180)), Math.toRadians(180))
                                 .waitSeconds(.5)
                                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()->{
