@@ -8,7 +8,7 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 public class SamAutoMM {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
-        Pose2d startPose = new Pose2d(-35, -65, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
         Pose2d midPose = new Pose2d(-34.5, -20, Math.toRadians(90));
         Pose2d farmingPose = new Pose2d(-30.4,-6,Math.toRadians(45));
         //-60.8,-35.6
@@ -19,7 +19,7 @@ public class SamAutoMM {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(43, 50, Math.toRadians(60), Math.toRadians(60), 8)
+                .setConstraints(80, 50, Math.toRadians(180), Math.toRadians(180), 13)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPose)
                                 .UNSTABLE_addTemporalMarkerOffset(0,()->{
