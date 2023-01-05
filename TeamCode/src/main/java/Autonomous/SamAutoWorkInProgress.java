@@ -271,7 +271,7 @@ public class SamAutoWorkInProgress extends LinearOpMode {
 
         TrajectorySequence backToPole = drive.trajectorySequenceBuilder(toStack.end())
                 .setReversed(true)
-                .splineToSplineHeading(/*farming pose*/ farmingPose, Math.toRadians(60))
+                .splineToSplineHeading(/*farming pose*/ farmingPose, Math.toRadians(45))
                 .setReversed(false)
                 .build();
 

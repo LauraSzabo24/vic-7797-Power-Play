@@ -12,10 +12,9 @@ public class SamAutoMM {
         Pose2d midPose = new Pose2d(-34.5, -20, Math.toRadians(90));
         Pose2d farmingPose = new Pose2d(-30.4,-6,Math.toRadians(45));
         //-60.8,-35.6
-        Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(90));
-        Pose2d leftPark =  new Pose2d(-60.8,-35.6,Math.toRadians(90));
-        Pose2d rightPark =  new Pose2d(-10.8,-35.6,Math.toRadians(90));
-        Pose2d beginnerPose = new Pose2d(-35.1,-13,Math.toRadians(90));
+        Pose2d middlePark = new Pose2d(-35.8,-12,Math.toRadians(0));
+        Pose2d leftPark =  new Pose2d(-57.8,-12,Math.toRadians(0));
+        Pose2d rightPark =  new Pose2d(-10.8,-12,Math.toRadians(270));
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -43,7 +42,7 @@ public class SamAutoMM {
                                     //close claw lift
                                 })
                                 .setReversed(true)
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(60))
+                                .splineToSplineHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
                                 .setReversed(false)
                                 .waitSeconds(0.5)
 
@@ -54,7 +53,7 @@ public class SamAutoMM {
                                     //close claw lift
                                 })
                                 .setReversed(true)
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(60))
+                                .splineToSplineHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
                                 .setReversed(false)
                                 .waitSeconds(0.5)
 
@@ -65,7 +64,7 @@ public class SamAutoMM {
                                     //close claw lift
                                 })
                                 .setReversed(true)
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(60))
+                                .splineToSplineHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
                                 .setReversed(false)
                                 .waitSeconds(0.5)
 
@@ -76,7 +75,7 @@ public class SamAutoMM {
                                     //close claw lift
                                 })
                                 .setReversed(true)
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(60))
+                                .splineToSplineHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
                                 .setReversed(false)
                                 .waitSeconds(0.5)
 
@@ -87,15 +86,15 @@ public class SamAutoMM {
                                     //close claw lift
                                 })
                                 .setReversed(true)
-                                .splineToLinearHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(60))
+                                .splineToSplineHeading(new Pose2d(-30.4,-6,Math.toRadians(45)), Math.toRadians(45))
                                 .setReversed(false)
                                 .waitSeconds(0.5)
 
                                 .waitSeconds(0.5)
-                                .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
-                                .lineToLinearHeading(new Pose2d(-35,-15,Math.toRadians(90)))
-                                .lineToLinearHeading(new Pose2d(-35,-35,Math.toRadians(90)))
-                                .lineToLinearHeading((rightPark))
+                                .setReversed(true)
+                                .back(3)
+                                .splineToSplineHeading((rightPark),Math.toRadians(0))
+                                .setReversed(false)
                                 .build()
                 );
 
