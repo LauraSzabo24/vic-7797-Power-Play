@@ -4,6 +4,7 @@ package Autonomous;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -219,9 +220,9 @@ public class SamAutoWorkInProgress extends LinearOpMode {
         drive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         //Scoring Coordinates
         Pose2d startPose = new Pose2d(-35, -65, Math.toRadians(90));
-        Pose2d midPose = new Pose2d(-34.5, -20, Math.toRadians(90));
-        Pose2d farmingPose = new Pose2d(-30.4,-6,Math.toRadians(45));
-        Pose2d stackPose = new Pose2d(-59,-12,Math.toRadians(180));
+        Vector2d midPose = new Vector2d(-34.5, -30);//, Math.toRadians(90));
+        Pose2d farmingPose = new Pose2d(-31.4,-12,Math.toRadians(45));
+        Vector2d stackPose = new Vector2d(-59,-12);//,Math.toRadians(180));
 
         /*Pose2d startPose = new Pose2d(-35, -60, Math.toRadians(90));
         Pose2d midPose = new Pose2d(-35, -5, Math.toRadians(90));
@@ -229,9 +230,9 @@ public class SamAutoWorkInProgress extends LinearOpMode {
         Pose2d stackPose = new Pose2d(-70,10,Math.toRadians(180));*/
         //Parking Coordinates
 
-        Pose2d middlePark = new Pose2d(-35.8,-12,Math.toRadians(0));
-        Pose2d leftPark =  new Pose2d(-57.8,-12,Math.toRadians(0));
-        Pose2d rightPark =  new Pose2d(-10.8,-12,Math.toRadians(270));
+         Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(90));
+         Pose2d leftPark =  new Pose2d(-60.8,-35.6,Math.toRadians(90));
+         Pose2d rightPark =  new Pose2d(-10.8,-35.6,Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
 
@@ -246,13 +247,13 @@ public class SamAutoWorkInProgress extends LinearOpMode {
                     //bring up slides
                     //targetPosition = tallHeight;
                 })
-                .lineToLinearHeading(midPose)
+                .lineTo(midPose)
                 .splineToSplineHeading(farmingPose, Math.toRadians(45))
                 .build();
 
 
 
-        TrajectorySequence toStack = drive.trajectorySequenceBuilder(/*farming pose*/farmingPose)
+        TrajectorySequence toStack = drive.trajectorySequenceBuilder(firstCone.end())
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //lower slides
@@ -260,8 +261,9 @@ public class SamAutoWorkInProgress extends LinearOpMode {
                     //open claw
                     //openClaw();
                 })
-                .back(3)
-                .splineToSplineHeading(/*stack pose*/stackPose, Math.toRadians(180))
+                .back(6)
+                .turn(Math.toRadians(135))
+                .lineTo(stackPose)
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     //close claw lift
@@ -274,9 +276,10 @@ public class SamAutoWorkInProgress extends LinearOpMode {
 
 
         TrajectorySequence backToPole = drive.trajectorySequenceBuilder(toStack.end())
-                .setReversed(true)
-                .splineToSplineHeading(/*farming pose*/ farmingPose, Math.toRadians(60))
-                .setReversed(false)
+                .back(6)
+                .turn(Math.toRadians(-135))
+                .lineToLinearHeading(farmingPose)
+
                 .build();
 
 
