@@ -280,8 +280,11 @@ public class rotatingStaacks extends LinearOpMode {
                    targetPosition = tallHeight;
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    targetPosition = grabHeight;
+                    targetPosition = tallHeight-1000;
                     openClaw();
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    targetPosition = grabHeight;
                 })
                 .lineToLinearHeading(approachPose)
 
@@ -308,10 +311,12 @@ public class rotatingStaacks extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(fPx,fPy,Math.toRadians(47))) //make this exactly on the pole
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    targetPosition = grabHeight;
+                    targetPosition = tallHeight-1000;
                     openClaw();
                 })
-
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    targetPosition = grabHeight;
+                })
                 .lineToLinearHeading(approachPose)
                 .build();
 
