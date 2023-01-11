@@ -283,10 +283,11 @@ public class rotatingStaacks extends LinearOpMode {
                     targetPosition = tallHeight-1000;
                     openClaw();
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                .lineToLinearHeading(approachPose)
+                .UNSTABLE_addTemporalMarkerOffset(-2, () -> {
                     targetPosition = grabHeight;
                 })
-                .lineToLinearHeading(approachPose)
+
 
 
                 .build();
@@ -314,10 +315,12 @@ public class rotatingStaacks extends LinearOpMode {
                     targetPosition = tallHeight-1000;
                     openClaw();
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                .lineToLinearHeading(approachPose)
+                .UNSTABLE_addTemporalMarkerOffset(-2, () -> {
                     targetPosition = grabHeight;
                 })
-                .lineToLinearHeading(approachPose)
+
+
                 .build();
 
 
