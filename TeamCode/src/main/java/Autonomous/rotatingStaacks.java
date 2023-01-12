@@ -68,7 +68,7 @@ public class rotatingStaacks extends LinearOpMode {
     public static double aPy = -9.7;//i am so funny & indra is dumb fr
 
     public static double fPx = -31.2;//-30.2
-    public static double fPy = -4.4;//-3
+    public static double fPy = -2.5;//-4.4
 
     public static double sPx = -64.5;
     public static double sPy = -8.1;
@@ -254,9 +254,9 @@ public class rotatingStaacks extends LinearOpMode {
 
 
 
-        Pose2d approachPose = new Pose2d(aPx, aPy, Math.toRadians(47));
+        Pose2d approachPose = new Pose2d(aPx, aPy, Math.toRadians(50));//heading orgin:47
         Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
-        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(47));
+        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(50));
         Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(180));
 
 
@@ -280,11 +280,12 @@ public class rotatingStaacks extends LinearOpMode {
                    targetPosition = tallHeight;
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    targetPosition = tallHeight-1000;
                     openClaw();
+                    targetPosition = tallHeight-300;
+
                 })
                 .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(-2, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     targetPosition = grabHeight;
                 })
 
@@ -309,14 +310,15 @@ public class rotatingStaacks extends LinearOpMode {
 
         TrajectorySequence ToPole = drive.trajectorySequenceBuilder(ToStack.end())
 
-                .lineToLinearHeading(new Pose2d(fPx,fPy,Math.toRadians(47))) //make this exactly on the pole
+                .lineToLinearHeading(farmPose) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    targetPosition = tallHeight-1000;
                     openClaw();
+                    targetPosition = tallHeight-300;
+
                 })
                 .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(-2, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     targetPosition = grabHeight;
                 })
 
@@ -328,7 +330,7 @@ public class rotatingStaacks extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     closeClaw();
-                    targetPosition = 0;
+                    targetPosition = 50;
                 })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 .lineToLinearHeading(middlePark)
@@ -340,7 +342,7 @@ public class rotatingStaacks extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     closeClaw();
-                    targetPosition = 0;
+                    targetPosition = 50;
                 })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 .lineToLinearHeading(middlePark)
@@ -349,8 +351,9 @@ public class rotatingStaacks extends LinearOpMode {
         TrajectorySequence zone3 = drive.trajectorySequenceBuilder(ToPole.end())
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+
                     closeClaw();
-                    targetPosition = 0;
+                    targetPosition = 50;
 
                 })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
@@ -383,15 +386,15 @@ public class rotatingStaacks extends LinearOpMode {
                         else {
                             switch (tagNumber) {
                                 case 1 :
-                                    drive.followTrajectorySequence(zone1);
+                                    drive.followTrajectorySequenceAsync(zone1);
                                     currentState = State.IDLE;
                                     break;
                                 case 2 :
-                                    drive.followTrajectorySequence(zone2);
+                                    drive.followTrajectorySequenceAsync(zone2);
                                     currentState = State.IDLE;
                                     break;
                                 case 3 :
-                                    drive.followTrajectorySequence(zone3);
+                                    drive.followTrajectorySequenceAsync(zone3);
                                     currentState = State.IDLE;
                                     break;
                             }
@@ -402,6 +405,7 @@ public class rotatingStaacks extends LinearOpMode {
                     if (!drive.isBusy()) {
                         //fPy = fPy + 12;
                         //fPx = fPx + 10;
+                        farmPose.plus(new Pose2d(1,1,Math.toRadians(1)));//.plus adds the exact amount of units shown- to farmPose, hopefully it works
                         drive.followTrajectorySequenceAsync(ToPole);
                         currentState = State.TO_POLE;
                         grabHeight -= 200;

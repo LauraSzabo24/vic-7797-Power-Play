@@ -140,13 +140,13 @@ public class FinalTeleOp extends OpMode {
         //servos
         if(gamepad2.b)
         {
-            rightServo.setPosition(0.5);
-            leftServo.setPosition(0.5);
+            rightServo.setPosition(0.55);
+            leftServo.setPosition(0.45);
         }
         if(gamepad2.a)
         {
-            rightServo.setPosition(0.3);
-            leftServo.setPosition(0.7);
+            rightServo.setPosition(0.33);
+            leftServo.setPosition(0.67);
         }
 
 
@@ -277,7 +277,7 @@ public class FinalTeleOp extends OpMode {
         }
 
 
-        if (gamepad1.right_trigger>0.1) {
+        if (gamepad1.left_trigger>0.1) {
             motorFrontLeft.setPower(frontLeftPower * 0.4);
             motorBackLeft.setPower(backLeftPower * 0.4);
             motorFrontRight.setPower(frontRightPower * 0.4);
@@ -285,7 +285,7 @@ public class FinalTeleOp extends OpMode {
         }
 
 
-        if (gamepad1.left_trigger>0.1) {
+        else if (gamepad1.right_trigger>0.1) {
             motorFrontLeft.setPower(frontLeftPower * 0.2);
             motorBackLeft.setPower(backLeftPower * 0.2);
             motorFrontRight.setPower(frontRightPower * 0.2);
