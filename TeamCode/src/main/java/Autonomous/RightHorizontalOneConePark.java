@@ -149,13 +149,13 @@ public class RightHorizontalOneConePark extends LinearOpMode {
             }
         });
 
-        waitForStart();
+       // waitForStart();
 
         telemetry.setMsTransmissionInterval(50);
 
         //from here2
         double currentTime = timer2.seconds();
-        while (opModeIsActive() && !(tagNumber == 1) && !(tagNumber == 2) && !(tagNumber == 3) && !(tagNumber == 4) && !(tagNumber == 5)) {
+        while ( opModeInInit() /*opModeIsActive() && !(tagNumber == 1) && !(tagNumber == 2) && !(tagNumber == 3) && !(tagNumber == 4) && !(tagNumber == 5)*/) {
             ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
             telemetry.addData("currentTime", currentTime);
             telemetry.addLine(String.format("time difference", timer2.time() - currentTime));

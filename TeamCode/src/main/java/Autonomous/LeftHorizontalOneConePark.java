@@ -149,13 +149,13 @@ public class LeftHorizontalOneConePark extends LinearOpMode {
             }
         });
 
-        waitForStart();
+     //   waitForStart();
 
         telemetry.setMsTransmissionInterval(50);
 
         //from here2
         double currentTime = timer2.seconds();
-        while (opModeIsActive() && !(tagNumber == 1) && !(tagNumber == 2) && !(tagNumber == 3) && !(tagNumber == 4) && !(tagNumber == 5)) { //new new new
+        while (opModeInInit() /*opModeIsActive() && !(tagNumber == 1) && !(tagNumber == 2) && !(tagNumber == 3) && !(tagNumber == 4) && !(tagNumber == 5)*/) { //new new new
             ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
             telemetry.addData("currentTime", currentTime);
             telemetry.addLine(String.format("time difference", timer2.time() - currentTime));
@@ -277,7 +277,7 @@ public class LeftHorizontalOneConePark extends LinearOpMode {
                 .waitSeconds(30)
                 .build();
         TrajectorySequence parkRight = drive.trajectorySequenceBuilder(dropCone.end())
-                .strafeLeft(20)
+                .strafeLeft(20)//20
                 .waitSeconds(30)
                 .build();
         TrajectorySequence centerPark = drive.trajectorySequenceBuilder(dropCone.end())

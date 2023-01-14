@@ -237,17 +237,17 @@ public class LeftVerticalOneConePark extends LinearOpMode {
                 .build();
         TrajectorySequence dropCone = drive.trajectorySequenceBuilder(goToPole.end())
                 .forward(6)
-                .addTemporalMarker(1.5, () -> {
+                .addTemporalMarker(2.5, () -> {
                     rightServo.setPosition(0.2);
                     leftServo.setPosition(0.8);
 
                 })
-                .addTemporalMarker(2.5, () -> {
+                .addTemporalMarker(3.5, () -> {
                     rightServo.setPosition(0.5);
                     leftServo.setPosition(0.5);
 
                 })
-                .waitSeconds(2)
+                .waitSeconds(4)
                 .back(6)
                 .build();
 
@@ -276,11 +276,11 @@ public class LeftVerticalOneConePark extends LinearOpMode {
 
         Pose2d poseEstimate = drive.getPoseEstimate();
         TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(moveBack.end())
-                .strafeLeft(20)
+                .strafeLeft(28)//20
                 .waitSeconds(30)
                 .build();
         TrajectorySequence parkRight = drive.trajectorySequenceBuilder(moveBack.end())
-                .strafeRight(20)
+                .strafeRight(28)//20
                 .waitSeconds(30)
                 .build();
 
