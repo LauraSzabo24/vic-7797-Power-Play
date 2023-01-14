@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import pipelines.AprilTagDetectionPipeline;
 
 @Autonomous
-@Disabled
 public class RightHorizontalOneConePark extends LinearOpMode {
 
     //PID junk
