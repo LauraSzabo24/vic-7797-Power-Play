@@ -123,16 +123,16 @@ public class FinalTeleOp extends OpMode {
         {
             motorBackLeft.setPower(0);
             motorBackRight.setPower(0);
-            motorFrontLeft.setPower(0.9);
-            motorFrontRight.setPower(-0.9);
+            motorFrontLeft.setPower(2);//0.9
+            motorFrontRight.setPower(-2);
 
         }
         if(gamepad1.a)
         {
             motorBackLeft.setPower(0);
             motorBackRight.setPower(0);
-            motorFrontLeft.setPower(-0.9);
-            motorFrontRight.setPower(0.9);
+            motorFrontLeft.setPower(-2);
+            motorFrontRight.setPower(2);
 
 
         }
@@ -145,8 +145,8 @@ public class FinalTeleOp extends OpMode {
         }
         if(gamepad2.a)
         {
-            rightServo.setPosition(0.33);
-            leftServo.setPosition(0.67);
+            rightServo.setPosition(0.34);
+            leftServo.setPosition(0.66);
         }
 
 
@@ -173,7 +173,7 @@ public class FinalTeleOp extends OpMode {
         }
         if(gamepad2.dpad_down)
         {
-            targetPosition = 0;
+            targetPosition = 200;
           //  slideSet.setHeight(0);
         }
 

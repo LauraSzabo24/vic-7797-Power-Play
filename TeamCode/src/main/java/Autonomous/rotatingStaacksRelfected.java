@@ -24,13 +24,12 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-
 import pipelines.AprilTagDetectionPipeline;
 
 
 @Config
 @Autonomous
-public class rotatingStaacks extends LinearOpMode {
+public class rotatingStaacksRelfected extends LinearOpMode {
     enum State {
         TO_POLE,
         TO_STACK,
@@ -64,14 +63,14 @@ public class rotatingStaacks extends LinearOpMode {
     public static double targetPosition = 0;
 
 
-    public static double aPx = -37.1;
+    public static double aPx = 37.1;
     public static double aPy = -9.7;//i am so funny & indra is dumb fr
 
-    public static double fPx = -30.2;//-30.2
-    public static double fPy = -2.5;//-4.4
+    public static double fPx = 31.2;//-30.2
+    public static double fPy = -3;//-4.4
 
-    public static double sPx = -63.5;
-    public static double sPy = -8.1; //-8.1
+    public static double sPx = 64.5;
+    public static double sPy = -8.1;
 
     private static double offsetHead = 0;
 
@@ -254,15 +253,15 @@ public class rotatingStaacks extends LinearOpMode {
 
 
 
-        Pose2d approachPose = new Pose2d(aPx, aPy, Math.toRadians(50));//heading orgin:47
-        Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
-        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(60));
-        Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(180));
+        Pose2d approachPose = new Pose2d(aPx, aPy, Math.toRadians(180-50));//heading orgin:47
+        Pose2d startPose = new Pose2d(36, -62, Math.toRadians(90));
+        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(180-60));
+        Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(0));
 
 
-        Pose2d middlePark = new Pose2d(-35,-33.2,Math.toRadians(90));
+        Pose2d middlePark = new Pose2d(-35.8,-33.2,Math.toRadians(90));
         Pose2d leftPark =  new Pose2d(-60.8,-33.2,Math.toRadians(90));
-        Pose2d rightPark =  new Pose2d(-11.8,-33.2,Math.toRadians(90));
+        Pose2d rightPark =  new Pose2d(-10.8,-33.2,Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
 
@@ -281,11 +280,11 @@ public class rotatingStaacks extends LinearOpMode {
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     openClaw();
-                    targetPosition = tallHeight-200;
+                    targetPosition = tallHeight-250;
 
                 })
                 .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     targetPosition = grabHeight;
                 })
 
@@ -308,23 +307,38 @@ public class rotatingStaacks extends LinearOpMode {
                 .lineToLinearHeading(approachPose)// or change to approach pose if needed
                 .build();
 
-        TrajectorySequence ToPole = drive.trajectorySequenceBuilder(ToStack.end())//.plus(new Pose2d(-2,-4,0))
+        TrajectorySequence ToPole = drive.trajectorySequenceBuilder(ToStack.end().plus(new Pose2d(0,-1,0)))
 
                 .lineToLinearHeading(farmPose) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     openClaw();
-                    targetPosition = tallHeight-200;
+                    targetPosition = tallHeight-250;
 
                 })
                 .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     targetPosition = grabHeight;
                 })
 
 
                 .build();
+        TrajectorySequence ToPoleOffset = drive.trajectorySequenceBuilder(ToStack.end())
 
+                .lineToLinearHeading(farmPose) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                    openClaw();
+                    targetPosition = tallHeight-250;
+
+                })
+                .lineToLinearHeading(approachPose)
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                    targetPosition = grabHeight;
+                })
+
+
+                .build();
 
 
         TrajectorySequence zone1 = drive.trajectorySequenceBuilder(ToPole.end())

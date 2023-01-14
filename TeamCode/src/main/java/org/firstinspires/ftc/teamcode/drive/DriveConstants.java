@@ -44,7 +44,7 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.8898; // in
-    public static double GEAR_RATIO = .75*(62/48.13) * (46.5/44.71); // output (wheel) speed / input (motor) speed
+    public static double GEAR_RATIO = (62/48.13) * (46.5/44.71); //.75* output (wheel) speed / input (motor) speed
     public static double TRACK_WIDTH = 13; // in
 
     /*
@@ -66,8 +66,8 @@ public class DriveConstants {
      */
     public static double MAX_VEL = 63; //maxvelo tuner original: 73
     public static double MAX_ACCEL = 50; //maxvelo tuner original: 50
-    public static double MAX_ANG_VEL = Math.toRadians(75);
-    public static double MAX_ANG_ACCEL = Math.toRadians(75);//next try 75
+    public static double MAX_ANG_VEL = Math.toRadians(70);
+    public static double MAX_ANG_ACCEL = Math.toRadians(70);//next try 75
 
 
     public static double encoderTicksToInches(double ticks) {
