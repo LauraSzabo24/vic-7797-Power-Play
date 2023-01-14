@@ -64,14 +64,14 @@ public class rotatingStaacks extends LinearOpMode {
     public static double targetPosition = 0;
 
 
-    public static double aPx = -37.1;
+    public static double aPx = -35.1;//-37.1
     public static double aPy = -9.7;//i am so funny & indra is dumb fr
 
     public static double fPx = -30.2;//-30.2
-    public static double fPy = -4.4;//-3.5
+    public static double fPy = -3;//-3.5 || -4.4
 
-    public static double sPx = -63.5;
-    public static double sPy = -8.1; //-8.1
+    public static double sPx = -63.8;//-64.5
+    public static double sPy = -11; //-8.1 || -9.7
 
     private static double offsetHead = 0;
 
@@ -274,7 +274,7 @@ public class rotatingStaacks extends LinearOpMode {
 
         TrajectorySequence FirstCone = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(approachPose)
-                .lineToLinearHeading(new Pose2d(fPx,fPy-1,Math.toRadians(53))) //make exactly on pole
+                .lineToLinearHeading(new Pose2d(-30.2,-6,Math.toRadians(53))) //
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-4.5, () -> {
                    targetPosition = tallHeight;
@@ -455,7 +455,7 @@ public class rotatingStaacks extends LinearOpMode {
                     //    farmPose.plus(new Pose2d(0.2,1.5,Math.toRadians(0)));//.plus adds the exact amount of units shown- to farmPose, hopefully it works
                         drive.followTrajectorySequenceAsync(ToPole);
                         currentState = State.TO_POLE;
-                        grabHeight -= 200;
+                        grabHeight -= 300;//200
                     }
                     break;
                 case IDLE:
