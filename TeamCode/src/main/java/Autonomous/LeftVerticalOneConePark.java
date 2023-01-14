@@ -242,7 +242,7 @@ public class LeftVerticalOneConePark extends LinearOpMode {
                     leftServo.setPosition(0.8);
 
                 })
-                .addTemporalMarker(3.5, () -> {
+                .addTemporalMarker(4.5, () -> {
                     rightServo.setPosition(0.5);
                     leftServo.setPosition(0.5);
 
