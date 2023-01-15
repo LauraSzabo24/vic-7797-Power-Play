@@ -177,7 +177,7 @@ public class FinalTeleOp extends OpMode {
           //  slideSet.setHeight(0);
         }
 
-        if(gamepad2.right_bumper && pulleyMotorL.getCurrentPosition()<5000)
+        if(gamepad2.right_bumper)
         {
 
             pulleyMotorL.setPower(motorPower);
@@ -187,7 +187,7 @@ public class FinalTeleOp extends OpMode {
 
 
         }
-        if(gamepad2.left_bumper && pulleyMotorL.getCurrentPosition() > 0)
+        if(gamepad2.left_bumper)
         {
             pulleyMotorL.setPower(-motorPower);
             pulleyMotorR.setPower(-motorPower);
