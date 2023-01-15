@@ -24,13 +24,12 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-
 import pipelines.AprilTagDetectionPipeline;
 
 
 @Config
 @Autonomous
-public class rotatingStaacks extends LinearOpMode {
+public class pivotingStaacks extends LinearOpMode {
     enum State {
         TO_POLE,
         TO_STACK,
@@ -63,15 +62,14 @@ public class rotatingStaacks extends LinearOpMode {
     public static boolean liftIsBusy = false;
     public static double targetPosition = 0;
 
+    public static double aPx = -37.1;//-37.1
+    public static double aPy = -13;//i am so funny & indra is dumb fr
 
-    public static double aPx = -35.1;//-37.1
-    public static double aPy = -9.7;//i am so funny & indra is dumb fr
+    public static double fPx = -23;//-30.2
+    public static double fPy = -9;//-3.5 || -4.4
 
-    public static double fPx = -30.2;//-30.2
-    public static double fPy = -2.8;//-3.5 || -4.4
-
-    public static double sPx = -63.8;//-64.5
-    public static double sPy = -9.7; //-8.1 || -9.7
+    public static double sPx = -58.5;//-64.5
+    public static double sPy = -12.7; //-8.1 || -9.7
 
     private static double offsetHead = 0;
 
@@ -254,11 +252,12 @@ public class rotatingStaacks extends LinearOpMode {
 
 
 
-        Pose2d approachPose = new Pose2d(aPx-1, aPy, Math.toRadians(57));//heading orgin:47
+     //heading orgin:47
         Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
-        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(57));
-        Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(180));
 
+        Pose2d stackPose = new Pose2d(-58.5,-12.7,Math.toRadians(180));//orig:180
+        Pose2d farmPose = new Pose2d(-23,-9,Math.toRadians(90)); //-33.9,-8.5,42 original
+        Pose2d approachPose = new Pose2d(-37.1,-13,Math.toRadians(180));
 
         Pose2d middlePark = new Pose2d(-35,-33.2,Math.toRadians(90));
         Pose2d leftPark =  new Pose2d(-60.8,-33.2,Math.toRadians(90));
@@ -274,20 +273,14 @@ public class rotatingStaacks extends LinearOpMode {
 
         TrajectorySequence FirstCone = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(approachPose)
-                .lineToLinearHeading(new Pose2d(-31.2,-5,Math.toRadians(50))) //make exactly on pole  public static double fPx = -30.2;//-30.2
+                .lineToLinearHeading(farmPose) //make exactly on pole  public static double fPx = -30.2;//-30.2
 
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-4.5, () -> {
                    targetPosition = tallHeight;
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
+                    for(int i =0; i<10; i++) openClaw();
                     targetPosition = tallHeight-200;
 
                 })
@@ -308,12 +301,7 @@ public class rotatingStaacks extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
                     //closeClaw();
                     closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
+
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     targetPosition = tallHeight;
@@ -327,14 +315,7 @@ public class rotatingStaacks extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
 
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
+                    for(int i =0; i<10; i++) openClaw();
                     targetPosition = tallHeight-200;
 
                 })
@@ -352,15 +333,6 @@ public class rotatingStaacks extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-
                     targetPosition = 50;
                 })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
@@ -373,16 +345,6 @@ public class rotatingStaacks extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
                     targetPosition = 50;
                 })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
@@ -393,13 +355,6 @@ public class rotatingStaacks extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
 
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
                     closeClaw();
                     targetPosition = 50;
 

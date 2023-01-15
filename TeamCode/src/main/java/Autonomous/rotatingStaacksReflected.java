@@ -253,15 +253,15 @@ public class rotatingStaacksReflected extends LinearOpMode {
 
 
 
-        Pose2d approachPose = new Pose2d(aPx, aPy, Math.toRadians(53));//heading orgin:47
-        Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
-        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(53));
+        Pose2d approachPose = new Pose2d(aPx, aPy, Math.toRadians(180-53));//heading orgin:47
+        Pose2d startPose = new Pose2d(-36*-1, -62, Math.toRadians(90));
+        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(180-53));
         Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(180));
 
 
-        Pose2d middlePark = new Pose2d(-35,-33.2,Math.toRadians(90));
-        Pose2d leftPark =  new Pose2d(-60.8,-33.2,Math.toRadians(90));
-        Pose2d rightPark =  new Pose2d(-11.8,-33.2,Math.toRadians(90));
+        Pose2d middlePark = new Pose2d(-35*-1,-33.2,Math.toRadians(90));
+        Pose2d leftPark =  new Pose2d(-60.8*-1,-33.2,Math.toRadians(90));
+        Pose2d rightPark =  new Pose2d(-11.8*-1,-33.2,Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
 

@@ -150,12 +150,12 @@ public class ParkingOnly extends LinearOpMode
             }
         });
 
-        waitForStart();
+      //  waitForStart();
 
         telemetry.setMsTransmissionInterval(50);
 
         //from here2
-        while (opModeIsActive() && !(tagNumber==1) && !(tagNumber==2) && !(tagNumber==3) && !(tagNumber==4))
+        while (opModeInInit())
         {
             ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
 
@@ -220,47 +220,58 @@ public class ParkingOnly extends LinearOpMode
 
         //edited from here
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Pose2d middlePark = new Pose2d(-35,-33.2,Math.toRadians(90));
+        Pose2d leftPark =  new Pose2d(-60.8,-33.2,Math.toRadians(90));
+        Pose2d rightPark =  new Pose2d(-11.8,-33.2,Math.toRadians(90));
 
         //roadrunner trajectory stuff
-        Pose2d startPose = new Pose2d(0,0,0);
+        Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
-        TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(startPose)
-                .forward(35)
-                .waitSeconds(0.4)
-                .strafeLeft(30)
-                .build();
-        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(startPose)
-                .forward(35)
-                .waitSeconds(0.4)
-                .strafeRight(30)
-                .build();
-        Trajectory centerPark  = drive.trajectoryBuilder(startPose)
-                .forward(35)
+        TrajectorySequence zone1 = drive.trajectorySequenceBuilder(startPose)
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+
+                    targetPosition = 50;
+                })
+                .lineToLinearHeading(middlePark)
+                .lineToLinearHeading(leftPark)
+
                 .build();
 
-        waitForStart(); //also new
+        TrajectorySequence zone2 = drive.trajectorySequenceBuilder(startPose)
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
 
-        while(opModeIsActive()){
-            if (tagNumber == 1)
-            {
-                //if (!isStopRequested())
-                drive.followTrajectorySequence(parkLeft);
-                tagNumber=0;
-            }
-            else if (tagNumber == 2)
-            {
-                //if (!isStopRequested())
-                drive.followTrajectory(centerPark);
-                tagNumber=0;
-            }
-            else if (tagNumber == 3)
-            {
-                //if (!isStopRequested())
-                drive.followTrajectorySequence(parkRight);
-                tagNumber=0;
-            }
+                    targetPosition = 50;
+                })
+                .lineToLinearHeading(middlePark)
+                .build();
+
+        TrajectorySequence zone3 = drive.trajectorySequenceBuilder(startPose)
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+
+                    targetPosition = 50;
+
+                })
+                .lineToLinearHeading(middlePark)
+                .lineToLinearHeading(rightPark)
+
+                .build();
+
+
+      //  waitForStart(); //also new
+        if(tagNumber==3){
+            drive.followTrajectorySequence(zone3);
         }
+        else if(tagNumber==2){
+            drive.followTrajectorySequence(zone2);
+        }
+       else if(tagNumber==1){
+            drive.followTrajectorySequence(zone1);
+        }
+
     }
 }
 
