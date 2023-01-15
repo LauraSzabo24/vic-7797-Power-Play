@@ -29,7 +29,7 @@ import pipelines.AprilTagDetectionPipeline;
 
 @Config
 @Autonomous
-public class rotatingStaacksRelfected extends LinearOpMode {
+public class pivotingStaacks extends LinearOpMode {
     enum State {
         TO_POLE,
         TO_STACK,
@@ -58,19 +58,18 @@ public class rotatingStaacksRelfected extends LinearOpMode {
     public static double smallHeight = 2100;
     public static double midHeight =3141;
     public static double tallHeight =3950;
-    public static double grabHeight =800; //940
+    public static double grabHeight =720; //800
     public static boolean liftIsBusy = false;
     public static double targetPosition = 0;
 
+    public static double aPx = -37.1;//-37.1
+    public static double aPy = -13;//i am so funny & indra is dumb fr
 
-    public static double aPx = 37.1;
-    public static double aPy = -9.7;//i am so funny & indra is dumb fr
+    public static double fPx = -23;//-30.2
+    public static double fPy = -9;//-3.5 || -4.4
 
-    public static double fPx = 31.2;//-30.2
-    public static double fPy = -3;//-4.4
-
-    public static double sPx = 64.5;
-    public static double sPy = -8.1;
+    public static double sPx = -58.5;//-64.5
+    public static double sPy = -12.7; //-8.1 || -9.7
 
     private static double offsetHead = 0;
 
@@ -253,15 +252,16 @@ public class rotatingStaacksRelfected extends LinearOpMode {
 
 
 
-        Pose2d approachPose = new Pose2d(aPx, aPy, Math.toRadians(180-50));//heading orgin:47
-        Pose2d startPose = new Pose2d(36, -62, Math.toRadians(90));
-        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(180-60));
-        Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(0));
+     //heading orgin:47
+        Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
 
+        Pose2d stackPose = new Pose2d(-58.5,-12.7,Math.toRadians(180));//orig:180
+        Pose2d farmPose = new Pose2d(-23,-9,Math.toRadians(90)); //-33.9,-8.5,42 original
+        Pose2d approachPose = new Pose2d(-37.1,-13,Math.toRadians(180));
 
-        Pose2d middlePark = new Pose2d(-35.8,-33.2,Math.toRadians(90));
+        Pose2d middlePark = new Pose2d(-35,-33.2,Math.toRadians(90));
         Pose2d leftPark =  new Pose2d(-60.8,-33.2,Math.toRadians(90));
-        Pose2d rightPark =  new Pose2d(-10.8,-33.2,Math.toRadians(90));
+        Pose2d rightPark =  new Pose2d(-11.8,-33.2,Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
 
@@ -273,18 +273,19 @@ public class rotatingStaacksRelfected extends LinearOpMode {
 
         TrajectorySequence FirstCone = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(approachPose)
-                .lineToLinearHeading(farmPose) //make exactly on pole
+                .lineToLinearHeading(farmPose) //make exactly on pole  public static double fPx = -30.2;//-30.2
+
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-4.5, () -> {
                    targetPosition = tallHeight;
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    openClaw();
-                    targetPosition = tallHeight-250;
+                    for(int i =0; i<10; i++) openClaw();
+                    targetPosition = tallHeight-200;
 
                 })
                 .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     targetPosition = grabHeight;
                 })
 
@@ -300,6 +301,7 @@ public class rotatingStaacksRelfected extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
                     //closeClaw();
                     closeClaw();
+
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     targetPosition = tallHeight;
@@ -307,38 +309,24 @@ public class rotatingStaacksRelfected extends LinearOpMode {
                 .lineToLinearHeading(approachPose)// or change to approach pose if needed
                 .build();
 
-        TrajectorySequence ToPole = drive.trajectorySequenceBuilder(ToStack.end().plus(new Pose2d(0,-1,0)))
+        TrajectorySequence ToPole = drive.trajectorySequenceBuilder(ToStack.end())//.plus(new Pose2d(-2,-4,0))
 
                 .lineToLinearHeading(farmPose) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    openClaw();
-                    targetPosition = tallHeight-250;
+
+                    for(int i =0; i<10; i++) openClaw();
+                    targetPosition = tallHeight-200;
 
                 })
                 .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
                     targetPosition = grabHeight;
                 })
 
 
                 .build();
-        TrajectorySequence ToPoleOffset = drive.trajectorySequenceBuilder(ToStack.end())
 
-                .lineToLinearHeading(farmPose) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    openClaw();
-                    targetPosition = tallHeight-250;
-
-                })
-                .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    targetPosition = grabHeight;
-                })
-
-
-                .build();
 
 
         TrajectorySequence zone1 = drive.trajectorySequenceBuilder(ToPole.end())
@@ -423,7 +411,7 @@ public class rotatingStaacksRelfected extends LinearOpMode {
                     //    farmPose.plus(new Pose2d(0.2,1.5,Math.toRadians(0)));//.plus adds the exact amount of units shown- to farmPose, hopefully it works
                         drive.followTrajectorySequenceAsync(ToPole);
                         currentState = State.TO_POLE;
-                        grabHeight -= 200;
+                        grabHeight -= 300;//200
                     }
                     break;
                 case IDLE:
@@ -464,8 +452,8 @@ public class rotatingStaacksRelfected extends LinearOpMode {
 
     }
     public void openClaw() {
-        rightServo.setPosition(0.30);//0.2
-        leftServo.setPosition(0.70);//0.8
+        rightServo.setPosition(0.20);//0.3
+        leftServo.setPosition(0.80);//0.7
     }
 
 

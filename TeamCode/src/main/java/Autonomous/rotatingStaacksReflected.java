@@ -24,13 +24,12 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-
 import pipelines.AprilTagDetectionPipeline;
 
 
 @Config
 @Autonomous
-public class rotatingStaacks extends LinearOpMode {
+public class rotatingStaacksReflected extends LinearOpMode {
     enum State {
         TO_POLE,
         TO_STACK,
@@ -59,19 +58,19 @@ public class rotatingStaacks extends LinearOpMode {
     public static double smallHeight = 2100;
     public static double midHeight =3141;
     public static double tallHeight =3950;
-    public static double grabHeight =720; //800
+    public static double grabHeight =800; //940
     public static boolean liftIsBusy = false;
     public static double targetPosition = 0;
 
 
-    public static double aPx = -35.1;//-37.1
+    public static double aPx = -1*-35.1;//-37.1
     public static double aPy = -9.7;//i am so funny & indra is dumb fr
 
-    public static double fPx = -30.2;//-30.2
-    public static double fPy = -2.8;//-3.5 || -4.4
+    public static double fPx = -1*-30.2;//-30.2
+    public static double fPy = -3;//-3.5 || -4.4
 
-    public static double sPx = -63.8;//-64.5
-    public static double sPy = -9.7; //-8.1 || -9.7
+    public static double sPx = -1*-63.8;//-64.5
+    public static double sPy = -11; //-8.1 || -9.7
 
     private static double offsetHead = 0;
 
@@ -254,15 +253,15 @@ public class rotatingStaacks extends LinearOpMode {
 
 
 
-        Pose2d approachPose = new Pose2d(aPx-1, aPy, Math.toRadians(57));//heading orgin:47
-        Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
-        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(57));
+        Pose2d approachPose = new Pose2d(aPx, aPy, Math.toRadians(180-53));//heading orgin:47
+        Pose2d startPose = new Pose2d(-36*-1, -62, Math.toRadians(90));
+        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(180-53));
         Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(180));
 
 
-        Pose2d middlePark = new Pose2d(-35,-33.2,Math.toRadians(90));
-        Pose2d leftPark =  new Pose2d(-60.8,-33.2,Math.toRadians(90));
-        Pose2d rightPark =  new Pose2d(-11.8,-33.2,Math.toRadians(90));
+        Pose2d middlePark = new Pose2d(-35*-1,-33.2,Math.toRadians(90));
+        Pose2d leftPark =  new Pose2d(-60.8*-1,-33.2,Math.toRadians(90));
+        Pose2d rightPark =  new Pose2d(-11.8*-1,-33.2,Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
 
@@ -274,8 +273,7 @@ public class rotatingStaacks extends LinearOpMode {
 
         TrajectorySequence FirstCone = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(approachPose)
-                .lineToLinearHeading(new Pose2d(-31.2,-5,Math.toRadians(50))) //make exactly on pole  public static double fPx = -30.2;//-30.2
-
+                .lineToLinearHeading(new Pose2d(-1*-30.2,-6,Math.toRadians(53))) //
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-4.5, () -> {
                    targetPosition = tallHeight;

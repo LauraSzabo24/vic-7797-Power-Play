@@ -174,7 +174,7 @@ public class FinalTeleOp extends OpMode {
         }
         if(gamepad2.dpad_down)
         {
-            targetPosition = 180;
+            targetPosition = 50;//180
           //  slideSet.setHeight(0);
         }
 
