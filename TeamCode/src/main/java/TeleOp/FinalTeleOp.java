@@ -58,7 +58,7 @@ public class FinalTeleOp extends OpMode {
     public static double smallHeight = 2100;
     public static double midHeight =3141;
     public static double tallHeight =4215;
-    public static double motorPower =1.3;
+    public static double motorPower =2;
     public static double targetPosition = 5;
 
    // Thread slideUpdate = new Thread(new SlideFixerT());
@@ -106,7 +106,8 @@ public class FinalTeleOp extends OpMode {
         pulleyMotorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         pulleyMotorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-
+        rightServo.setPosition(0.55);
+        leftServo.setPosition(0.45);
 
         targetPosition = 0;
 
