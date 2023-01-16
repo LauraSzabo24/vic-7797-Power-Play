@@ -24,14 +24,12 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-import javax.lang.model.util.ElementScanner6;
-
 import pipelines.AprilTagDetectionPipeline;
 
 
 @Config
 @Autonomous
-public class AcrossAuto extends LinearOpMode {
+public class StationaryAuto extends LinearOpMode {
     enum State {
         FIRST_CONE,
         TO_POLE,
@@ -72,7 +70,7 @@ public class AcrossAuto extends LinearOpMode {
     public static double fPx = -30.2;//-30.2
     public static double fPy = -4.4;//-3.5
 
-    public static double sPx = 63.5;
+    public static double sPx = -63.5;
     public static double sPy = -8.1; //-8.1
 
     private static double offsetHead = 0;
@@ -256,9 +254,9 @@ public class AcrossAuto extends LinearOpMode {
 
 
 
-        Pose2d approachPose = new Pose2d(aPx, aPy, Math.toRadians(53));//heading orgin:47
+        Pose2d approachPose = new Pose2d(aPx, aPy, Math.toRadians(45));//heading orgin:47
         Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
-        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(53));
+        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(45));
         Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(0));
 
 
@@ -275,22 +273,23 @@ public class AcrossAuto extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence FirstCone = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(approachPose)
-                .lineToLinearHeading(new Pose2d(fPx,fPy,Math.toRadians(53))) //make exactly on pole
+                .lineToLinearHeading(new Pose2d(aPx, aPy, Math.toRadians(90)))
+                .turn(Math.toRadians(-45))
+                .lineToLinearHeading(farmPose) //make exactly on pole
                 .waitSeconds(0.5)
                 .lineToLinearHeading(approachPose)
                 .build();
 
 
         TrajectorySequence ToStack = drive.trajectorySequenceBuilder(FirstCone.end())// or farmpose
-
-                .lineToSplineHeading(stackPose)
-                .waitSeconds(1)
-                .lineToSplineHeading(approachPose)// or change to approach pose if needed
+                .turn(Math.toRadians(135))
+                .lineToLinearHeading(stackPose)
+                .waitSeconds(0.7)
+                .lineToLinearHeading(new Pose2d(aPx, aPy, Math.toRadians(180)))// or change to approach pose if needed
                 .build();
 
         TrajectorySequence ToPole = drive.trajectorySequenceBuilder(ToStack.end())//.plus(new Pose2d(-2,-4,0))
-
+                .turn(Math.toRadians(-135))
                 .lineToLinearHeading(farmPose) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                 .waitSeconds(0.5)
                 .lineToLinearHeading(approachPose)
@@ -299,19 +298,14 @@ public class AcrossAuto extends LinearOpMode {
 
 
         TrajectorySequence zone1 = drive.trajectorySequenceBuilder(ToPole.end())
-                .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
-                .lineToLinearHeading(middlePark)
                 .lineToLinearHeading(leftPark)
                 .build();
 
         TrajectorySequence zone2 = drive.trajectorySequenceBuilder(ToPole.end())
-                .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 .lineToLinearHeading(middlePark)
                 .build();
 
         TrajectorySequence zone3 = drive.trajectorySequenceBuilder(ToPole.end())
-                .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
-                .lineToLinearHeading(middlePark)
                 .lineToLinearHeading(rightPark)
 
                 .build();
@@ -320,9 +314,10 @@ public class AcrossAuto extends LinearOpMode {
 
 
 
+
+        closeClaw();
         cycle =0;
         grabHeight =800;
-        closeClaw();
 
         drive.followTrajectorySequenceAsync(FirstCone);
         ElapsedTime et = new ElapsedTime(0);
@@ -338,6 +333,14 @@ public class AcrossAuto extends LinearOpMode {
                         currentState = State.TO_STACK;
                         et.reset();
                         cycle++;
+                    }
+                    if (et.seconds() == 0) targetPosition = tallHeight;
+                    else if (et.seconds() == 2) {
+                        targetPosition -= 200;
+                        openClaw();
+                    }
+                    else if(et.seconds() == 3) {
+                        targetPosition = grabHeight;
                     }
                 case TO_POLE:
                     if (!drive.isBusy()) {
@@ -369,6 +372,14 @@ public class AcrossAuto extends LinearOpMode {
                                     break;
                             }
                         }
+                        if (et.seconds() == 0) targetPosition = tallHeight;
+                        else if (et.seconds() == 2) {
+                            targetPosition -= 200;
+                            openClaw();
+                        }
+                        else if(et.seconds() == 3.1) {
+                            targetPosition = grabHeight;
+                        }
                     }
                     break;
                 case TO_STACK:
@@ -378,6 +389,10 @@ public class AcrossAuto extends LinearOpMode {
                         et.reset();
                         grabHeight -= 200;
                     }
+                    if (et.seconds() == 2) closeClaw();
+                    else if (et.seconds() == 2.5) {
+                        targetPosition = tallHeight;
+                    }
                     break;
                 case IDLE:
                     break;
@@ -385,40 +400,11 @@ public class AcrossAuto extends LinearOpMode {
 
             }
             drive.update();
-            fixSlides();//pp
+            fixSlides();
             telemetry.addData("offset",fPy);
             telemetry.addData("timer",et.seconds());
             telemetry.update();
-            switch (currentState) {
-                case FIRST_CONE:
-                    if (et.seconds() == 0) targetPosition = tallHeight;
-                    else if (et.seconds() == 2) {
-                        targetPosition -= 200;
-                        openClaw();
-                    }
-                    else if(et.seconds() == 3) {
-                        targetPosition = grabHeight;
-                    }
-                    break;
 
-                case TO_STACK:
-                    if (et.seconds() == 2) closeClaw();
-                    else if (et.seconds() == 2.5) {
-                        targetPosition = tallHeight;
-                    }
-                    break;
-
-                case TO_POLE:
-                    if (et.seconds() == 0) targetPosition = tallHeight;
-                    else if (et.seconds() == 2) {
-                        targetPosition -= 200;
-                        openClaw();
-                    }
-                    else if(et.seconds() == 3.1) {
-                        targetPosition = grabHeight;
-                    }
-                    break;
-            }
         }
 
 

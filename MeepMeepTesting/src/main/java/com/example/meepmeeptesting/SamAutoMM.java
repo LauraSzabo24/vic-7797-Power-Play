@@ -29,6 +29,7 @@ public class SamAutoMM {
                                 .lineToLinearHeading(farmingPose)
                                 .waitSeconds(0.5)
                                 .lineToLinearHeading(approachPose)
+
                                 .turn(Math.toRadians(135))
                                 .lineToLinearHeading(stackPose)
                                 .waitSeconds(0.8)

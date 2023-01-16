@@ -212,8 +212,8 @@ public class FinalTeleOp extends OpMode {
         telemetry.addData("targetPosition", targetPosition);
         telemetry.addData("power", power);
         telemetry.update();
-        pulleyMotorL.setPower(power);
-        pulleyMotorR.setPower(power);
+        pulleyMotorL.setPower(2*power);
+        pulleyMotorR.setPower(2*power);
 
 
     }
