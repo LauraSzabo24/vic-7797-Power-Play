@@ -24,6 +24,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
+import javax.lang.model.util.ElementScanner6;
+
 import pipelines.AprilTagDetectionPipeline;
 
 
@@ -31,6 +33,7 @@ import pipelines.AprilTagDetectionPipeline;
 @Autonomous
 public class AcrossAuto extends LinearOpMode {
     enum State {
+        FIRST_CONE,
         TO_POLE,
         TO_STACK,
         PARKING,//
@@ -275,27 +278,7 @@ public class AcrossAuto extends LinearOpMode {
                 .lineToLinearHeading(approachPose)
                 .lineToLinearHeading(new Pose2d(fPx,fPy,Math.toRadians(53))) //make exactly on pole
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-4.5, () -> {
-                   targetPosition = tallHeight;
-                })
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    targetPosition = tallHeight-200;
-
-                })
                 .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    targetPosition = grabHeight;
-                })
-
-
-
                 .build();
 
 
@@ -303,19 +286,6 @@ public class AcrossAuto extends LinearOpMode {
 
                 .lineToSplineHeading(stackPose)
                 .waitSeconds(1)
-                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
-                    //closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                })
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    targetPosition = tallHeight;
-                })
                 .lineToSplineHeading(approachPose)// or change to approach pose if needed
                 .build();
 
@@ -323,85 +293,23 @@ public class AcrossAuto extends LinearOpMode {
 
                 .lineToLinearHeading(farmPose) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    targetPosition = tallHeight-200;
-
-                })
                 .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
-                    targetPosition = grabHeight;
-                })
-
-
                 .build();
 
 
 
         TrajectorySequence zone1 = drive.trajectorySequenceBuilder(ToPole.end())
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-
-                    targetPosition = 50;
-                })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 .lineToLinearHeading(middlePark)
                 .lineToLinearHeading(leftPark)
-
                 .build();
 
         TrajectorySequence zone2 = drive.trajectorySequenceBuilder(ToPole.end())
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    targetPosition = 50;
-                })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 .lineToLinearHeading(middlePark)
                 .build();
 
         TrajectorySequence zone3 = drive.trajectorySequenceBuilder(ToPole.end())
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
-
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    targetPosition = 50;
-
-                })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 .lineToLinearHeading(middlePark)
                 .lineToLinearHeading(rightPark)
@@ -417,29 +325,45 @@ public class AcrossAuto extends LinearOpMode {
         closeClaw();
 
         drive.followTrajectorySequenceAsync(FirstCone);
-        State currentState = State.TO_POLE;
+        ElapsedTime et = new ElapsedTime(0);
+        State currentState = State.FIRST_CONE;
+
 
         while(opModeIsActive())
         {
             switch (currentState) {
+                case FIRST_CONE:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectorySequenceAsync(ToStack);
+                        currentState = State.TO_STACK;
+                        et.reset();
+                        cycle++;
+                    }
                 case TO_POLE:
                     if (!drive.isBusy()) {
                         if(cycle<2) {
                             drive.followTrajectorySequenceAsync(ToStack);
                             currentState = State.TO_STACK;
+                            et.reset();
                             cycle++;
                         }
                         else {
                             switch (tagNumber) {
                                 case 1 :
+                                    closeClaw();
+                                    targetPosition = 50;
                                     drive.followTrajectorySequenceAsync(zone1);
                                     currentState = State.IDLE;
                                     break;
                                 case 2 :
+                                    closeClaw();
+                                    targetPosition = 50;
                                     drive.followTrajectorySequenceAsync(zone2);
                                     currentState = State.IDLE;
                                     break;
                                 case 3 :
+                                    closeClaw();
+                                    targetPosition = 50;
                                     drive.followTrajectorySequenceAsync(zone3);
                                     currentState = State.IDLE;
                                     break;
@@ -449,11 +373,9 @@ public class AcrossAuto extends LinearOpMode {
                     break;
                 case TO_STACK:
                     if (!drive.isBusy()) {
-                        //fPy = fPy + 12;
-                        //fPx = fPx + 10;
-                    //    farmPose.plus(new Pose2d(0.2,1.5,Math.toRadians(0)));//.plus adds the exact amount of units shown- to farmPose, hopefully it works
                         drive.followTrajectorySequenceAsync(ToPole);
                         currentState = State.TO_POLE;
+                        et.reset();
                         grabHeight -= 200;
                     }
                     break;
@@ -465,7 +387,38 @@ public class AcrossAuto extends LinearOpMode {
             drive.update();
             fixSlides();//pp
             telemetry.addData("offset",fPy);
+            telemetry.addData("timer",et.seconds());
             telemetry.update();
+            switch (currentState) {
+                case FIRST_CONE:
+                    if (et.seconds() == 0) targetPosition = tallHeight;
+                    else if (et.seconds() == 2) {
+                        targetPosition -= 200;
+                        openClaw();
+                    }
+                    else if(et.seconds() == 3) {
+                        targetPosition = grabHeight;
+                    }
+                    break;
+
+                case TO_STACK:
+                    if (et.seconds() == 2) closeClaw();
+                    else if (et.seconds() == 2.5) {
+                        targetPosition = tallHeight;
+                    }
+                    break;
+
+                case TO_POLE:
+                    if (et.seconds() == 0) targetPosition = tallHeight;
+                    else if (et.seconds() == 2) {
+                        targetPosition -= 200;
+                        openClaw();
+                    }
+                    else if(et.seconds() == 3.1) {
+                        targetPosition = grabHeight;
+                    }
+                    break;
+            }
         }
 
 
