@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "FinalTeleOp")
+@TeleOp(name = "FMSTeleOp")
 public class FSMTeleOp extends OpMode {
 
     //mecanum constants
@@ -118,7 +118,7 @@ public class FSMTeleOp extends OpMode {
         // mecanum
         drive();
         OpmodeAvil = true;
-
+        currentState = State.NORMAL;
         //pivots
         if(gamepad1.b)
         {
@@ -151,98 +151,71 @@ public class FSMTeleOp extends OpMode {
         }
 
 
-
-        switch (currentState){
-            case NORMAL:
-
-                if(gamepad2.y) currentState = State.EMERGENCY;
-
-                if(gamepad2.b) {
-                rightServo.setPosition(0.55);
-                leftServo.setPosition(0.45);
-                }
-                if(gamepad2.a) {
-                    rightServo.setPosition(0.34);
-                    leftServo.setPosition(0.66);
-                }
+        if(gamepad2.b) {
+            rightServo.setPosition(0.55);
+            leftServo.setPosition(0.45);
+        }
+        if(gamepad2.a) {
+            rightServo.setPosition(0.34);
+            leftServo.setPosition(0.66);
+        }
 
                 //PID
-                if(gamepad2.dpad_up && pulleyMotorL.getCurrentPosition()<5000) {
-                    targetPosition = tallHeight;
-                    //  slideSet.setHeight(tallHeight);
-
-                }
-                if(gamepad2.dpad_left && pulleyMotorL.getCurrentPosition()>50) {
-                    targetPosition = smallHeight;
-                    //  slideSet.setHeight(smallHeight);
-
-                }
-                if(gamepad2.dpad_right) {
-                    targetPosition = midHeight;
-                    //  slideSet.setHeight(midHeight);
-
-
-                }
-                if(gamepad2.dpad_down) {
-                    targetPosition = 50;//180
-                    //  slideSet.setHeight(0);
-                }
-
-                if(gamepad2.right_bumper) {
-
-                    pulleyMotorL.setPower(motorPower);
-                    pulleyMotorR.setPower(motorPower);
-                    targetPosition = pulleyMotorL.getCurrentPosition();
-
-                }
-                if(gamepad2.left_bumper) {
-
-                    pulleyMotorL.setPower(-motorPower);
-                    pulleyMotorR.setPower(-motorPower);
-                    targetPosition = pulleyMotorL.getCurrentPosition();
-
-                }
-                if(!gamepad2.right_bumper && !gamepad2.left_bumper && Math.abs(targetPosition-pulleyMotorL.getCurrentPosition())<12) {
-
-                    pulleyMotorL.setPower(0);
-                    pulleyMotorR.setPower(0);
-
-                }
-
-                double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
-                telemetry.addData("positonrightMotor", pulleyMotorR.getCurrentPosition());
-                telemetry.addData("positonleftMotor", pulleyMotorL.getCurrentPosition());
-                telemetry.addData("targetPosition", targetPosition);
-                telemetry.addData("power", power);
-                telemetry.update();
-                pulleyMotorL.setPower(power);
-                pulleyMotorR.setPower(power);
-
-            break;
-            case EMERGENCY:
-                if(gamepad2.y) currentState = State.NORMAL;
-
-                if(gamepad2.right_bumper) {
-
-                pulleyMotorL.setPower(motorPower);
-                pulleyMotorR.setPower(motorPower);
-
-            }
-               else if(gamepad2.left_bumper) {
-
-                    pulleyMotorL.setPower(-motorPower);
-                    pulleyMotorR.setPower(-motorPower);
-
-
-                }
-                else {
-
-                    pulleyMotorL.setPower(0);
-                    pulleyMotorR.setPower(0);
-
-                }
+        if(gamepad2.dpad_up && pulleyMotorL.getCurrentPosition()<5000) {
+            targetPosition = tallHeight;
+            //  slideSet.setHeight(tallHeight);
 
         }
+        if(gamepad2.dpad_left && pulleyMotorL.getCurrentPosition()>50) {
+            targetPosition = smallHeight;
+            //  slideSet.setHeight(smallHeight);
+
+        }
+        if(gamepad2.dpad_right) {
+            targetPosition = midHeight;
+            //  slideSet.setHeight(midHeight);
+
+        }
+        if(gamepad2.dpad_down) {
+            targetPosition = 50;//180
+            //  slideSet.setHeight(0);
+        }
+
+        if(gamepad2.right_bumper) {
+
+            pulleyMotorL.setPower(motorPower);
+            pulleyMotorR.setPower(motorPower);
+            currentState = State.EMERGENCY;
+            targetPosition = pulleyMotorL.getCurrentPosition();
+
+        }
+        if(gamepad2.left_bumper) {
+
+            pulleyMotorL.setPower(-motorPower);
+            pulleyMotorR.setPower(-motorPower);
+            currentState = State.EMERGENCY;
+            targetPosition = pulleyMotorL.getCurrentPosition();
+
+        }
+        if(!gamepad2.right_bumper && !gamepad2.left_bumper && Math.abs(targetPosition-pulleyMotorL.getCurrentPosition())<12) {
+
+            pulleyMotorL.setPower(0);
+            pulleyMotorR.setPower(0);
+
+        }
+        if(currentState== State.NORMAL){
+            double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+            telemetry.addData("positonrightMotor", pulleyMotorR.getCurrentPosition());
+            telemetry.addData("positonleftMotor", pulleyMotorL.getCurrentPosition());
+            telemetry.addData("targetPosition", targetPosition);
+            telemetry.addData("power", power);
+            telemetry.update();
+            pulleyMotorL.setPower(power);
+            pulleyMotorR.setPower(power);
+        }
+
+
+
 
     }
 

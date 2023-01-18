@@ -62,7 +62,7 @@ public class rotatingStaacks extends LinearOpMode {
     public static double grabHeight =720; //800
     public static boolean liftIsBusy = false;
     public static double targetPosition = 0;
-
+//sam is a submissive cat femboy-true
 
     public static double aPx = -35.1;//-37.1
     public static double aPy = -9.7;//i am so funny & indra is dumb fr
@@ -70,7 +70,7 @@ public class rotatingStaacks extends LinearOpMode {
     public static double fPx = -30.2;//-30.2
     public static double fPy = -2.8;//-3.5 || -4.4
 
-    public static double sPx = -63.8;//-64.5
+    public static double sPx = -55;//-63.8
     public static double sPy = -9.7; //-8.1 || -9.7
 
     private static double offsetHead = 0;
@@ -281,13 +281,7 @@ public class rotatingStaacks extends LinearOpMode {
                    targetPosition = tallHeight;
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
+                    for(int i =0; i<130; i++) openClaw();
                     targetPosition = tallHeight-200;
 
                 })
@@ -308,12 +302,7 @@ public class rotatingStaacks extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
                     //closeClaw();
                     closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
+
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     targetPosition = tallHeight;
@@ -326,15 +315,7 @@ public class rotatingStaacks extends LinearOpMode {
                 .lineToLinearHeading(farmPose) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
-                    openClaw();
+                    for(int i =0; i<130; i++) openClaw();
                     targetPosition = tallHeight-200;
 
                 })
@@ -352,15 +333,6 @@ public class rotatingStaacks extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-
                     targetPosition = 50;
                 })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
@@ -373,16 +345,6 @@ public class rotatingStaacks extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
                     targetPosition = 50;
                 })
                 .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
@@ -393,13 +355,6 @@ public class rotatingStaacks extends LinearOpMode {
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
 
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
-                    closeClaw();
                     closeClaw();
                     targetPosition = 50;
 

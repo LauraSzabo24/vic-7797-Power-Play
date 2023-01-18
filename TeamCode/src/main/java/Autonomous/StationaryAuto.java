@@ -70,7 +70,7 @@ public class StationaryAuto extends LinearOpMode {
     public static double fPx = -30.2;//-30.2
     public static double fPy = -4.4;//-3.5
 
-    public static double sPx = -63.5;
+    public static double sPx = -55;//-63.5
     public static double sPy = -8.1; //-8.1
 
     private static double offsetHead = 0;
@@ -257,7 +257,7 @@ public class StationaryAuto extends LinearOpMode {
         Pose2d approachPose = new Pose2d(aPx, aPy, Math.toRadians(45));//heading orgin:47
         Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
         Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(45));
-        Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(0));
+        Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(180));
 
 
         Pose2d middlePark = new Pose2d(-35,-8.1,Math.toRadians(90));
@@ -277,14 +277,33 @@ public class StationaryAuto extends LinearOpMode {
                 .turn(Math.toRadians(-45))
                 .lineToLinearHeading(farmPose) //make exactly on pole
                 .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-4.5, () -> {
+                    targetPosition = tallHeight;
+                })
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                    for(int i =0; i<130; i++) openClaw();
+                    targetPosition = tallHeight-200;
+
+                })
                 .lineToLinearHeading(approachPose)
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    targetPosition = grabHeight;
+                })
                 .build();
 
 
         TrajectorySequence ToStack = drive.trajectorySequenceBuilder(FirstCone.end())// or farmpose
                 .turn(Math.toRadians(135))
                 .lineToLinearHeading(stackPose)
-                .waitSeconds(0.7)
+                .waitSeconds(1)//0.7
+                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
+                    //closeClaw();
+                    closeClaw();
+
+                })
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                    targetPosition = tallHeight;
+                })
                 .lineToLinearHeading(new Pose2d(aPx, aPy, Math.toRadians(180)))// or change to approach pose if needed
                 .build();
 
@@ -292,7 +311,15 @@ public class StationaryAuto extends LinearOpMode {
                 .turn(Math.toRadians(-135))
                 .lineToLinearHeading(farmPose) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                 .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                    for(int i =0; i<130; i++) openClaw();
+                    targetPosition = tallHeight-200;
+
+                })
                 .lineToLinearHeading(approachPose)
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
+                    targetPosition = grabHeight;
+                })
                 .build();
 
 

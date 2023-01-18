@@ -10,8 +10,8 @@ public class mmInAuto {
         MeepMeep meepMeep = new MeepMeep(800);
         Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
         Pose2d stackPose = new Pose2d(-58.5,-12.7,Math.toRadians(180));//orig:180
-        Pose2d farmPose = new Pose2d(-23,-9,Math.toRadians(90)); //-33.9,-8.5,42 original
-        Pose2d approachPose = new Pose2d(-37.1,-13,Math.toRadians(180));
+        Pose2d farmPose = new Pose2d(-23,-10,Math.toRadians(90)); //-9
+        Pose2d approachPose = new Pose2d(-33.1,-10,Math.toRadians(180));//-37.1
         //
         Pose2d middlePark = new Pose2d(-35.8,-34.6,Math.toRadians(270));
         Pose2d leftPark =  new Pose2d(-60.8,-35.6,Math.toRadians(270));

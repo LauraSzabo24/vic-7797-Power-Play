@@ -66,7 +66,7 @@ public class DriveConstants {
      */
     public static double MAX_VEL = 63; //maxvelo tuner original: 73
     public static double MAX_ACCEL = 50; //maxvelo tuner original: 50
-    public static double MAX_ANG_VEL = Math.toRadians(70);
+    public static double MAX_ANG_VEL = Math.toRadians(180);//70
     public static double MAX_ANG_ACCEL = Math.toRadians(70);//next try 75
 
 

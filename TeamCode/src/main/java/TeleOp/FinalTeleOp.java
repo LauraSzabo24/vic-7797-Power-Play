@@ -60,6 +60,7 @@ public class FinalTeleOp extends OpMode {
     public static double tallHeight =4215;
     public static double motorPower =2;
     public static double targetPosition = 5;
+    public static double increment = 0;
 
    // Thread slideUpdate = new Thread(new SlideFixerT());
    // SlideFixerT slideSet = new SlideFixerT();
@@ -207,10 +208,12 @@ public class FinalTeleOp extends OpMode {
 
 
         double power = returnPower(targetPosition, pulleyMotorL.getCurrentPosition());
+        increment++;
         telemetry.addData("positonrightMotor", pulleyMotorR.getCurrentPosition());
         telemetry.addData("positonleftMotor", pulleyMotorL.getCurrentPosition());
         telemetry.addData("targetPosition", targetPosition);
         telemetry.addData("power", power);
+        telemetry.addData("loopie", increment);
         telemetry.update();
         pulleyMotorL.setPower(2*power);
         pulleyMotorR.setPower(2*power);
