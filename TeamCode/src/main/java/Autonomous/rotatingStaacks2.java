@@ -270,7 +270,7 @@ public class rotatingStaacks2 extends LinearOpMode {
 
 
         drive.setPoseEstimate(startPose);
-        TrajectorySequence bigTrajectory = drive. trajectorySequenceBuilder(startPose)
+        TrajectorySequence bigTrajectory = drive.trajectorySequenceBuilder(startPose)
                 //FIRST CONE
                 .lineToLinearHeading(approachPose)
                 .lineToLinearHeading(new Pose2d(-30.7,-4.5,Math.toRadians(45))) //make exactly on pole  public static double fPx = -30.2;//-30.2
@@ -456,12 +456,7 @@ public class rotatingStaacks2 extends LinearOpMode {
             switch (currentState) {
                 case TO_POLE:
                     if (!drive.isBusy()) {
-                        if(cycle<2) {
-                            drive.followTrajectorySequenceAsync(ToStack);
-                            currentState = State.TO_STACK;
-                            cycle++;
-                        }
-                        else {
+
                             switch (tagNumber) {
                                 case 1 :
                                     drive.followTrajectorySequenceAsync(zone1);
@@ -475,18 +470,12 @@ public class rotatingStaacks2 extends LinearOpMode {
                                     drive.followTrajectorySequenceAsync(zone3);
                                     currentState = State.IDLE;
                                     break;
-                            }
+                                default :
+                                    drive.followTrajectorySequenceAsync(zone3);
+                                    currentState = State.IDLE;
+                                    break;
+
                         }
-                    }
-                    break;
-                case TO_STACK:
-                    if (!drive.isBusy()) {
-                        //fPy = fPy + 12;
-                        //fPx = fPx + 10;
-                    //    farmPose.plus(new Pose2d(0.2,1.5,Math.toRadians(0)));//.plus adds the exact amount of units shown- to farmPose, hopefully it works
-                        drive.followTrajectorySequenceAsync(ToPole);
-                        currentState = State.TO_POLE;
-                        grabHeight -= 300;//200
                     }
                     break;
                 case IDLE:
