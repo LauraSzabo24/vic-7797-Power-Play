@@ -7,7 +7,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -29,9 +28,8 @@ import pipelines.AprilTagDetectionPipeline;
 
 
 @Config
-@Disabled
 @Autonomous
-public class rotatingStaacks2 extends LinearOpMode {
+public class rotatingStaacks4 extends LinearOpMode {
     enum State {
         TO_POLE,
         TO_STACK,
@@ -66,7 +64,7 @@ public class rotatingStaacks2 extends LinearOpMode {
     public static double aPy = -9.7;//i am so funny & indra is dumb fr
 
     public static double fPx = -30.2;//-30.2
-    public static double fPy = -2.8;//-3.5 || -4.4
+    public static double fPy = -1.5;//-3.5 || -4.4
 
     public static double sPx = -55;//-63.8
     public static double sPy = -9.7; //-8.1 || -9.7
@@ -186,6 +184,191 @@ public class rotatingStaacks2 extends LinearOpMode {
 
         //
         initialize();
+        //Trajectory starts here
+        PIDFController pidSlide = new PIDFController(Kp,Ki,Kd,Kf);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        drive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        //Scoring Coordinates
+
+
+
+
+        Pose2d approachPose = new Pose2d(aPx-1, aPy, Math.toRadians(57));//heading orgin:57
+        Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
+        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(57));
+        Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(180));
+
+
+        Pose2d middlePark = new Pose2d(-35,-6.7,Math.toRadians(57));
+        Pose2d leftPark =  new Pose2d(-55.8,-6.7,Math.toRadians(57));
+        Pose2d rightPark =  new Pose2d(-11.8,-6.7,Math.toRadians(57));
+
+        drive.setPoseEstimate(startPose);
+
+
+        //trajectories and trajectory sequences
+
+
+        drive.setPoseEstimate(startPose);
+        TrajectorySequence bigTrajectory = drive.trajectorySequenceBuilder(startPose)
+                //FIRST CONE
+                .lineToLinearHeading(new Pose2d(aPx-4, aPy+8, Math.toRadians(90)))
+                .lineToLinearHeading(approachPose)
+                .lineToLinearHeading(new Pose2d(-29.5,-2.5,Math.toRadians(45))) //y:-3.5, heading: 45
+
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-2.5, () -> {
+                    targetPosition = tallHeight;
+                })
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                    for(int i =0; i<130; i++) openClaw();
+                    targetPosition = tallHeight-200;
+
+                })
+                .lineToLinearHeading(approachPose)
+
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    targetPosition = grabHeight;
+                    // drive.setPoseEstimate(new Pose2d(aPx-1, aPy-2, Math.toRadians(57)));
+                })
+
+                //GRABSTACK1
+
+                .lineToLinearHeading(new Pose2d(-62.8,-6.7,Math.toRadians(180)))//-9.7
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
+                    //closeClaw();
+                    closeClaw();
+
+                })
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> { // offset:-0.5
+                    targetPosition = tallHeight+100;
+                })
+                .lineToLinearHeading(approachPose)
+
+
+                //GOTOPOLE1
+                .lineToLinearHeading(new Pose2d(-29.1,-2.5,Math.toRadians(52))) //y:-1.8, heading:51 make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
+                    for(int i =0; i<130; i++) openClaw();
+                    targetPosition = tallHeight-200;
+
+                })
+                .lineToLinearHeading(approachPose)
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
+                    grabHeight -= 200;
+                    targetPosition = grabHeight;
+                    // drive.setPoseEstimate(new Pose2d(aPx-1, aPy-2, Math.toRadians(57)));
+                })
+                //GRABSTACK2
+
+                .lineToLinearHeading(new Pose2d(-63.8,-5.7,Math.toRadians(180)))//-11.7
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
+                    //closeClaw();
+                    closeClaw();
+
+                })
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                    targetPosition = tallHeight+100;
+                })
+                .lineToLinearHeading(approachPose)
+                //.lineToLinearHeading(new Pose2d(aPx-1, -5.7, Math.toRadians(57)))
+
+
+
+                //GOTOPOLE2
+                .lineToLinearHeading(new Pose2d(-29.1,-1,Math.toRadians(53))) //heading: 56  make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
+                    for(int i =0; i<130; i++) openClaw();
+                    targetPosition = tallHeight-200;
+
+                })
+                .lineToLinearHeading(approachPose)
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
+                    grabHeight -= 200;
+                    targetPosition = grabHeight;
+
+                })
+
+
+                //GRABSTACK3
+
+                  .lineToLinearHeading(new Pose2d(-62.8,-3.7,Math.toRadians(180)))//y:-12
+                  .waitSeconds(0.5)
+                  .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
+                      //closeClaw();
+                      closeClaw();
+
+                  })
+                  .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
+                      targetPosition = tallHeight+100;
+                  })
+                  .lineToLinearHeading(approachPose)
+                  //.lineToLinearHeading(new Pose2d(aPx-1, -5.7, Math.toRadians(57)))
+
+
+
+                  //GOTOPOLE3
+                  .lineToLinearHeading(new Pose2d(-29.1,-1,Math.toRadians(60))) //y: -0.5 heading: 59 make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
+                  .waitSeconds(0.7)
+                  .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                      for(int i =0; i<130; i++) openClaw();
+                      targetPosition = tallHeight-200;
+
+
+                  })
+                  .lineToLinearHeading(approachPose)
+                  .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
+                      grabHeight -= 200;
+                      targetPosition = grabHeight;
+
+                  })
+
+
+
+                .build();
+
+
+
+
+
+
+        TrajectorySequence zone1 = drive.trajectorySequenceBuilder(bigTrajectory.end())
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+                    closeClaw();
+                    targetPosition = 50;
+                })
+                //.lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
+                // .lineToLinearHeading(middlePark)
+                .lineToLinearHeading(leftPark)
+                .build();
+
+        TrajectorySequence zone2 = drive.trajectorySequenceBuilder(bigTrajectory.end())
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+                    closeClaw();
+                    targetPosition = 50;
+                })
+                // .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
+                .lineToLinearHeading(middlePark)
+                .build();
+
+        TrajectorySequence zone3 = drive.trajectorySequenceBuilder(bigTrajectory.end())
+                .waitSeconds(0.5)
+                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
+                    closeClaw();
+                    targetPosition = 50;
+                })
+                // .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
+                // .lineToLinearHeading(middlePark)
+                .lineToLinearHeading(rightPark)
+                .build();
+
 
         //waitForStart();
 
@@ -242,197 +425,10 @@ public class rotatingStaacks2 extends LinearOpMode {
 
 
         //Trajectory starts here
-        PIDFController pidSlide = new PIDFController(Kp,Ki,Kd,Kf);
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
         drive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         //Scoring Coordinates
 
 
-
-
-        Pose2d approachPose = new Pose2d(aPx-1, aPy, Math.toRadians(57));//heading orgin:47
-        Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
-        Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(57));
-        Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(180));
-
-
-        Pose2d middlePark = new Pose2d(-35,-33.2,Math.toRadians(57)); //heading:90
-        Pose2d leftPark =  new Pose2d(-60.8,-33.2,Math.toRadians(57));
-        Pose2d rightPark =  new Pose2d(-11.8,-33.2,Math.toRadians(57));
-
-        drive.setPoseEstimate(startPose);
-
-
-        //trajectories and trajectory sequences
-
-
-        drive.setPoseEstimate(startPose);
-        TrajectorySequence bigTrajectory = drive.trajectorySequenceBuilder(startPose)
-                //FIRST CONE
-                .lineToLinearHeading(approachPose)
-                .lineToLinearHeading(new Pose2d(-30.7,-4.5,Math.toRadians(45))) //make exactly on pole  public static double fPx = -30.2;//-30.2
-
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-4.5, () -> {
-                    targetPosition = tallHeight;
-                })
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    for(int i =0; i<130; i++) openClaw();
-                    targetPosition = tallHeight-200;
-
-                })
-                .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    targetPosition = grabHeight;
-                })
-
-                //GRABSTACK1
-
-                .lineToLinearHeading(new Pose2d(-62.8,-12,Math.toRadians(180)))//-9.7
-                .waitSeconds(0.7)//1
-                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
-                    //closeClaw();
-                    closeClaw();
-
-                })
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    targetPosition = tallHeight+100;
-                })
-                .lineToLinearHeading(approachPose)
-
-                //GOTOPOLE1
-                .lineToLinearHeading(new Pose2d(-29.1,-4.5,Math.toRadians(45))) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    for(int i =0; i<130; i++) openClaw();
-                    targetPosition = tallHeight-200;
-
-                })
-                .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
-                    grabHeight -= 200;
-                    targetPosition = grabHeight;
-                })
-                //GRABSTACK2
-
-                .lineToLinearHeading(new Pose2d(-62,-12,Math.toRadians(180)))
-                .waitSeconds(0.7)
-                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
-                    //closeClaw();
-                    closeClaw();
-
-                })
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    targetPosition = tallHeight+100;
-                })
-                .lineToLinearHeading(approachPose)
-
-                //GOTOPOLE2
-                .lineToLinearHeading(new Pose2d(-28.1,-4.7,Math.toRadians(45))) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    for(int i =0; i<130; i++) openClaw();
-                    targetPosition = tallHeight-200;
-
-                })
-                .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
-                    grabHeight -= 200;
-                    targetPosition = grabHeight;
-                })
-                .build();
-
-
-
-        TrajectorySequence FirstCone = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(approachPose)
-                .lineToLinearHeading(new Pose2d(-30.7,-4.5,Math.toRadians(45))) //make exactly on pole  public static double fPx = -30.2;//-30.2
-
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-4.5, () -> {
-                   targetPosition = tallHeight;
-                })
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    for(int i =0; i<130; i++) openClaw();
-                    targetPosition = tallHeight-200;
-
-                })
-                .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    targetPosition = grabHeight;
-                })
-
-
-
-                .build();
-
-
-        TrajectorySequence ToStack = drive.trajectorySequenceBuilder(FirstCone.end())// or farmpose
-
-                .lineToLinearHeading(stackPose)
-                .waitSeconds(1)
-                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
-                    //closeClaw();
-                    closeClaw();
-
-                })
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    targetPosition = tallHeight;
-                })
-                .lineToLinearHeading(approachPose)// or change to approach pose if needed
-                .build();
-
-        TrajectorySequence ToPole = drive.trajectorySequenceBuilder(ToStack.end())//.plus(new Pose2d(-2,-4,0))
-
-                .lineToLinearHeading(farmPose) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    for(int i =0; i<130; i++) openClaw();
-                    targetPosition = tallHeight-200;
-
-                })
-                .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
-                    targetPosition = grabHeight;
-                })
-
-
-                .build();
-
-
-
-        TrajectorySequence zone1 = drive.trajectorySequenceBuilder(ToPole.end())
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
-                    closeClaw();
-                    targetPosition = 50;
-                })
-               // .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
-               // .lineToLinearHeading(middlePark)
-                .lineToLinearHeading(leftPark)
-                .build();
-
-        TrajectorySequence zone2 = drive.trajectorySequenceBuilder(ToPole.end())
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
-                    closeClaw();
-                    targetPosition = 50;
-                })
-               // .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
-                .lineToLinearHeading(middlePark)
-                .build();
-
-        TrajectorySequence zone3 = drive.trajectorySequenceBuilder(ToPole.end())
-                .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
-                    closeClaw();
-                    targetPosition = 50;
-                })
-               // .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
-               // .lineToLinearHeading(middlePark)
-                .lineToLinearHeading(rightPark)
-                .build();
 
 
 
@@ -440,7 +436,7 @@ public class rotatingStaacks2 extends LinearOpMode {
 
         cycle =0;
         grabHeight =700;
-        closeClaw();
+       // closeClaw();
 
         drive.followTrajectorySequenceAsync(bigTrajectory);
         State currentState = State.TO_POLE;
@@ -450,7 +446,7 @@ public class rotatingStaacks2 extends LinearOpMode {
             switch (currentState) {
                 case TO_POLE:
                     if (!drive.isBusy()) {
-
+                            drive.setPoseEstimate(approachPose);
                             switch (tagNumber) {
                                 case 1 :
                                     drive.followTrajectorySequenceAsync(zone1);
@@ -465,7 +461,7 @@ public class rotatingStaacks2 extends LinearOpMode {
                                     currentState = State.IDLE;
                                     break;
                                 default :
-                                    drive.followTrajectorySequenceAsync(zone3);
+                                   // drive.followTrajectorySequenceAsync(zone2);
                                     currentState = State.IDLE;
                                     break;
 
