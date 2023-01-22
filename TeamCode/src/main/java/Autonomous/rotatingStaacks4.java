@@ -139,24 +139,29 @@ public class rotatingStaacks4 extends LinearOpMode {
 
         closeClaw();
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
-        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+        try {
+            int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
+            aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
 
-        camera.setPipeline(aprilTagDetectionPipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-            }
+            camera.setPipeline(aprilTagDetectionPipeline);
+            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+                @Override
+                public void onOpened() {
+                    camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                }
 
-            @Override
-            public void onError(int errorCode) {
-                throw new RuntimeException("Error opening camera! Error code " + errorCode);
-            }
-        });
-
+                @Override
+                public void onError(int errorCode) {
+                    throw new RuntimeException("Error opening camera! Error code " + errorCode);
+                }
+            });
+        }
+        catch (Exception e) {
+            telemetry.addData("PreLoopStatus", "PRELOOP CAMERA ERROR, EXCEPTION CAUGHT");
+            telemetry.update();
+        }
     }
 
     //PID METHOD
