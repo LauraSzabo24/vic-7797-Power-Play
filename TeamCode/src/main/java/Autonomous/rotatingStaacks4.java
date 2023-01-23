@@ -139,24 +139,29 @@ public class rotatingStaacks4 extends LinearOpMode {
 
         closeClaw();
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
-        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+        try {
+            int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
+            aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
 
-        camera.setPipeline(aprilTagDetectionPipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-            }
+            camera.setPipeline(aprilTagDetectionPipeline);
+            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+                @Override
+                public void onOpened() {
+                    camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                }
 
-            @Override
-            public void onError(int errorCode) {
-                throw new RuntimeException("Error opening camera! Error code " + errorCode);
-            }
-        });
-
+                @Override
+                public void onError(int errorCode) {
+                    throw new RuntimeException("Error opening camera! Error code " + errorCode);
+                }
+            });
+        }
+        catch (Exception e) {
+            telemetry.addData("PreLoopStatus", "PRELOOP CAMERA ERROR, EXCEPTION CAUGHT");
+            telemetry.update();
+        }
     }
 
     //PID METHOD
@@ -378,50 +383,56 @@ public class rotatingStaacks4 extends LinearOpMode {
 
         //from here2
         while (opModeInInit()) {
-            ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
+            try {
+                ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
 
-            if (detections != null) {
-                telemetry.addData("FPS", camera.getFps());
-                telemetry.addData("Overhead ms", camera.getOverheadTimeMs());
-                telemetry.addData("Pipeline ms", camera.getPipelineTimeMs());
+                if (detections != null) {
+                    telemetry.addData("FPS", camera.getFps());
+                    telemetry.addData("Overhead ms", camera.getOverheadTimeMs());
+                    telemetry.addData("Pipeline ms", camera.getPipelineTimeMs());
 
-                if (detections.size() == 0) {
-                    numFramesWithoutDetection++;
+                    if (detections.size() == 0) {
+                        numFramesWithoutDetection++;
 
-                    if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
-                        aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
-                    }
-                } else {
-                    numFramesWithoutDetection = 0;
-
-                    if (detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
-                        aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
-                    }
-
-                    for (AprilTagDetection detection : detections) {
-                        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-                        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x * FEET_PER_METER));
-                        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y * FEET_PER_METER));
-                        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z * FEET_PER_METER));
-                        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
-                        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
-                        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
-
-                        //...
-                        if (detection.id == 1 || detection.id == 2 || detection.id == 3) {
-                            tagNumber = detection.id;
+                        if (numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION) {
+                            aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
                         }
-                        //...
+                    } else {
+                        numFramesWithoutDetection = 0;
+
+                        if (detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS) {
+                            aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
+                        }
+
+                        for (AprilTagDetection detection : detections) {
+                            telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+                            telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x * FEET_PER_METER));
+                            telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y * FEET_PER_METER));
+                            telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z * FEET_PER_METER));
+                            telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
+                            telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
+                            telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+
+                            //...
+                            if (detection.id == 1 || detection.id == 2 || detection.id == 3) {
+                                tagNumber = detection.id;
+                            }
+                            //...
+                        }
                     }
+                    telemetry.update();
+
                 }
-                telemetry.update();
+                sleep(20);
 
+                //PID CONSTANT CORRECTION OF SLIDES
+
+                //PID ENDS HERE
             }
-            sleep(20);
-
-            //PID CONSTANT CORRECTION OF SLIDES
-
-            //PID ENDS HERE
+            catch (Exception e) {
+                telemetry.addData("Status", "CAMERA ERROR, EXCEPTION CAUGHT");
+                telemetry.update();
+            }
         }
 
 
