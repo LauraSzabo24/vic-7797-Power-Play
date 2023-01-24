@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "FMSTeleOp")
+@TeleOp(name = "FSMTeleOp")
 public class FSMTeleOp extends OpMode {
 
     //mecanum constants
