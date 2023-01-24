@@ -61,13 +61,13 @@ public class rotatingStaacks4 extends LinearOpMode {
 //sam is a submissive cat femboy-true
 
     public static double aPx = -35.1;//-37.1
-    public static double aPy = -9.7;//i am so funny & indra is dumb fr
+    public static double aPy = -9.7;//-9.7
 
     public static double fPx = -30.2;//-30.2
     public static double fPy = -1.5;//-3.5 || -4.4
 
-    public static double sPx = -55;//-63.8
-    public static double sPy = -9.7; //-8.1 || -9.7
+    public static double sPx = -58;//-55
+    public static double sPy = -13.7; //-8.1 || -9.7
 
 
 
@@ -218,9 +218,10 @@ public class rotatingStaacks4 extends LinearOpMode {
         drive.setPoseEstimate(startPose);
         TrajectorySequence bigTrajectory = drive.trajectorySequenceBuilder(startPose)
                 //FIRST CONE
-                .lineToLinearHeading(new Pose2d(aPx-4, aPy+8, Math.toRadians(90)))
-                .lineToLinearHeading(approachPose)
-                .lineToLinearHeading(new Pose2d(-29.5,-2.5,Math.toRadians(45))) //y:-3.5, heading: 45
+                .lineToLinearHeading(new Pose2d(aPx-2, aPy+8, Math.toRadians(90)))
+                //.lineToLinearHeading(approachPose)
+                .lineToLinearHeading(new Pose2d(aPx-1, aPy-8, Math.toRadians(57)))
+                .lineToLinearHeading(new Pose2d(-30.5,-4.5,Math.toRadians(47))) //y:-2.5, heading: 45
 
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-2.5, () -> {
@@ -231,7 +232,8 @@ public class rotatingStaacks4 extends LinearOpMode {
                     targetPosition = tallHeight-200;
 
                 })
-                .lineToLinearHeading(approachPose)
+                //.lineToLinearHeading(approachPose)
+                .lineToLinearHeading(new Pose2d(aPx-1, aPy-8, Math.toRadians(57)))
 
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     targetPosition = grabHeight;
@@ -240,7 +242,7 @@ public class rotatingStaacks4 extends LinearOpMode {
 
                 //GRABSTACK1
 
-                .lineToLinearHeading(new Pose2d(-62.8,-6.7,Math.toRadians(180)))//-9.7
+                .lineToLinearHeading(new Pose2d(-62.8,-9.7,Math.toRadians(180)))//-6.7
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
                     //closeClaw();
@@ -285,7 +287,7 @@ public class rotatingStaacks4 extends LinearOpMode {
 
 
                 //GOTOPOLE2
-                .lineToLinearHeading(new Pose2d(-29.1,-1,Math.toRadians(53))) //heading: 56  make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
+                .lineToLinearHeading(new Pose2d(-29.1,-1,Math.toRadians(56))) //heading: 53  make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
                     for(int i =0; i<130; i++) openClaw();
