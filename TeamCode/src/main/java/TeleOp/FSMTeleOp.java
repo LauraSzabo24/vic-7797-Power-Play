@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "FMSTeleOp")
+@TeleOp(name = "FSMTeleOp")
 public class FSMTeleOp extends OpMode {
 
     //mecanum constants
@@ -183,16 +183,16 @@ public class FSMTeleOp extends OpMode {
 
         if(gamepad2.right_bumper) {
 
-            pulleyMotorL.setPower(motorPower);
-            pulleyMotorR.setPower(motorPower);
+            pulleyMotorL.setPower(0.7*motorPower);
+            pulleyMotorR.setPower(0.7*motorPower);
             currentState = State.EMERGENCY;
             targetPosition = pulleyMotorL.getCurrentPosition();
 
         }
         if(gamepad2.left_bumper) {
 
-            pulleyMotorL.setPower(-motorPower);
-            pulleyMotorR.setPower(-motorPower);
+            pulleyMotorL.setPower(-0.7*motorPower);
+            pulleyMotorR.setPower(-0.7*motorPower);
             currentState = State.EMERGENCY;
             targetPosition = pulleyMotorL.getCurrentPosition();
 

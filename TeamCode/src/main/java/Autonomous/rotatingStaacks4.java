@@ -463,18 +463,22 @@ public class rotatingStaacks4 extends LinearOpMode {
                             switch (tagNumber) {
                                 case 1 :
                                     drive.followTrajectorySequenceAsync(zone1);
+                                    closeClaw();
                                     currentState = State.IDLE;
                                     break;
                                 case 2 :
                                     drive.followTrajectorySequenceAsync(zone2);
+                                    closeClaw();
                                     currentState = State.IDLE;
                                     break;
                                 case 3 :
                                     drive.followTrajectorySequenceAsync(zone3);
+                                    closeClaw();
                                     currentState = State.IDLE;
                                     break;
                                 default :
-                                   // drive.followTrajectorySequenceAsync(zone2);
+                                    drive.followTrajectorySequenceAsync(zone2);
+                                    closeClaw();
                                     currentState = State.IDLE;
                                     break;
 
