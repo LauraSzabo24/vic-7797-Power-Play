@@ -161,12 +161,12 @@ public class FSMTeleOp extends OpMode {
         }
 
                 //PID
-        if(gamepad2.dpad_up && pulleyMotorL.getCurrentPosition()<5000) {
+        if(gamepad2.dpad_up) {
             targetPosition = tallHeight;
             //  slideSet.setHeight(tallHeight);
 
         }
-        if(gamepad2.dpad_left && pulleyMotorL.getCurrentPosition()>50) {
+        if(gamepad2.dpad_left) {
             targetPosition = smallHeight;
             //  slideSet.setHeight(smallHeight);
 
