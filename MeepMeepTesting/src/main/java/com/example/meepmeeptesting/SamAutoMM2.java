@@ -20,7 +20,7 @@ public class SamAutoMM2 {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(80, 50, Math.toRadians(180), Math.toRadians(180), 13)
+                .setConstraints(80, 50, Math.toRadians(1800), Math.toRadians(1800), 13)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPose)
                                 .lineToLinearHeading(approachPose)

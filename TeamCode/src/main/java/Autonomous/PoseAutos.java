@@ -66,7 +66,7 @@ public class PoseAutos extends LinearOpMode {
     public static double fPx = -30.2;//-30.2
     public static double fPy = -1.5;//-3.5 || -4.4
 
-    public static double sPx = -58;//-55
+    public static double sPx = -61;//-55
     public static double sPy = -13.7; //-8.1 || -9.7
 
 
@@ -199,7 +199,7 @@ public class PoseAutos extends LinearOpMode {
 
 
 
-        Pose2d approachPose = new Pose2d(aPx-1, aPy-8, Math.toRadians(57));//heading orgin:57
+        Pose2d approachPose = new Pose2d(aPx-1, aPy-4, Math.toRadians(57));//heading orgin:57
         Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
         Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(57));
         Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(180));
@@ -233,7 +233,7 @@ public class PoseAutos extends LinearOpMode {
 
                 })
                 //.lineToLinearHeading(approachPose)
-                .lineToLinearHeading(new Pose2d(aPx-1, aPy-8, Math.toRadians(57)))
+                .lineToLinearHeading(new Pose2d(aPx-1, aPy-4, Math.toRadians(57)))
                 .UNSTABLE_addTemporalMarkerOffset(0,()->{
                     drive.setPoseEstimate(approachPose);
                 })

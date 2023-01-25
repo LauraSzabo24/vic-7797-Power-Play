@@ -29,7 +29,7 @@ import pipelines.AprilTagDetectionPipeline;
 
 @Config
 @Autonomous
-public class rotatingStaacks4 extends LinearOpMode {
+public class OnePlusTwo extends LinearOpMode {
     enum State {
         TO_POLE,
         TO_STACK,
@@ -220,7 +220,7 @@ public class rotatingStaacks4 extends LinearOpMode {
                 //FIRST CONE
                 .lineToLinearHeading(new Pose2d(aPx-2, aPy+8, Math.toRadians(90)))
                 //.lineToLinearHeading(approachPose)
-                .lineToLinearHeading(new Pose2d(aPx-1, aPy-8, Math.toRadians(57)))
+                .lineToLinearHeading(new Pose2d(aPx-1, aPy-5, Math.toRadians(57))) //first isolate first two trajectories to derive appropriate approach pose
                 .lineToLinearHeading(new Pose2d(-30.5,-5,Math.toRadians(47))) //y:-2.5, heading: 45
 
                 .waitSeconds(0.5)
@@ -233,7 +233,7 @@ public class rotatingStaacks4 extends LinearOpMode {
 
                 })
                 //.lineToLinearHeading(approachPose)
-                .lineToLinearHeading(new Pose2d(aPx-1, aPy-8, Math.toRadians(57)))
+                .lineToLinearHeading(new Pose2d(aPx-1, aPy-5, Math.toRadians(57)))
 
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     targetPosition = grabHeight;
@@ -257,6 +257,7 @@ public class rotatingStaacks4 extends LinearOpMode {
 
 
                 //GOTOPOLE1
+
                 .lineToLinearHeading(new Pose2d(-32.5,-4.5,Math.toRadians(52))) //x:-29.1 y:-2.5, heading:51 make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
@@ -264,16 +265,17 @@ public class rotatingStaacks4 extends LinearOpMode {
                     targetPosition = tallHeight-200;
 
                 })
-                .lineToLinearHeading(approachPose)
+                .lineToLinearHeading(approachPose.plus(new Pose2d()))//change approach pose based off of drift from previous cycle
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
                     grabHeight -= 200;
                     targetPosition = grabHeight;
-
+                    drive.setPoseEstimate(approachPose);//so it makes a direct b-line towards stack that replicates previous cycle
                     // drive.setPoseEstimate(new Pose2d(aPx-1, aPy-2, Math.toRadians(57)));
                 })
+
                 //GRABSTACK2
 
-                .lineToLinearHeading(new Pose2d(-63.8,-9.7,Math.toRadians(180)))//-5.7
+                .lineToLinearHeading(new Pose2d(-63.7,-9.7,Math.toRadians(180)))//-5.7
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
                     //closeClaw();
@@ -283,28 +285,36 @@ public class rotatingStaacks4 extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     targetPosition = tallHeight+100;
                 })
-                .lineToLinearHeading(approachPose)
+                .lineToLinearHeading(approachPose.plus(new Pose2d()))//make sure is adequate
+                .UNSTABLE_addTemporalMarkerOffset(0,()->{
+                    drive.setPoseEstimate(approachPose);
+                })
                 //.lineToLinearHeading(new Pose2d(aPx-1, -5.7, Math.toRadians(57)))
 
 
 
                 //GOTOPOLE2
-                .lineToLinearHeading(new Pose2d(-31.1,-2.5,Math.toRadians(56))) //heading: 53  make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
+                .lineToLinearHeading(new Pose2d(-30.5,-5,Math.toRadians(47))) //y:-2.5, heading: 45
+
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-2.5, () -> {
+                    targetPosition = tallHeight;
+                })
+                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     for(int i =0; i<130; i++) openClaw();
                     targetPosition = tallHeight-200;
 
                 })
-                .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
-                    grabHeight -= 200;
+                //.lineToLinearHeading(approachPose)
+                .lineToLinearHeading(new Pose2d(aPx-1, aPy-5, Math.toRadians(57)))
+
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     targetPosition = grabHeight;
 
+                    // drive.setPoseEstimate(new Pose2d(aPx-1, aPy-2, Math.toRadians(57)));
                 })
 
-
-                //GRABSTACK3
+            /*    //GRABSTACK3
 
                   .lineToLinearHeading(new Pose2d(-62.8,-7.7,Math.toRadians(180)))//y:-12
                   .waitSeconds(0.5)
@@ -336,7 +346,7 @@ public class rotatingStaacks4 extends LinearOpMode {
                       targetPosition = grabHeight;
 
                   })
-
+            */
 
 
                 .build();
