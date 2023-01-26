@@ -64,9 +64,9 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 83; //maxvelo tuner original: 63
+    public static double MAX_VEL = 65; //maxvelo tuner original: 63
     public static double MAX_ACCEL = 50; //maxvelo tuner original: 50
-    public static double MAX_ANG_VEL = Math.toRadians(100);//150
+    public static double MAX_ANG_VEL = Math.toRadians(70);//150
     public static double MAX_ANG_ACCEL = Math.toRadians(70);//70
 
 

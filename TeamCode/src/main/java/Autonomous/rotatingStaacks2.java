@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import pipelines.AprilTagDetectionPipeline;
 
 
-@Config
-@Disabled
 @Autonomous
 public class rotatingStaacks2 extends LinearOpMode {
     enum State {
@@ -257,9 +255,9 @@ public class rotatingStaacks2 extends LinearOpMode {
         Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(180));
 
 
-        Pose2d middlePark = new Pose2d(-35,-33.2,Math.toRadians(57)); //heading:90
-        Pose2d leftPark =  new Pose2d(-60.8,-33.2,Math.toRadians(57));
-        Pose2d rightPark =  new Pose2d(-11.8,-33.2,Math.toRadians(57));
+        Pose2d middlePark = new Pose2d(-35,-9.7,Math.toRadians(90)); //heading:90
+        Pose2d leftPark =  new Pose2d(-60.8,-9.7,Math.toRadians(90));
+        Pose2d rightPark =  new Pose2d(-11.8,-9.7,Math.toRadians(90));
 
         drive.setPoseEstimate(startPose);
 
@@ -271,7 +269,7 @@ public class rotatingStaacks2 extends LinearOpMode {
         TrajectorySequence bigTrajectory = drive.trajectorySequenceBuilder(startPose)
                 //FIRST CONE
                 .lineToLinearHeading(approachPose)
-                .lineToLinearHeading(new Pose2d(-30.7,-4.5,Math.toRadians(45))) //make exactly on pole  public static double fPx = -30.2;//-30.2
+                .lineToLinearHeading(new Pose2d(-30.7,-3.5,Math.toRadians(45))) //make exactly on pole  public static double fPx = -30.2;//-30.2
 
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-4.5, () -> {
@@ -289,7 +287,7 @@ public class rotatingStaacks2 extends LinearOpMode {
 
                 //GRABSTACK1
 
-                .lineToLinearHeading(new Pose2d(-62.8,-12,Math.toRadians(180)))//-9.7
+                .lineToLinearHeading(new Pose2d(-63,-12,Math.toRadians(180)))//-9.7
                 .waitSeconds(0.7)//1
                 .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
                     //closeClaw();
@@ -302,7 +300,7 @@ public class rotatingStaacks2 extends LinearOpMode {
                 .lineToLinearHeading(approachPose)
 
                 //GOTOPOLE1
-                .lineToLinearHeading(new Pose2d(-29.1,-4.5,Math.toRadians(45))) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
+                .lineToLinearHeading(new Pose2d(-30.4,-3.5,Math.toRadians(45))) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     for(int i =0; i<130; i++) openClaw();
@@ -316,7 +314,7 @@ public class rotatingStaacks2 extends LinearOpMode {
                 })
                 //GRABSTACK2
 
-                .lineToLinearHeading(new Pose2d(-62,-12,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-63,-12,Math.toRadians(180)))
                 .waitSeconds(0.7)
                 .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
                     //closeClaw();
@@ -329,7 +327,7 @@ public class rotatingStaacks2 extends LinearOpMode {
                 .lineToLinearHeading(approachPose)
 
                 //GOTOPOLE2
-                .lineToLinearHeading(new Pose2d(-28.1,-4.7,Math.toRadians(45))) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
+                .lineToLinearHeading(new Pose2d(-29.4,-3.7,Math.toRadians(45))) //make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     for(int i =0; i<130; i++) openClaw();
@@ -337,7 +335,7 @@ public class rotatingStaacks2 extends LinearOpMode {
 
                 })
                 .lineToLinearHeading(approachPose)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> { //original offset = -0.5 b
                     grabHeight -= 200;
                     targetPosition = grabHeight;
                 })
