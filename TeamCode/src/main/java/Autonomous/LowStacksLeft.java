@@ -199,7 +199,7 @@ public class LowStacksLeft extends LinearOpMode {
 
 
 
-        Pose2d approachPose = new Pose2d(aPx-1, aPy-5, Math.toRadians(57));//heading orgin:57
+        Pose2d approachPose = new Pose2d(aPx-1, aPy-5, Math.toRadians(90));//heading orgin:57
         Pose2d startPose = new Pose2d(-36, -62, Math.toRadians(90));
         Pose2d farmPose = new Pose2d(fPx,fPy,Math.toRadians(57));
         Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(180));
@@ -225,10 +225,9 @@ public class LowStacksLeft extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(-3.5, () -> {
                     targetPosition = midHeight;
                 })
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
                     for(int i =0; i<130; i++) openClaw();
-                    targetPosition = tallHeight-200;
-
+                    targetPosition = midHeight-200;
                 })
                 .lineToLinearHeading(approachPose)
 
@@ -238,7 +237,7 @@ public class LowStacksLeft extends LinearOpMode {
 
                 .lineToLinearHeading(stackPose)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
                     closeClaw();
                     targetPosition = smallHeight;
                 })
@@ -246,7 +245,7 @@ public class LowStacksLeft extends LinearOpMode {
                 .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
                 .lineToLinearHeading(farmPose2)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> { //-0.3
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> { //-0.5
                     for(int i =0; i<130; i++) openClaw();
                     grabHeight-=200;
                     targetPosition = grabHeight;
@@ -257,7 +256,7 @@ public class LowStacksLeft extends LinearOpMode {
 
                 .lineToLinearHeading(stackPose)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
                     closeClaw();
                     targetPosition = smallHeight;
                 })
@@ -265,7 +264,7 @@ public class LowStacksLeft extends LinearOpMode {
                 .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
                 .lineToLinearHeading(farmPose2)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> { //-0.3
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> { //-0.5
                     for(int i =0; i<130; i++) openClaw();
                     grabHeight-=200;
                     targetPosition = grabHeight;
@@ -277,7 +276,7 @@ public class LowStacksLeft extends LinearOpMode {
 
                 .lineToLinearHeading(stackPose)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
                     closeClaw();
                     targetPosition = smallHeight;
                 })
@@ -285,7 +284,7 @@ public class LowStacksLeft extends LinearOpMode {
                 .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
                 .lineToLinearHeading(farmPose2)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> { //-0.3
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> { //-0.3
                     for(int i =0; i<130; i++) openClaw();
                     grabHeight-=200;
                     targetPosition = grabHeight;
@@ -297,7 +296,7 @@ public class LowStacksLeft extends LinearOpMode {
 
                 .lineToLinearHeading(stackPose)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
                     closeClaw();
                     targetPosition = smallHeight;
                 })
@@ -305,7 +304,7 @@ public class LowStacksLeft extends LinearOpMode {
                 .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
                 .lineToLinearHeading(farmPose2)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> { //-0.3
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> { //-0.3
                     for(int i =0; i<130; i++) openClaw();
                     grabHeight-=200;
                     targetPosition = grabHeight;
@@ -317,7 +316,7 @@ public class LowStacksLeft extends LinearOpMode {
 
                 .lineToLinearHeading(stackPose)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
                     closeClaw();
                     targetPosition = smallHeight;
                 })
@@ -325,7 +324,7 @@ public class LowStacksLeft extends LinearOpMode {
                 .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
                 .lineToLinearHeading(farmPose2)
                 .waitSeconds(0.5)
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> { //-0.3
+                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> { //-0.3
                     for(int i =0; i<130; i++) openClaw();
                     grabHeight-=200;
                     targetPosition = grabHeight;
