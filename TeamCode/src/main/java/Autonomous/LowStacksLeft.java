@@ -517,8 +517,8 @@ public class LowStacksLeft extends LinearOpMode {
 
     }
     public void openClaw() {
-        rightServo.setPosition(0.20);//0.3
-        leftServo.setPosition(0.80);//0.7
+        rightServo.setPosition(0.34); //0.2
+        leftServo.setPosition(0.66); //0.8
     }
 
 
