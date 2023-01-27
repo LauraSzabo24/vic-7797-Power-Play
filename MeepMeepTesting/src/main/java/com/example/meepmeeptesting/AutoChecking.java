@@ -5,7 +5,7 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-public class AutoTesting {
+public class AutoChecking {
     public static double Kp = 0.0125;
     public static double Ki = 0.0; //.00005
     public static double Kd = 0.0;
@@ -50,39 +50,109 @@ public class AutoTesting {
                         drive.trajectorySequenceBuilder(startPose)
                                 .lineToLinearHeading(firstConePose)
                                 .waitSeconds(0.5)
-                                .lineToLinearHeading(approachPose)
-                                .lineToLinearHeading(stackPose)
-                                .waitSeconds(0.5)
-                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                                .lineToLinearHeading(farmPose2)
-                                .waitSeconds(0.5)
-                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                                .lineToLinearHeading(stackPose)
-                                .waitSeconds(0.5)
-                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                                .lineToLinearHeading(farmPose2)
-                                .waitSeconds(0.5)
-                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                                .lineToLinearHeading(stackPose)
-                                .waitSeconds(0.5)
-                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                                .lineToLinearHeading(farmPose2)
-                                .waitSeconds(0.5)
-                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                                .lineToLinearHeading(stackPose)
-                                .waitSeconds(0.5)
-                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                                .lineToLinearHeading(farmPose2)
-                                .waitSeconds(0.5)
-                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                                .lineToLinearHeading(stackPose)
-                                .waitSeconds(0.5)
-                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                                .lineToLinearHeading(farmPose2)
-                                .waitSeconds(0.5)
-                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                                .lineToLinearHeading(rightPark)
+                                .UNSTABLE_addTemporalMarkerOffset(-3.5, () -> {
 
+                                })
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+
+                                })
+                                .lineToLinearHeading(approachPose)
+
+
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5,() ->{
+
+                                })
+                                .lineToLinearHeading(stackPose)
+                                .waitSeconds(0.5)
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+
+
+                                })
+                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+                                .lineToLinearHeading(farmPose2)
+                                .waitSeconds(0.5)
+                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+                                //CYCLE1
+
+                                .lineToLinearHeading(stackPose)
+                                .waitSeconds(0.5)
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                                  
+                                })
+
+                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+                                .lineToLinearHeading(farmPose2)
+                                .waitSeconds(0.5)
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> { //-0.3
+
+                                })
+                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+
+                                //CYCLE2
+
+                                .lineToLinearHeading(stackPose)
+                                .waitSeconds(0.5)
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+
+                                })
+
+                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+                                .lineToLinearHeading(farmPose2)
+                                .waitSeconds(0.5)
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> { //-0.3
+
+                                })
+                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+
+                                //CYCLE3
+
+                                .lineToLinearHeading(stackPose)
+                                .waitSeconds(0.5)
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+
+                                })
+
+                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+                                .lineToLinearHeading(farmPose2)
+                                .waitSeconds(0.5)
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> { //-0.3
+
+
+                                })
+                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+
+                                //CYCLE4
+
+                                .lineToLinearHeading(stackPose)
+                                .waitSeconds(0.5)
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+
+                                })
+
+                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+                                .lineToLinearHeading(farmPose2)
+                                .waitSeconds(0.5)
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> { //-0.3
+
+
+                                })
+                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+
+                                //CYCLE5
+
+                                .lineToLinearHeading(stackPose)
+                                .waitSeconds(0.5)
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+
+                                })
+
+                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+                                .lineToLinearHeading(farmPose2)
+                                .waitSeconds(0.5)
+                                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> { //-0.3
+
+                                })
+                                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
 
                                 .build()
                 );

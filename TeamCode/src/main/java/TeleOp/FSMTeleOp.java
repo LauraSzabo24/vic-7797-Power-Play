@@ -183,16 +183,16 @@ public class FSMTeleOp extends OpMode {
 
         if(gamepad2.right_bumper) {
 
-            pulleyMotorL.setPower(0.2*motorPower);
-            pulleyMotorR.setPower(0.2*motorPower);
+            pulleyMotorL.setPower(0.08*motorPower);
+            pulleyMotorR.setPower(0.08*motorPower);
             currentState = State.EMERGENCY;
             targetPosition = pulleyMotorL.getCurrentPosition();
 
         }
         if(gamepad2.left_bumper) {
 
-            pulleyMotorL.setPower(-0.2*motorPower);
-            pulleyMotorR.setPower(-0.2*motorPower);
+            pulleyMotorL.setPower(-0.08*motorPower);
+            pulleyMotorR.setPower(-0.08*motorPower);
             currentState = State.EMERGENCY;
             targetPosition = pulleyMotorL.getCurrentPosition();
 
