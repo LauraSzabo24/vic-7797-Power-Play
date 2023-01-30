@@ -205,7 +205,7 @@ public class LowStacksLeft extends LinearOpMode {
         Pose2d stackPose = new Pose2d(sPx,sPy,Math.toRadians(180));
 
         Pose2d firstConePose = new Pose2d(-32.1,-30,Math.toRadians(40));
-        Pose2d farmPose2 = new Pose2d(-48.6,-13,Math.toRadians(270));
+        Pose2d farmPose2 = new Pose2d(-48.6,-14,Math.toRadians(270));
 
         Pose2d middlePark = new Pose2d(-35,-6.7,Math.toRadians(90));
         Pose2d leftPark =  new Pose2d(-55.8,-6.7,Math.toRadians(90));
@@ -227,7 +227,7 @@ public class LowStacksLeft extends LinearOpMode {
                 .setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(40))
                 .lineToLinearHeading(new Pose2d(-36,-5,Math.toRadians(90)))
                 .back(30)
-                .lineToLinearHeading(new Pose2d(-28.9,-26.5,Math.toRadians(45)))
+                .lineToLinearHeading(new Pose2d(-29.1,-26.5,Math.toRadians(45)))
                 .resetConstraints()
                 .resetAccelConstraint()
                 .waitSeconds(0.1)
@@ -246,9 +246,9 @@ public class LowStacksLeft extends LinearOpMode {
                     for(int i =0; i<130; i++) openClaw();
                     targetPosition = grabHeight;
                 })
-                .lineToLinearHeading(new Pose2d(-62.5,-7.5, Math.toRadians(180)))
-                .waitSeconds(0.3)
-                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
+                .lineToLinearHeading(new Pose2d(-62.5,-8.5, Math.toRadians(180)))
+                .waitSeconds(0.2)
+                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
                     closeClaw();
                     closeClaw();
                     closeClaw();
@@ -258,9 +258,9 @@ public class LowStacksLeft extends LinearOpMode {
                     targetPosition = smallHeight;
                 })
 
-                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,3,0)))
                 .lineToLinearHeading(farmPose2)
-                .waitSeconds(0.2)
+                .waitSeconds(0.1)
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () -> { //-0.5
                     for(int i =0; i<130; i++) openClaw();
                     targetPosition = smallHeight-200;
@@ -269,7 +269,7 @@ public class LowStacksLeft extends LinearOpMode {
                     grabHeight-=200;
                     targetPosition = grabHeight;
                 })
-                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,3,0)))
 
 
 
@@ -279,18 +279,18 @@ public class LowStacksLeft extends LinearOpMode {
                     for(int i =0; i<130; i++) openClaw();
                     targetPosition = grabHeight;
                 })
-                .lineToLinearHeading(new Pose2d(-63.5,-7.5, Math.toRadians(180)))
-                .waitSeconds(0.3)
-                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
+                .lineToLinearHeading(new Pose2d(-63.5,-8.5, Math.toRadians(180)))
+                .waitSeconds(0.2)
+                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
                     closeClaw();
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () -> {
                     targetPosition = smallHeight;
                 })
 
-                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                .lineToLinearHeading(farmPose2.plus(new Pose2d(-2, 0)))
-                .waitSeconds(0.2)
+                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,3,0)))
+                .lineToLinearHeading(farmPose2.plus(new Pose2d(-1.5, 0)))
+                .waitSeconds(0.1)
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () -> { //-0.5
                     for(int i =0; i<130; i++) openClaw();
                     targetPosition = smallHeight-200;
@@ -299,7 +299,7 @@ public class LowStacksLeft extends LinearOpMode {
                     grabHeight-=200;
                     targetPosition = grabHeight;
                 })
-                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,3,0)))
 
                 //CYCLE3
 
@@ -307,18 +307,18 @@ public class LowStacksLeft extends LinearOpMode {
                     for(int i =0; i<130; i++) openClaw();
                     targetPosition = grabHeight;
                 })
-                .lineToLinearHeading(new Pose2d(-64.5,-7.5, Math.toRadians(180)))
-                .waitSeconds(0.3)
-                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
+                .lineToLinearHeading(new Pose2d(-64.5,-9.5, Math.toRadians(180)))
+                .waitSeconds(0.2)
+                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
                     closeClaw();
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () -> {
                     targetPosition = smallHeight;
                 })
 
-                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                .lineToLinearHeading(farmPose2.plus(new Pose2d(-3, 0)))
-                .waitSeconds(0.2)
+                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,3,0)))
+                .lineToLinearHeading(farmPose2.plus(new Pose2d(-3, -.5)))
+                .waitSeconds(0.1)
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () -> { //-0.5
                     for(int i =0; i<130; i++) openClaw();
                     targetPosition = smallHeight-200;
@@ -327,7 +327,7 @@ public class LowStacksLeft extends LinearOpMode {
                     grabHeight-=100;
                     targetPosition = grabHeight;
                 })
-                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
+                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,3,0)))
 
                 //CYCLE4
 
@@ -335,17 +335,17 @@ public class LowStacksLeft extends LinearOpMode {
                     for(int i =0; i<130; i++) openClaw();
                     targetPosition = grabHeight;
                 })
-                .lineToLinearHeading(new Pose2d(-65.5,-7.5, Math.toRadians(180)))
-                .waitSeconds(0.3)
-                .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
+                .lineToLinearHeading(new Pose2d(-65,-9.5, Math.toRadians(180)))
+                .waitSeconds(0.2)
+                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
                     closeClaw();
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () -> {
                     targetPosition = smallHeight;
                 })
 
-                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
-                .lineToLinearHeading(farmPose2.plus(new Pose2d(-5, -0.7)))
+                .lineToLinearHeading(farmPose2.plus(new Pose2d(0,3,0)))
+                .lineToLinearHeading(farmPose2.plus(new Pose2d(-3, -1.2)))
                 .waitSeconds(0.1)
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () -> { //-0.5
                     for(int i =0; i<130; i++) {
@@ -361,7 +361,6 @@ public class LowStacksLeft extends LinearOpMode {
 
 
         TrajectorySequence zone1 = drive.trajectorySequenceBuilder(bigTrajectory.end())
-                .waitSeconds(0.1)
                 .back(4)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     closeClaw();
@@ -373,7 +372,6 @@ public class LowStacksLeft extends LinearOpMode {
                 .build();
 
         TrajectorySequence zone2 = drive.trajectorySequenceBuilder(bigTrajectory.end())
-                .waitSeconds(0.1)
 
                 .back(4)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
@@ -381,12 +379,10 @@ public class LowStacksLeft extends LinearOpMode {
                     targetPosition = 50;
                 })
                 // .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
-                .lineToLinearHeading(new Pose2d(-35,-9.7,Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-41,-9.7,Math.toRadians(270)))
                 .build();
 
         TrajectorySequence zone3 = drive.trajectorySequenceBuilder(bigTrajectory.end())
-                .waitSeconds(0.1)
-
                 .back(4)
                 .UNSTABLE_addTemporalMarkerOffset(-0.4,()->{
                     closeClaw();
@@ -394,7 +390,7 @@ public class LowStacksLeft extends LinearOpMode {
                 })
                 // .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 // .lineToLinearHeading(middlePark)
-                .lineToLinearHeading(new Pose2d(-6,-9.7,Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-16,-9.7,Math.toRadians(270)))
                 .build();
 
 
@@ -469,7 +465,7 @@ public class LowStacksLeft extends LinearOpMode {
 
 
         cycle =0;
-        grabHeight =650;
+        grabHeight =600;
        // closeClaw();
 
         drive.followTrajectorySequenceAsync(bigTrajectory);
@@ -497,7 +493,7 @@ public class LowStacksLeft extends LinearOpMode {
                                     currentState = State.IDLE;
                                     break;
                                 default :
-                                    drive.followTrajectorySequenceAsync(zone2);
+                                    drive.followTrajectorySequenceAsync(zone3);
                                     closeClaw();
                                     currentState = State.IDLE;
                                     break;
