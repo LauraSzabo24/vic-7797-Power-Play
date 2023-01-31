@@ -33,7 +33,7 @@ public class AutoTesting {
         Pose2d stackPose = new Pose2d(-58.5,-12.7,Math.toRadians(180));//orig:180
         Pose2d farmPose = new Pose2d(-31.9,-6.5,Math.toRadians(42)); //-33.9,-8.5,42 original
         Pose2d approachPose = new Pose2d(-37.1,-13,Math.toRadians(90));
-        Pose2d firstConePose = new Pose2d(-32.1,-30,Math.toRadians(40));
+        Pose2d firstConePose = new Pose2d(-32.1,-25,Math.toRadians(0));//-32.1,-30,Math.toRadians(40)
         Pose2d farmPose2 = new Pose2d(-47.8,-13,Math.toRadians(270));
         //
         Pose2d middlePark = new Pose2d(-35.8,-13,Math.toRadians(270));
@@ -48,10 +48,11 @@ public class AutoTesting {
                 .setConstraints(50, 50, Math.toRadians(70), Math.toRadians(75), 14)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(startPose)
+                                .lineToLinearHeading(startPose.plus(new Pose2d(4,20,0)))
                                 .lineToLinearHeading(firstConePose)
                                 .waitSeconds(0.5)
                                 .lineToLinearHeading(approachPose)
-                                .lineToLinearHeading(stackPose)
+                               /* .lineToLinearHeading(stackPose)
                                 .waitSeconds(0.5)
                                 .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
                                 .lineToLinearHeading(farmPose2)
@@ -82,7 +83,7 @@ public class AutoTesting {
                                 .waitSeconds(0.5)
                                 .lineToLinearHeading(farmPose2.plus(new Pose2d(0,2,0)))
                                 .lineToLinearHeading(rightPark)
-
+                            */
 
                                 .build()
                 );
