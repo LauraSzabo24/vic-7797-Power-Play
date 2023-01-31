@@ -224,7 +224,7 @@ public class LowStacksLeft extends LinearOpMode {
                     targetPosition = midHeight;
                 })
                 .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(50, 40, 13))
-                .setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(40))
+                .setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(45))
                 .lineToLinearHeading(new Pose2d(-36,-5,Math.toRadians(90)))
                 .back(30)
                 .lineToLinearHeading(new Pose2d(-28.9,-26.5,Math.toRadians(45)))
@@ -396,7 +396,7 @@ public class LowStacksLeft extends LinearOpMode {
                 })
                 // .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 // .lineToLinearHeading(middlePark)
-                .lineToLinearHeading(new Pose2d(-15,-9.7,Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-10,-9.7,Math.toRadians(270)))
                 .build();
 
 
