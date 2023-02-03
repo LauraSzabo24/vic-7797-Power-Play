@@ -129,11 +129,18 @@ public class AntiTipTeleOp extends OpMode {
 
         targetPosition = 0;
 
+        imu = hardwareMap.get(IMU.class, "imu");
+
+
+    }
+
+    @Override
+    public void start() {
         IMU.Parameters myIMUParameters = new IMU.Parameters(
-            new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                RevHubOrientationOnRobot.UsbFacingDirection.UP
-            )
+                new RevHubOrientationOnRobot(
+                        RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                        RevHubOrientationOnRobot.UsbFacingDirection.UP
+                )
         );
         imu.initialize(myIMUParameters);
         robotOrientation = imu.getRobotYawPitchRollAngles();
@@ -240,14 +247,25 @@ public class AntiTipTeleOp extends OpMode {
             telemetry.addData("positonleftMotor", pulleyMotorL.getCurrentPosition());
             telemetry.addData("targetPosition", targetPosition);
             telemetry.addData("power", power);
+            //
+            robotOrientation = imu.getRobotYawPitchRollAngles();
+            Yaw = robotOrientation.getYaw(AngleUnit.DEGREES);
+            Pitch = robotOrientation.getPitch(AngleUnit.DEGREES);
+            Roll = robotOrientation.getRoll(AngleUnit.DEGREES);
+            telemetry.addData("Pitch", Pitch);
+            telemetry.addData("yaw", Yaw);
+            telemetry.addData("roll", Roll);
+
             telemetry.update();
             pulleyMotorL.setPower(power);
             pulleyMotorR.setPower(power);
         }
 
-        Yaw = robotOrientation.getYaw(AngleUnit.DEGREES);
+      /*  Yaw = robotOrientation.getYaw(AngleUnit.DEGREES);
         Pitch = robotOrientation.getPitch(AngleUnit.DEGREES);
         Roll = robotOrientation.getRoll(AngleUnit.DEGREES);
+        telemetry.addData("Pitch", Pitch);
+        telemetry.update();*/
         antiTip(Pitch);
 
 
@@ -314,7 +332,7 @@ public class AntiTipTeleOp extends OpMode {
         }
 
 
-        if (gamepad1.left_trigger>0.1) {
+        if (gamepad1.left_trigger>0.1 && !isActivated) {
             motorFrontLeft.setPower(frontLeftPower * 0.4);
             motorBackLeft.setPower(backLeftPower * 0.4);
             motorFrontRight.setPower(frontRightPower * 0.4);
@@ -322,24 +340,19 @@ public class AntiTipTeleOp extends OpMode {
         }
 
 
-        else if (gamepad1.right_trigger>0.1) {
+        else if (gamepad1.right_trigger>0.1 && !isActivated) {
             motorFrontLeft.setPower(frontLeftPower * 0.2);
             motorBackLeft.setPower(backLeftPower * 0.2);
             motorFrontRight.setPower(frontRightPower * 0.2);
             motorBackRight.setPower(backRightPower * 0.2);
         }
-        else {
+        else if(!isActivated) {
             motorFrontLeft.setPower(frontLeftPower);
             motorBackLeft.setPower(backLeftPower);
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
         }
-        if (motorBackRight.getPower() == 0 && motorFrontRight.getPower() == 0 && motorBackLeft.getPower() == 0 && motorFrontLeft.getPower() == 0 && !isActivated) {
-            motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
+
 
     }
 
@@ -358,12 +371,17 @@ public class AntiTipTeleOp extends OpMode {
     }
 
     public void antiTip(double pitch) {
-        if(Math.abs(pitch)>20){
-            double pitchCorrection = 0.125*pitch;  // tune 0.125 p term later
+        if(Math.abs(pitch)>10 && Math.abs(pitch)<70){
+            isActivated = true;
+            double pitchCorrection = -0.08*pitch;  // tune 0.125 p term later
             motorBackLeft.setPower(pitchCorrection);
             motorBackRight.setPower(pitchCorrection);
             motorFrontLeft.setPower(pitchCorrection);
             motorFrontRight.setPower(pitchCorrection);
+            if(Math.abs(pitch) > 15) targetPosition = 50;
+        }
+        else {
+            isActivated = false;
         }
 
     }

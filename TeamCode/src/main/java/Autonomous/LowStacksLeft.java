@@ -221,13 +221,16 @@ public class LowStacksLeft extends LinearOpMode {
         TrajectorySequence bigTrajectory = drive.trajectorySequenceBuilder(startPose)
                 //FIRST CONE
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    targetPosition = smallHeight-100;
+                })
+                .UNSTABLE_addTemporalMarkerOffset(3, () -> {
                     targetPosition = midHeight;
                 })
-                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(50, 40, 13))
-                .setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(45))
+                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(60, 50, 13))
+                .setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(50))
                 .lineToLinearHeading(new Pose2d(-36,-5,Math.toRadians(90)))
                 .back(30)
-                .lineToLinearHeading(new Pose2d(-28.9,-26.5,Math.toRadians(45)))
+                .lineToLinearHeading(new Pose2d(-29.3,-27.3,Math.toRadians(45)))
                 .resetConstraints()
                 .resetAccelConstraint()
                 .waitSeconds(0.1)
@@ -289,7 +292,7 @@ public class LowStacksLeft extends LinearOpMode {
                 })
 
                 .lineToLinearHeading(farmPose2.plus(new Pose2d(0,3,0)))
-                .lineToLinearHeading(farmPose2.plus(new Pose2d(-1.4, -1.8)))
+                .lineToLinearHeading(farmPose2.plus(new Pose2d(-1.4, -1.5)))
                 .waitSeconds(0.1)
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () -> { //-0.5
                     for(int i =0; i<130; i++) openClaw();
@@ -345,7 +348,7 @@ public class LowStacksLeft extends LinearOpMode {
                 })
 
                 .lineToLinearHeading(farmPose2.plus(new Pose2d(-3,3,0)))
-                .lineToLinearHeading(farmPose2.plus(new Pose2d(-3.6, -2.8)))
+                .lineToLinearHeading(farmPose2.plus(new Pose2d(-3.6, -2.4)))
                 .waitSeconds(0.1)
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () -> { //-0.5
                     for(int i =0; i<130; i++) {
@@ -371,7 +374,7 @@ public class LowStacksLeft extends LinearOpMode {
                 })
                 //.lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 // .lineToLinearHeading(middlePark)
-                .lineToLinearHeading(new Pose2d(-64,-9.7,Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-64,-16,Math.toRadians(270)))
                 .build();
 
         TrajectorySequence zone2 = drive.trajectorySequenceBuilder(bigTrajectory.end())
@@ -383,7 +386,7 @@ public class LowStacksLeft extends LinearOpMode {
                     targetPosition = 50;
                 })
                 // .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
-                .lineToLinearHeading(new Pose2d(-35,-9.7,Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-35,-16,Math.toRadians(270)))
                 .build();
 
         TrajectorySequence zone3 = drive.trajectorySequenceBuilder(bigTrajectory.end())
@@ -396,7 +399,7 @@ public class LowStacksLeft extends LinearOpMode {
                 })
                 // .lineToLinearHeading(new Pose2d(-35.4,-11,Math.toRadians(42)))
                 // .lineToLinearHeading(middlePark)
-                .lineToLinearHeading(new Pose2d(-10,-9.7,Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-10,-16.,Math.toRadians(270)))
                 .build();
 
 
