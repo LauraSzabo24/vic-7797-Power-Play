@@ -358,51 +358,14 @@ public class AntiTipTeleOp extends OpMode {
     }
 
     public void antiTip(double pitch) {
-        if (pitch > 40) {
-            isActivated = true;
-            motorBackLeft.setPower(-0.2);
-            motorBackRight.setPower(-0.2);
+        if(Math.abs(pitch)>20){
+            double pitchCorrection = 0.125*pitch;  // tune 0.125 p term later
+            motorBackLeft.setPower(pitchCorrection);
+            motorBackRight.setPower(pitchCorrection);
+            motorFrontLeft.setPower(pitchCorrection);
+            motorFrontRight.setPower(pitchCorrection);
         }
-        else if (pitch > 30) {
-            isActivated = true;
-            motorBackLeft.setPower(-0.1);
-            motorBackRight.setPower(-0.1);
-        }
-        else if (pitch > 20) {
-            isActivated = true;
-            motorBackLeft.setPower(-0.05);
-            motorBackRight.setPower(-0.05);
-        }
-        else if (pitch > 10) {
-            isActivated = true;
-            motorBackLeft.setPower(-0.01);
-            motorBackRight.setPower(-0.01);
-        }
-        else if (pitch < -40) {
-            isActivated = true;
-            motorFrontLeft.setPower(0.2);
-            motorFrontRight.setPower(0.2);
-        }
-        else if (pitch < -30) {
-            isActivated = true;
-            motorFrontLeft.setPower(0.1);
-            motorFrontRight.setPower(0.1);
-        }
-        else if (pitch < -20) {
-            isActivated = true;
-            motorFrontLeft.setPower(0.05);
-            motorFrontRight.setPower(0.05);
-        }
-        else if (pitch < -10) {
-            isActivated = true;
-            motorFrontLeft.setPower(0.01);
-            motorFrontRight.setPower(0.01);
-        }
-        else if (isActivated) {
-            motorBackLeft.setPower(0);
-            motorBackRight.setPower(0);
-            isActivated = false;
-        }
+
     }
 
 }
