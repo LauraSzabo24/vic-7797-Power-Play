@@ -250,7 +250,7 @@ public class rotatingStaacks4 extends LinearOpMode {
                     closeClaw();
 
                 })
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> { // offset:-0.5
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> { // offset:-0.5
                     targetPosition = tallHeight+100;
                 })
                 .lineToLinearHeading(approachPose)
@@ -280,7 +280,7 @@ public class rotatingStaacks4 extends LinearOpMode {
                     closeClaw();
 
                 })
-                .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(-0, () -> {
                     targetPosition = tallHeight+100;
                 })
                 .lineToLinearHeading(approachPose)
@@ -289,7 +289,7 @@ public class rotatingStaacks4 extends LinearOpMode {
 
 
                 //GOTOPOLE2
-                .lineToLinearHeading(new Pose2d(-31.1,-2.5,Math.toRadians(56))) //heading: 53  make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
+                .lineToLinearHeading(new Pose2d(-32.1,-3.5,Math.toRadians(56))) //heading: 53  make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                 .waitSeconds(0.5)
                 .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
                     for(int i =0; i<130; i++) openClaw();
@@ -306,14 +306,14 @@ public class rotatingStaacks4 extends LinearOpMode {
 
                 //GRABSTACK3
 
-                  .lineToLinearHeading(new Pose2d(-62.8,-7.7,Math.toRadians(180)))//y:-12
+                  .lineToLinearHeading(new Pose2d(-63.8,-7.7,Math.toRadians(180)))//y:-12
                   .waitSeconds(0.5)
                   .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
                       //closeClaw();
                       closeClaw();
 
                   })
-                  .UNSTABLE_addTemporalMarkerOffset(-0.3, () -> {
+                  .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                       targetPosition = tallHeight+100;
                   })
                   .lineToLinearHeading(approachPose)
@@ -322,7 +322,7 @@ public class rotatingStaacks4 extends LinearOpMode {
 
 
                   //GOTOPOLE3
-                  .lineToLinearHeading(new Pose2d(-31.1,-2.5,Math.toRadians(60))) //y: -0.5 heading: 59 make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
+                  .lineToLinearHeading(new Pose2d(-32.1,-3.5,Math.toRadians(60))) //y: -0.5 heading: 59 make this exactly on the pole new Pose2d(fPx,fPy,Math.toRadians(50))
                   .waitSeconds(0.7)
                   .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                       for(int i =0; i<130; i++) openClaw();
@@ -520,8 +520,8 @@ public class rotatingStaacks4 extends LinearOpMode {
         }
     }
     public void closeClaw() {
-        rightServo.setPosition(0.5);
-        leftServo.setPosition(0.5);
+        rightServo.setPosition(0.6);
+        leftServo.setPosition(0.4);
 
     }
     public void openClaw() {
