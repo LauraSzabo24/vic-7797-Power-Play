@@ -1,17 +1,20 @@
-# Road Runner Quickstart
+This is the 2022-2023 season's code for  team 7797 Victorian Voltage.
 
-An example FTC project using [Road Runner](https://github.com/acmerobotics/road-runner). **Note:** Road Runner is in alpha and many of its APIs are incubating.
+Credits: All code within this repository is from either the 2024-2025 FTC Roadrunner Quickstart, EasyOpenCV library or is the work of Indrajith
+Thyagaraja, Sam Xu with help from Laura Szabo from team #7797 Victorian Voltage. 
 
-## Installation
+Guide/Breakdown: All important code files are found under TeamCode/src/main/java. Here there are 5 folders:
 
-For more detailed instructions on getting Road Runner setup in your own project, see the [Road Runner README](https://github.com/acmerobotics/road-runner#core).
+    -Autonomous: Each folder describes the type of autonomous the files inside are. These are based on the robot's starting position on the field. 
+    There are a lot of different versions for each.
+    
+    -TeleOp: There are a lot of different versions, but the one that is the most finalized is the AntiTipTeleOp file. 
+    
+    -pipelines: These are the files for the camera detection. The AprilTagDetectionPipeline is a premade pipeline form EasyOpenCV, we did not write it. 
+    This pipeline is used in the majority of the Autonomous files. 
+    
+    -org/firstinspires/ftc/teamcode: These contain some of the files from the Roadrunner Quickstart. These are unmodified. 
+    
+    -Trash - These are old files that we didn't want to delete. They can be ignored. 
 
-1. Download or clone this repo with `git clone https://github.com/acmerobotics/road-runner-quickstart`.
-
-1. Open the project in Android Studio and build `TeamCode` like any other `ftc_app` project.
-
-1. If you have trouble with multidex, enable proguard by changing `useProguard` to `true` in `build.common.gradle`.
-
-## Documentation
-
-Check out the new [online quickstart documentation](https://acme-robotics.gitbook.io/road-runner/quickstart/introduction).
+Thank you for visiting this repository! Have a nice day!
